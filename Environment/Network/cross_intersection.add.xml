@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2023-05-28 21:52:01 by Eclipse SUMO netedit Version 1.14.1
+-->
+
+<additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">
+    <!-- Shapes -->
+    <poi id="poi_0" type="wifi" color="yellow" layer="202.00" x="499.56" y="-0.81" width="100.00" height="100.00"/>
+    <poi id="poi_1" type="3G" color="yellow" layer="202.00" x="754.78" y="8.25" width="100.00" height="100.00"/>
+    <poi id="poi_2" type="4G" color="yellow" layer="202.00" x="204.62" y="9.14" width="100.00" height="100.00"/>
+</additional>

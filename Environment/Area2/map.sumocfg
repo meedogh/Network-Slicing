@@ -1,0 +1,14 @@
+ <configuration>
+     <input>
+         <net-file value="map.net.xml"/>
+         <!-- <route-files value ="map.rou.xml"/> -->
+         <additional-files value="map.poly.xml"/>
+     </input>
+     <time>
+    </time>
+     <gui_only>
+         <gui-settings-file value ="view_setting.xml" />
+         <!-- <start value="true"/> -->
+         <!-- <quit-on-end value="true"/> -->
+     </gui_only>
+ </configuration>
