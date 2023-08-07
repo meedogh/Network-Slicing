@@ -218,7 +218,7 @@ class PerformanceLogger(metaclass=SingletonMeta):
         for key in self._queue_power_for_requested_in_buffer:
             self._queue_power_for_requested_in_buffer[key] = deque([])
         for key in self._queue_provisioning_time_buffer:
-            self._queue_provisioning_time_buffer[key] = [0,0]
+            self._queue_provisioning_time_buffer[key] = dict()
         for key in self._outlet_services_requested_number:
             self._outlet_services_requested_number[key] = [0,0,0]
         for key in self._outlet_services_ensured_number:

@@ -10,7 +10,7 @@ class FactorySafety(Service):
 
     def calcualate_processing_time(self):
         # self._network_latency + self._task_complexity
-        return np.random.choice(np.arange(2,5))
+        return np.random.choice(np.arange(10,20))
     def calculate_arrival_rate(self):
         # TODO: add doc string
 

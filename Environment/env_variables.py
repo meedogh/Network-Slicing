@@ -26,7 +26,7 @@ outlets = {
     '3G': [],
     '4G': [],
     '5G': [],
-    'wifi':[]
+    'wifi': []
 
 }
 all_routes = []
@@ -66,7 +66,7 @@ advisor_period = [2, number_of_episodes_for_each_period * episode_steps]
 exploitation_exploration_period = [number_of_episodes_for_each_period * episode_steps , number_of_episodes_for_each_period * episode_steps*2]
 last_exploitation_period = [2 * number_of_episodes_for_each_period * episode_steps , number_of_episodes_for_each_period * episode_steps * 3]
 
-TIME = 3 * episode_steps
+TIME = 2 * episode_steps
 day_time = 1280
 
 decentralized_replay_buffer = 30

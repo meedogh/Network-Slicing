@@ -1,3 +1,6 @@
+from typing import List
+
+from Outlet.Cellular.ICellular import Cellular
 from .utils.imports import *
 from .utils.period import Period
 from .utils.savingWeights import *
@@ -21,7 +24,7 @@ class Environment:
     previouse_steps_reseting = 0
     prev = 0
     memory_threshold = 1500  # 3.5GB
-    temp_outlets = []
+    temp_outlets: List[Cellular] = []
     gridcells_dqn = []
     flag_processing_old_requests = [False] * 3
     reset_decentralize = False
@@ -90,18 +93,18 @@ class Environment:
             type_poi = traci.poi.getType(id_)
 
             if type_poi in env_variables.types_outlets:
-                print(" type_poi : ", type_poi)
+                # print(" type_poi : ", type_poi)
                 position_ = traci.poi.getPosition(id_)
                 env_variables.outlets[type_poi].append((id_, position_))
                 val = 0
                 if type_poi == "3G":
-                    val = 850
+                    val = 8500
                 elif type_poi == "4G":
-                    val = 1250
+                    val = 12500
                 elif type_poi == "5G":
-                    val = 10000
+                    val = 100000
                 elif type_poi == "wifi":
-                    val = 150
+                    val = 1500
                 factory = FactoryCellular(
                     outlet_types[str(type_poi)],
                     1,
@@ -113,7 +116,6 @@ class Environment:
                     [],
                     [10, 10, 10],
                 )
-
                 outlet = factory.produce_cellular_outlet(str(type_poi))
                 outlet.outlet_id = id_
                 outlet.radius = val
@@ -125,7 +127,8 @@ class Environment:
                 performancelogger.set_outlet_services_requested_number(outlet, [0, 0, 0])
                 performancelogger.set_outlet_services_ensured_number(outlet, [0, 0, 0])
                 performancelogger.set_outlet_services_power_allocation_10_TimeStep(outlet, [0, 0, 0])
-
+                if outlet not in performancelogger.queue_provisioning_time_buffer:
+                    performancelogger.queue_provisioning_time_buffer[outlet] = dict()
                 outlets.append(outlet)
 
         list(map(lambda x: append_outlets(x), poi_ids))
@@ -152,9 +155,9 @@ class Environment:
             dis = []
             for i in outlets:
                 dis.append(self.distance(j, i))
-            if len(dis) >= 3:
+            if len(dis) >= 4:
                 sorted_dis = sorted(dis)
-                min_indices = [dis.index(sorted_dis[i]) for i in range(3)]
+                min_indices = [dis.index(sorted_dis[i]) for i in range(4)]
                 elements = [outlets[i] for i in min_indices]
                 outlets = [
                     element
@@ -295,7 +298,7 @@ class Environment:
         self.starting()
         performance_logger = PerformanceLogger()
         outlets = self.get_all_outlets(performance_logger)
-        self.Grids = self.fill_grids(self.fill_grids_with_the_nearest(outlets[:21]))
+        self.Grids = self.fill_grids(self.fill_grids_with_the_nearest(outlets[:4]))
         step = 0
         print("\n")
         for i in outlets:
@@ -327,6 +330,7 @@ class Environment:
         for i in range(1):
             for index, outlet in enumerate(self.gridcells_dqn[i].agents.grid_outlets):
                 self.temp_outlets.append(outlet)
+        print('fuck',  self.temp_outlets)
 
         load_weigths_buffer(self.gridcells_dqn[0])
         number_of_decentralize_periods = 0
@@ -347,7 +351,7 @@ class Environment:
             #     previous_steps_sending = self.steps
 
             number_of_cars_will_send_requests = round(
-                len(list(env_variables.vehicles.values())) * 0.05
+                len(list(env_variables.vehicles.values())) * 0.1
             )
             vehicles = ra.sample(
                 list(env_variables.vehicles.values()), number_of_cars_will_send_requests
@@ -358,7 +362,7 @@ class Environment:
             if self.steps == 0:
                 centralize_state_action(self.gridcells_dqn, self.steps, performance_logger)
 
-                decentralize_state_action(performance_logger, self.gridcells_dqn, 1, 0)
+                decentralize_state_action(performance_logger, self.gridcells_dqn, 1, self.steps)
                 # for index, outlet in enumerate(self.temp_outlets):
 
                 # add_value_to_pickle(
@@ -370,6 +374,10 @@ class Environment:
 
             list(map(lambda veh: enable_sending_requests(veh, observer, self.gridcells_dqn, performance_logger,
                                                          self.steps), vehicles, ))
+
+            for i,outlet in enumerate(self.temp_outlets):
+                serving_requests(performance_logger, outlet, self.steps)
+
             provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps)
 
             if self.steps - self.previous_period >= 10:
@@ -400,7 +408,6 @@ class Environment:
                                                       self.temp_outlets)
 
                 # self.gridcells_dqn[0].agents.grid_outlets
-
                 for index, outlet in enumerate(self.temp_outlets):
                     add_value_to_pickle(
                         os.path.join(reward_decentralized_path, f"reward{index}.pkl"),
@@ -420,6 +427,15 @@ class Environment:
                         os.path.join(ratio_of_occupancy_decentralized_path, f"ratio_of_occupancy{index}.pkl"),
                         outlet.dqn.environment.state.ratio_of_occupancy,
                     )
+                    add_value_to_pickle(
+                        os.path.join(ratio_of_occupancy_decentralized_path, f"capacity{index}.pkl"),
+                        outlet.current_capacity,
+                    )
+                    add_value_to_pickle(
+                        os.path.join(ratio_of_occupancy_decentralized_path, f"max_capacity{index}.pkl"),
+                        outlet.max_capacity,
+                    )
+
                     # add_value_to_pickle(
                     #     os.path.join(sum_power_allocation_path, f"sum_power_allocation{index}.pkl"),
                     #     sum(performance_logger.outlet_services_power_allocation_with_action_period[outlet]),
@@ -434,6 +450,8 @@ class Environment:
                 # for outlet in self.temp_outlets:
                 #     print("current cap : ", outlet.current_capacity)
                 #     print("current occupancy : ", outlet.dqn.environment.state.ratio_of_occupancy)
+
+
                 decentralize_reset(self.gridcells_dqn[0].agents.grid_outlets, performance_logger,self.steps)
 
                 decentralize_state_action(performance_logger, self.gridcells_dqn, number_of_decentralize_periods,
@@ -455,6 +473,7 @@ class Environment:
                 #          env_variables.vehicles.values(),
                 #      )
                 #  )
+
 
             if self.steps - self.previous_steps_centralize_action >= 40:
                 self.previous_steps_centralize_action = self.steps

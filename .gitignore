@@ -63,3 +63,4 @@ Thumbs.db
 test?.py
 test.py
 *.yml
+/results3_tanh/

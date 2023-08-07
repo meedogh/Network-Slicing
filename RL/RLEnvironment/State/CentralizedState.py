@@ -19,9 +19,9 @@ class CentralizedState(State):
     _services_requested: np.ndarray
     _services_ensured_prev: np.ndarray
     _services_requested_prev: np.ndarray
-    _capacity_each_tower = [0.0, 0.0, 0.0]
+    _capacity_each_tower = [0.0] * 4
     _index_outlet: int
-    _max_capacity_each_outlet = [0.0, 0.0, 0.0]
+    _max_capacity_each_outlet = [0.0] * 4
     _index_service: int
     _state_value_centralize = [[0.0] * 12 for _ in range(9)]
     _next_state_centralize = [[0.0] * 12 for _ in range(9)]
@@ -33,22 +33,22 @@ class CentralizedState(State):
 
     def __init__(self):
         super().__init__()
-        self.grid_cell = 3
+        self.grid_cell = 4
         self.num_services = 3
         self.state_shape = CentralizedState.state_shape(self.num_services, self.grid_cell)
-        self._allocated_power = np.zeros((3, 3))
+        self._allocated_power = np.zeros((self.num_services, self.grid_cell))
         self._average_power_allocate = np.zeros(3)
-        self._supported_services = np.zeros((3, 3))
+        self._supported_services = np.zeros((self.num_services, self.grid_cell))
         self._services_ensured = np.zeros(3)
         self._services_requested = np.zeros(3)
         self._services_ensured_for_outlet = np.zeros(3)
         self._services_requested_for_outlet = np.zeros(3)
         self._services_ensured_prev = np.zeros(3)
         self._services_requested_prev = np.zeros(3)
-        self._capacity_each_tower = [0.0, 0.0, 0.0]
+        self._capacity_each_tower = [0.0] * self.grid_cell
         self._averaging_value_utility_centralize_prev = 0.0
         self._index_outlet = 0
-        self._max_capacity_each_outlet = [0.0, 0.0, 0.0]
+        self._max_capacity_each_outlet = [0.0] * self.grid_cell
         self._index_service = 0
         self._supported_service = 0
         self._utility_value_centralize_prev = 0.0

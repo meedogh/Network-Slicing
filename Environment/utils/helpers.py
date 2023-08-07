@@ -1,5 +1,8 @@
 import os
 import pickle
+
+import numpy as np
+
 from .aggregators import *
 
 
@@ -69,3 +72,15 @@ def terminate_service(veh, outlets, performance_logger):
 
         else:
             out.current_capacity = out.current_capacity
+
+
+def rolling_average(data, window_size):
+    # Convert the data to a NumPy array with float type
+    data_array = np.array(data, dtype=np.float64)
+    # Calculate the rolling average using convolution with a window of ones
+    weights = np.ones(window_size) / window_size
+    rolling_avg = np.convolve(data_array, weights, mode='valid')
+    # for i in range(len(data) - window_size + 1):
+    #     window_sum = sum(data[i:i + window_size])
+    #     rolling_avg = window_sum / window_size
+    return rolling_avg

@@ -22,7 +22,7 @@ class Cellular(Outlet):
     _current_capacity: float
 
     def __init__(
-            self, tower, agent, coms: Communications, supported_services, *args, **kwargs
+        self, tower, agent, coms: Communications, supported_services, *args, **kwargs
     ):
         """
         Parameters
@@ -42,9 +42,13 @@ class Cellular(Outlet):
 
         super().__init__(*args)
 
-        self.dqn = RLBuilder().agent.build_agent(ActionResponse()).environment.build_env(DeCentralizedReward(),
-                                                                                         DeCentralizedState()).model_.build_model(
-            "decentralized", 7, 8).build()
+        self.dqn = (
+            RLBuilder()
+            .agent.build_agent(ActionResponse())
+            .environment.build_env(DeCentralizedReward(), DeCentralizedState())
+            .model_.build_model("decentralized", 7, 8)
+            .build()
+        )
 
         self.agent = agent
         self.coms = coms
@@ -64,27 +68,26 @@ class Cellular(Outlet):
         # print("type : ", self.__class__.__name__)
 
     class BuildMaxCapacity:
-
         def calculate_max_capacity(
-                self,
-                num_antennas,
-                channel_bandwidth,
-                coding_rate,
-                modulation_order,
-                average_symbol_per_slot,
-                num_slots_per_frame,
-                num_frames_per_second,
+            self,
+            num_antennas,
+            channel_bandwidth,
+            coding_rate,
+            modulation_order,
+            average_symbol_per_slot,
+            num_slots_per_frame,
+            num_frames_per_second,
         ):
             spectral_efficiency = modulation_order * coding_rate  # bits/symbol
 
             capacity_per_antenna = (
-                                           channel_bandwidth
-                                           * 1e6
-                                           * spectral_efficiency
-                                           * average_symbol_per_slot
-                                           * num_slots_per_frame
-                                           * num_frames_per_second
-                                   ) / 1e6  # Mbps
+                channel_bandwidth
+                * 1e6
+                * spectral_efficiency
+                * average_symbol_per_slot
+                * num_slots_per_frame
+                * num_frames_per_second
+            ) / 1e6  # Mbps
             total_capacity = capacity_per_antenna * num_antennas
             real_total_capacity = total_capacity // 8 / 10
             # print(f"capacity is: {real_total_capacity} MBps")
@@ -137,6 +140,8 @@ class Cellular(Outlet):
             return 25000
         elif type == "Wifi":
             return 4500
+        else:
+            return 50000
 
     @property
     def current_capacity(self):
