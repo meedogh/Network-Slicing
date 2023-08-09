@@ -258,6 +258,13 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                         action = outlet_.dqn.agents.action.command.action_value_decentralize
 
                         service_index = service._dec_services_types_mapping[service.__class__.__name__]
+                        print("action : ", action )
+
+                        outlet.dqn.agents.action.command.action_object, outlet.dqn.agents.action.command.action_value_decentralize, flag = outlet.dqn.agents.chain_dec(
+                            outlet.dqn.model,
+                            outlet.dqn.environment.state.state_value_decentralize,
+                            outlet.dqn.agents.epsilon,
+                        )
                         if action == 1 and outlet.supported_services[service_index] == 1:
                             # print(action,"  ",service.request_supported(outlet)," ",outlet.current_capacity)
                             # performance_logger.queue_requested_buffer[outlet].appendleft(1)
@@ -284,11 +291,7 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                             if start_time == 0 :
                                 outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state()
                             print("state value : ", outlet.dqn.environment.state.state_value_decentralize)
-                            outlet.dqn.agents.action.command.action_object, outlet.dqn.agents.action.command.action_value_decentralize, flag = outlet.dqn.agents.chain_dec(
-                                                outlet.dqn.model,
-                                                outlet.dqn.environment.state.state_value_decentralize,
-                                                outlet.dqn.agents.epsilon,
-                                            )
+
                             print("action value : ",outlet.dqn.agents.action.command.action_value_decentralize)
 
                             served = serving_requests(performance_logger, outlet, start_time,service)
