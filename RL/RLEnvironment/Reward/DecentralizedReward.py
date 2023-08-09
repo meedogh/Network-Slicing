@@ -147,17 +147,16 @@ class DeCentralizedReward(Reward):
         self._mean_power_allocation_3services_this_period = 0
         self.reward_value_accumilated = 0
 
-    def calculate_reward2(self,occupancy_ratio,invers_of_complement_waisted_requests):
-        # print("occ : ",occupancy_ratio)
+    def calculate_reward2(self,served,current_capacity,power_allocation):
+        reward = -1
+        if served == True :
+            return reward + 100
+        elif served == False and current_capacity >= power_allocation:
+            return reward - 100
+        elif served == False and current_capacity < power_allocation:
+            return reward
 
-        derivation_of_occupancy = occupancy_ratio - self.perv_occupancy
-        # derivation_of_remaining_requests = remaining_requests - self.prev_remaining_requests
-        # print("remaining_requests : ", remaining_requests)
-        # print("math.tanh(-1 * remaining_requests) : ", math.tanh(-1 * remaining_requests))
-        return self.occupancy_weight * occupancy_ratio + self.inverse_of_complement_wasting_requests_weight * invers_of_complement_waisted_requests
-            #+ self.remaining_requests_weight * -1 * remaining_requests / self.remaining_services_threshold
-            # + self.derivation_wasting_requests_weight * derivation_of_invers_of_complement_waisted_requests \
-            # + self.derivation_occupancy_weight * derivation_of_occupancy
+
 
     def calculate_reward3(self,requested,ensured):
         if requested != 0 and ensured != 0 :
