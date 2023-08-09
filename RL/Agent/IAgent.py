@@ -13,7 +13,7 @@ class AgentProtocol(Protocol):
 
 
 class AbstractAgent():
-    def __init__(self, epsilon=0.99, gamma=0.95, epsilon_decay=0.000025, min_epsilon=0.8,
+    def __init__(self, epsilon=0.80, gamma=0.95, epsilon_decay=0.000035, min_epsilon=0.60,
                  episodes=7,
                  cumulative_reward=0,
                  step=60):
