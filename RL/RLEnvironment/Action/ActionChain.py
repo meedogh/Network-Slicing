@@ -23,9 +23,8 @@ class IHandler(ABC):
 
 class Explore(IHandler):
     "A Concrete Handler"
-    def __init__(self, action, mask, successor):
+    def __init__(self, action, successor):
         super().__init__(action, successor)
-        self.mask = mask
 
 
     def check_epsilon(self, test, epsilon):
@@ -33,23 +32,22 @@ class Explore(IHandler):
             self.flag = 0
             # action = Action.explore()
             # print(f'handled in {self.__class__.__name__} because epsilon is {epsilon} and random is {test}')
-            explore_val = self.action.explore(self.mask)
+            explore_val = self.action.explore()
             return explore_val
 
 
 class Exploit(IHandler):
     "A Concrete Handler"
-    def __init__(self, action, model, state,mask, successor):
+    def __init__(self, action, model, state, successor):
         super().__init__(action, successor)
         self.model = model
         self.state = state
-        self.mask = mask
     def check_epsilon(self, test, epsilon):
         if 0 < epsilon < test < 1:
             self.flag = 1
             # action = Action.exploit()
             # print(f'handled in {self.__class__.__name__} because epsilon is {epsilon} and random is {test}')
-            exploit = self.action.exploit(self.model, self.state,self.mask)
+            exploit = self.action.exploit(self.model, self.state)
             return exploit
 
 
