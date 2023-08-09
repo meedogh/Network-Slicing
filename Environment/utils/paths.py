@@ -2,7 +2,7 @@ import os
 import sys
 
 results_dir = os.path.join(sys.path[0],
-                           'results_of_fixing_occupancy')
+                           'fixing_occupancy_bugs_phase1_period3')
 centralized_weights = os.path.join(results_dir, 'centralized_weights')
 decentralized_weights = os.path.join(results_dir, 'decentralized_weights')
 path_memory_centralize = os.path.join(results_dir, 'centralize_memory')
@@ -31,10 +31,10 @@ sum_power_allocation_path = os.path.join(results_dir, "sum_power_allocation//")
 # "/content/drive/MyDrive/network_slicing/results3_tanh"
 # os.path.join(sys.path[0],"results3_tanh//results3_tanh//")
 # results1_explor_decentralize = "//content//drive//MyDrive//network_slicing//results2_explor_decentralize//"
-prev_results_dec_weight = "C://Users//Windows dunya//Downloads//action_masking_period3_phase3_derivation_occ_westing_req"
+# prev_results_dec_weight = "C://Users//Windows dunya//Downloads//action_masking_period3_phase3_derivation_occ_westing_req"
 # prev_results_dec_memory = "//content//drive//MyDrive//network_slicing//action_masking_period3_phase3_derivation_occ_westing_req"
 prev_centralize_weights_path = os.path.join(prev_results_3tanh_dir, "centralized_weights//")
-prev_decentralize_weights_path = os.path.join(prev_results_dec_weight,"decentralized_weights//")
+# prev_decentralize_weights_path = os.path.join(prev_results_dec_weight,"decentralized_weights//")
 # prev_centralize_memory_path = os.path.join(prev_results_4tanh_dir,"centralize_memory//")
 # prev_decentralize_memory_path = os.path.join(prev_results_dec_memory,"decentralize_memory//")
 centralize_qvalue_path = os.path.join(results_dir, "qvalue_centralized_for_plotting//")

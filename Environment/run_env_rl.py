@@ -375,10 +375,11 @@ class Environment:
             list(map(lambda veh: enable_sending_requests(veh, observer, self.gridcells_dqn, performance_logger,
                                                          self.steps), vehicles, ))
 
+            provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps)
+
             for i,outlet in enumerate(self.temp_outlets):
                 serving_requests(performance_logger, outlet, self.steps)
 
-            provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps)
 
             if self.steps - self.previous_period >= 10:
                 # print("decentralize new period  .......   ")
@@ -487,17 +488,17 @@ class Environment:
             else:
                 close_figures()
 
-            # if self.steps - self.previous_steps >= env_variables.decentralized_replay_buffer:
-            #     self.previous_steps = self.steps
-            #     for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
-            #         for i, outlet in enumerate(gridcell_dqn.agents.grid_outlets):
-            #             if len(outlet.dqn.agents.memory) > 31:
-            #                 # print("replay buffer of decentralize ")
-            #                 outlet.dqn.agents.qvalue = (
-            #                     outlet.dqn.agents.replay_buffer_decentralize(
-            #                         30, outlet.dqn.model
-            #                     )
-            #                 )
+            if self.steps - self.previous_steps >= env_variables.decentralized_replay_buffer:
+                self.previous_steps = self.steps
+                for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
+                    for i, outlet in enumerate(gridcell_dqn.agents.grid_outlets):
+                        if len(outlet.dqn.agents.memory) > 31:
+                            # print("replay buffer of decentralize ")
+                            outlet.dqn.agents.qvalue = (
+                                outlet.dqn.agents.replay_buffer_decentralize(
+                                    30, outlet.dqn.model
+                                )
+                            )
 
             # if self.steps - self.previous_steps_centralize >= env_variables.centralized_replay_buffer:
             #     self.previous_steps_centralize = self.steps

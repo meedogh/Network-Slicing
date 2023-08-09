@@ -34,12 +34,15 @@ class DeCentralizedReward(Reward):
         self.reward_value_accumilated = 0
         self._mean_power_allocation_3services_this_period = 0
         self._prev_mean_power_allocation_3services_this_period = 0
-        self.occupancy_weight=0.50
-        self.inverse_of_complement_wasting_requests_weight = 0.50
+        self.occupancy_weight=0.5
+        self.inverse_of_complement_wasting_requests_weight = 0.5
         self.perv_occupancy = 0
-        self.derivation_occupancy_weight = 0.50
+        self.derivation_occupancy_weight = 0.2
         self.derivation_wasting_requests_weight = 0.25
+        self.remaining_requests_weight = 0.1
         self.perv_wasting_requests_ratio = 0
+        self.prev_remaining_requests = 0
+        self.remaining_services_threshold = 100
 
 
     @staticmethod
@@ -148,20 +151,11 @@ class DeCentralizedReward(Reward):
         # print("occ : ",occupancy_ratio)
 
         derivation_of_occupancy = occupancy_ratio - self.perv_occupancy
-        derivation_of_invers_of_complement_waisted_requests = invers_of_complement_waisted_requests - self.perv_wasting_requests_ratio
-                # if accepted != 0  :
-        #     invers_of_complement_waisted_requests = (served/accepted)  - 1
-        # print("invers_of_complement_waisted_requests : ", invers_of_complement_waisted_requests)
-        #
-        # print("self.perv_occupancy : ",self.perv_occupancy)
-        # print("occupancy_ratio : ", occupancy_ratio)
-
-        # print("self.perv_wasting_requests_ratio : ", self.perv_wasting_requests_ratio)
-        # print("derivation_of_occupancy : ", derivation_of_occupancy)
-        # print("derivation_of_invers_of_complement_waisted_requests : ",
-        #       derivation_of_invers_of_complement_waisted_requests)
-
-        return self.derivation_occupancy_weight * derivation_of_occupancy + self.inverse_of_complement_wasting_requests_weight * invers_of_complement_waisted_requests
+        # derivation_of_remaining_requests = remaining_requests - self.prev_remaining_requests
+        # print("remaining_requests : ", remaining_requests)
+        # print("math.tanh(-1 * remaining_requests) : ", math.tanh(-1 * remaining_requests))
+        return self.occupancy_weight * occupancy_ratio + self.inverse_of_complement_wasting_requests_weight * invers_of_complement_waisted_requests
+            #+ self.remaining_requests_weight * -1 * remaining_requests / self.remaining_services_threshold
             # + self.derivation_wasting_requests_weight * derivation_of_invers_of_complement_waisted_requests \
             # + self.derivation_occupancy_weight * derivation_of_occupancy
 

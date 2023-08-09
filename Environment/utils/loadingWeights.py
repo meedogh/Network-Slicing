@@ -1,5 +1,5 @@
 import os
-from Environment.utils.paths import prev_centralize_weights_path,prev_decentralize_weights_path #, prev_decentralize_memory_path
+from Environment.utils.paths import prev_centralize_weights_path#,prev_decentralize_weights_path #, prev_decentralize_memory_path
 
 def load_weigths_buffer(gridcell):
     for i in range(1):
