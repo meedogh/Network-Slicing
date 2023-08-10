@@ -135,21 +135,23 @@ class DeCentralizedReward(Reward):
 
     def resetreward(self):
         self.reward_value = 0
-        self.services_requested = 0
-        self.services_ensured = 0
-        self.utility = 0
-        self.prev_utility = 0
-        self._prev_mean_power_allocation_3services_this_period = 0
-        self._mean_power_allocation_3services_this_period = 0
-        self.reward_value_accumilated = 0
+        # self.services_requested = 0
+        # self.services_ensured = 0
+        # self.utility = 0
+        # self.prev_utility = 0
+        # self._prev_mean_power_allocation_3services_this_period = 0
+        # self._mean_power_allocation_3services_this_period = 0
+        # self.reward_value_accumilated = 0
 
-    def calculate_reward2(self,served,current_capacity,power_allocation):
+    def calculate_reward2(self,accepted,current_capacity,power_allocation):
         reward = -1
-        if served == True :
+        if accepted == 1 and current_capacity >= power_allocation:
             return reward + 100
-        elif served == False and current_capacity >= power_allocation:
+        elif accepted == 1 and  current_capacity < power_allocation:
+            return reward -100
+        elif accepted == 0 and current_capacity >= power_allocation:
             return reward - 100
-        elif served == False and current_capacity < power_allocation:
+        elif accepted == 0 and current_capacity < power_allocation:
             return reward
 
 

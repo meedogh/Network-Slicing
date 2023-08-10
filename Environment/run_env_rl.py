@@ -464,10 +464,6 @@ class Environment:
                         out.dqn.environment.reward.reward_value_accumilated = 0
                         out.current_capacity = out.set_max_capacity(out.__class__.__name__)
 
-                        for i in range(3):
-                            out.dqn.environment.state._mean_power_allocated_requests[i] = \
-                                performance_logger.outlet_services_power_allocation[out][
-                                    i] / number_of_decentralize_periods
 
                         # print(" out : ", out.current_capacity)
                         out.dqn.environment.state.state_value_decentralize = out.dqn.environment.state.calculate_state()

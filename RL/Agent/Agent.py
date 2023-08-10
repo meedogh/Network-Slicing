@@ -69,17 +69,20 @@ class Agent(AbstractAgent):
     def replay_buffer_decentralize(self, batch_size, model):
         minibatch = random.sample(self.memory, batch_size)
         target = 0
-        for  exploitation, state, action, reward, next_state in minibatch:
+        for exploitation, state, action, reward, next_state in minibatch:
+            print("inside replay buffer ")
             target = reward
             if next_state is not None:
                 next_state = np.array(next_state).reshape([1, np.array(next_state).shape[0]])
                 # logit_model2 = keras.Model(inputs=model.input, outputs=model.layers[-2].output)
                 logit_value = model.predict(next_state, verbose=0)[0]
                 target = reward + self.gamma * np.amax(logit_value)
-
+            print("target belman :   ",target)
             state = np.array(state).reshape([1, np.array(state).shape[0]])
             target_f = model.predict(state, verbose=0)
+            print("target model : ", target_f)
             target_f[0][action] = target
+            print("target f after assign belman : ", target_f)
             model.fit(state, target_f, epochs=1, verbose=0)
         if self.epsilon > self.min_epsilon:
             self.epsilon -= self.epsilon * self.epsilon_decay

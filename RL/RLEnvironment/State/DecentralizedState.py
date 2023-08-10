@@ -11,8 +11,8 @@ class DeCentralizedState(State):
     _services_requested: int
     _tower_capacity = 0.0
     _max_tower_capacity = 0.0
-    _state_value_decentralize = [0.0] * 7
-    _next_state_decentralize = [0.0] * 7
+    _state_value_decentralize = [0.0] * 3
+    _next_state_decentralize = [0.0] * 3
 
     def __init__(self):
         super().__init__()
@@ -148,16 +148,9 @@ class DeCentralizedState(State):
         self._supported_services = supported_array
 
     def resetsate(self):
-        self._services_requested = 0
-        self._services_ensured = 0
-        self._allocated_power = np.zeros(self.num_services)
-        # out.dqn.environment.reward.reward_value = 0
-        self.ratio_of_occupancy = 0
-        self.mean_power_allocated_requests = np.zeros(self.num_services)
-        self.state_value_decentralize = [0.0] * 7
-        self._number_ensured_in_period = 0
-        self._number_requested_in_period = 0
 
+        self.state_value_decentralize = [0.0] * 3
+        self.power_of_requests = 0
         self.tower_capacity = self.max_tower_capacity
 
     def calculate_state(self):
@@ -167,7 +160,7 @@ class DeCentralizedState(State):
         final_state.append(self.power_of_requests)
 
         if len(final_state) == 0:
-            final_state = [0.0] * 7
+            final_state = [0.0] * 3
         return final_state
 
     def calculate_initial_state(self):
