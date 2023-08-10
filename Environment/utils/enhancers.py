@@ -219,7 +219,7 @@ def serving_requests(performancelogger,outlet,start_time,service_):
                         performancelogger.queue_power_for_requested_in_buffer[outlet][i][1] = True
                         performancelogger.queue_provisioning_time_buffer[outlet][service] = [start_time,
                                                                                              service.calcualate_processing_time()]
-                        performancelogger.queue_ensured_buffer[outlet].appenleft(1)
+                        performancelogger.queue_ensured_buffer[outlet].appendleft(1)
                         outlet.current_capacity = outlet.current_capacity - service.service_power_allocate
                         return True
                     else :
@@ -239,6 +239,8 @@ def provisioning_time_services(outlets, performance_logger, time_step_simulation
             performance_logger.queue_provisioning_time_buffer[outlet].pop(service)
 
 
+
+
 def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, start_time):
     car.attach(observer)
     car.set_state(
@@ -255,80 +257,80 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
             for gridcell in gridcells_dqn:
                 for j, outlet_ in enumerate(gridcell.agents.grid_outlets):
                     if outlet == outlet_:
-                        action = outlet_.dqn.agents.action.command.action_value_decentralize
 
                         service_index = service._dec_services_types_mapping[service.__class__.__name__]
-                        print("action : ", action )
-
-                        outlet.dqn.agents.action.command.action_object, outlet.dqn.agents.action.command.action_value_decentralize, flag = outlet.dqn.agents.chain_dec(
-                            outlet.dqn.model,
-                            outlet.dqn.environment.state.state_value_decentralize,
-                            outlet.dqn.agents.epsilon,
-                        )
-                        if action == 1 and outlet.supported_services[service_index] == 1:
-                            # print(action,"  ",service.request_supported(outlet)," ",outlet.current_capacity)
-                            # performance_logger.queue_requested_buffer[outlet].appendleft(1)
-
-                            request_bandwidth = Bandwidth(service.bandwidth, service.criticality)
-                            request_cost = RequestCost(request_bandwidth, service.realtime)
-                            request_cost.cost_setter(service.realtime)
-                            service.service_power_allocate = request_bandwidth.allocated
-                            performance_logger.queue_requested_buffer[outlet].appendleft(1)
-                            performance_logger.queue_power_for_requested_in_buffer[outlet].appendleft(
-                                [service, False])
-
-                            performance_logger.queue_power_for_requested_in_buffer[outlet][0][1] = False
+                        if outlet.supported_services[service_index] == 1:
                             outlet._max_capacity = outlet.set_max_capacity(outlet.__class__.__name__)
                             gridcell.environment.state._max_capacity_each_outlet[j] = outlet._max_capacity
                             gridcell.environment.state._capacity_each_tower[j] = outlet.current_capacity
-
 
                             # outlet.dqn.environment.state.state_value_decentralize[0] =
 
                             outlet.dqn.environment.state.max_tower_capacity = outlet._max_capacity
                             outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                             outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
-                            if start_time == 0 :
-                                outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state()
+
+                            outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state()
                             print("state value : ", outlet.dqn.environment.state.state_value_decentralize)
-
-                            print("action value : ",outlet.dqn.agents.action.command.action_value_decentralize)
-
-                            served = serving_requests(performance_logger, outlet, start_time,service)
-
-                            outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
-                            outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
-
-                            outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.agents.action.command.action_object.execute(
-                                outlet.dqn.environment.state,
-                                outlet.dqn.agents.action.command.action_value_decentralize,
-                            )
-
-                            print("next state : ", outlet.dqn.environment.state.next_state_decentralize)
-                            outlet.dqn.environment.reward.services_requested = len(performance_logger.queue_requested_buffer[outlet])
-                            outlet.dqn.environment.reward.services_ensured = len(performance_logger.queue_ensured_buffer[outlet])
-
-                            outlet.dqn.environment.reward.reward_value = outlet.dqn.environment.reward.calculate_reward2(
-                                served,
-                                outlet.current_capacity,
-                                service.service_power_allocate
-
-                            )
-
-                            if outlet.dqn.environment.reward.service_requested == 0 and (
-                                    outlet.dqn.agents.action.command.action_value_decentralize != 0):
-                                remember_flag = False
-                            else:
-                                remember_flag = True
-
-                            outlet.dqn.agents.remember_decentralize(
-                                flag,
+                            outlet.dqn.agents.action.command.action_object, outlet.dqn.agents.action.command.action_value_decentralize, flag = outlet.dqn.agents.chain_dec(
+                                outlet.dqn.model,
                                 outlet.dqn.environment.state.state_value_decentralize,
-                                outlet.dqn.agents.action.command.action_value_decentralize,
-                                outlet.dqn.environment.reward.reward_value,
-                                outlet.dqn.environment.state.next_state_decentralize,
-                                remember_flag
+                                outlet.dqn.agents.epsilon,
                             )
+                            print("action value : ", outlet.dqn.agents.action.command.action_value_decentralize)
+                            action = outlet_.dqn.agents.action.command.action_value_decentralize
 
-                            outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.next_state_decentralize.copy()
+                            if action == 1 and outlet.supported_services[service_index] == 1:
+                                # print(action,"  ",service.request_supported(outlet)," ",outlet.current_capacity)
+                                # performance_logger.queue_requested_buffer[outlet].appendleft(1)
+
+
+                                request_bandwidth = Bandwidth(service.bandwidth, service.criticality)
+                                request_cost = RequestCost(request_bandwidth, service.realtime)
+                                request_cost.cost_setter(service.realtime)
+                                service.service_power_allocate = request_bandwidth.allocated
+                                performance_logger.queue_requested_buffer[outlet].appendleft(1)
+                                performance_logger.queue_power_for_requested_in_buffer[outlet].appendleft(
+                                    [service, False])
+
+                                performance_logger.queue_power_for_requested_in_buffer[outlet][0][1] = False
+
+                                served = serving_requests(performance_logger, outlet, start_time,service)
+                                print("if served or not  : ", served)
+                                outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
+                                outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
+
+                                outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.agents.action.command.action_object.execute(
+                                    outlet.dqn.environment.state,
+                                    outlet.dqn.agents.action.command.action_value_decentralize,
+                                )
+
+                                print("next state : ", outlet.dqn.environment.state.next_state_decentralize)
+                                outlet.dqn.environment.reward.services_requested = len(performance_logger.queue_requested_buffer[outlet])
+                                outlet.dqn.environment.reward.services_ensured = len(performance_logger.queue_ensured_buffer[outlet])
+
+                                outlet.dqn.environment.reward.reward_value = outlet.dqn.environment.reward.calculate_reward2(
+                                    served,
+                                    outlet.current_capacity,
+                                    service.service_power_allocate
+
+                                )
+                                print("outlet.dqn.environment.reward.reward_value  : ",outlet.dqn.environment.reward.reward_value)
+
+                                if outlet.dqn.environment.reward.services_requested == 0 and (
+                                        outlet.dqn.agents.action.command.action_value_decentralize != 0):
+                                    remember_flag = False
+                                else:
+                                    remember_flag = True
+
+                                outlet.dqn.agents.remember_decentralize(
+                                    flag,
+                                    outlet.dqn.environment.state.state_value_decentralize,
+                                    outlet.dqn.agents.action.command.action_value_decentralize,
+                                    outlet.dqn.environment.reward.reward_value,
+                                    outlet.dqn.environment.state.next_state_decentralize,
+                                    remember_flag
+                                )
+
+                                outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.next_state_decentralize.copy()
 
