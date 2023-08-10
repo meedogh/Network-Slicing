@@ -113,8 +113,6 @@ class DeCentralizedReward(Reward):
         self._services_ensured = value
 
 
-
-
     @property
     def reward_value(self):
         return self._reward_value
@@ -124,8 +122,6 @@ class DeCentralizedReward(Reward):
         self._reward_value = r
 
     def calculate_utility(self):
-        # print("self._services_requested : ", self.services_requested)
-        # print("self._services_ensured : ", self.services_ensured)
         if (self.services_ensured ) == 0 and (
                 self.services_requested ) == 0:
             return 0
