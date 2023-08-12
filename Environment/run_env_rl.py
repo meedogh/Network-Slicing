@@ -363,50 +363,17 @@ class Environment:
 
 
 
-            for index, outlet in enumerate(self.temp_outlets):
-
-
-                add_value_to_pickle(
-                    os.path.join(action_decentralized_path, f"action{index}.pkl"),
-                    outlet.dqn.agents.action.command.action_value_decentralize,
-                )
-
-                add_value_to_pickle(
-                    os.path.join(supported_service_decentralized_path, f"supported_services{index}.pkl"),
-                    outlet.dqn.environment.state.supported_services,
-                )
-
-                number_of_decentralize_periods = number_of_decentralize_periods + 1
+            # for index, outlet in enumerate(self.temp_outlets):
+            #
+            #
+            #
+            #
+            #     number_of_decentralize_periods = number_of_decentralize_periods + 1
                 # update_figures(self.steps / 10, self.temp_outlets, self.gridcells_dqn)
 
                 # update_lines_reward_320_decentralized(lines_out_reward_320_decentralize, self.steps / 10,
                 #                                       self.temp_outlets)
 
-                add_value_to_pickle(
-                    os.path.join(reward_decentralized_path, f"reward{index}.pkl"),
-                    outlet.dqn.environment.reward.reward_value,
-                )
-
-                add_value_to_pickle(
-                    os.path.join(reward_decentralized_path, f"reward{index}.pkl"),
-                    outlet.dqn.environment.reward.reward_value,
-                )
-                add_value_to_pickle(
-                    os.path.join(requested_decentralized_path, f"requested{index}.pkl"),
-                    outlet.dqn.environment.reward.services_requested,
-                )
-
-                add_value_to_pickle(
-                    os.path.join(ratio_of_occupancy_decentralized_path, f"capacity{index}.pkl"),
-                    outlet.current_capacity,
-                )
-
-
-
-                add_value_to_pickle(
-                    os.path.join(ensured_decentralized_path, f"ensured{index}.pkl"),
-                    outlet.dqn.environment.reward.services_ensured,
-                )
 
 
             if self.steps - self.previous_steps_centralize_action >= 40:

@@ -1,15 +1,16 @@
 import math
+import os
 from collections import deque
 
-import numpy as np
 import traci
 import random as ra
 
 from Utils.Bandwidth import Bandwidth
 from Utils.Cost import RequestCost, TowerCost
-from .aggregators import *
+from .helpers import add_value_to_pickle
 from .. import env_variables
 from .mask_generation import *
+from Environment.utils.paths import *
 
 
 def rolling_average(data, window_size):
@@ -256,11 +257,18 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
         service = info[1][2]
         if sum(outlet.supported_services) != 0:
             for gridcell in gridcells_dqn:
+                # should fix logging and sure if the action taking when the service supported , and just when service accepted added to requested
                 for j, outlet_ in enumerate(gridcell.agents.grid_outlets):
                     if outlet == outlet_:
                         service_index = service._dec_services_types_mapping[service.__class__.__name__]
                         if outlet.supported_services[service_index] == 1:
-                            print("outlet name : ", outlet.__class__.__name__)
+                            # print("outlet name : ", outlet.__class__.__name__)
+
+                            request_bandwidth = Bandwidth(service.bandwidth, service.criticality)
+                            request_cost = RequestCost(request_bandwidth, service.realtime)
+                            request_cost.cost_setter(service.realtime)
+                            service.service_power_allocate = request_bandwidth.allocated
+
                             outlet._max_capacity = outlet.set_max_capacity(outlet.__class__.__name__)
                             gridcell.environment.state._max_capacity_each_outlet[j] = outlet._max_capacity
                             gridcell.environment.state._capacity_each_tower[j] = outlet.current_capacity
@@ -270,19 +278,16 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                             outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
 
                             outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state()
-                            print("state value : ", outlet.dqn.environment.state.state_value_decentralize)
+                            # outlet.dqn.environment.state.state_value_decentralize[2] = service.service_power_allocate
+                            # print("state value : ", outlet.dqn.environment.state.state_value_decentralize)
                             outlet.dqn.agents.action.command.action_object, outlet.dqn.agents.action.command.action_value_decentralize, flag = outlet.dqn.agents.chain_dec(
                                 outlet.dqn.model,
                                 outlet.dqn.environment.state.state_value_decentralize,
                                 outlet.dqn.agents.epsilon,
                             )
                             action = outlet.dqn.agents.action.command.action_value_decentralize
-                            print("action value : ",action )
+                            # print("action value : ",action )
 
-                            request_bandwidth = Bandwidth(service.bandwidth, service.criticality)
-                            request_cost = RequestCost(request_bandwidth, service.realtime)
-                            request_cost.cost_setter(service.realtime)
-                            service.service_power_allocate = request_bandwidth.allocated
 
                             if action == 1 :
                                 performance_logger.queue_requested_buffer[outlet].appendleft(1)
@@ -292,7 +297,8 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                 performance_logger.queue_power_for_requested_in_buffer[outlet][0][1] = False
 
                                 served = serving_requests(performance_logger, outlet, start_time,service)
-                                print("if served or not  : ", served)
+                                # print("if served or not  : ", served)
+
                             outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                             outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
 
@@ -301,7 +307,7 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                 outlet.dqn.agents.action.command.action_value_decentralize,
                             )
 
-                            print("next state : ", outlet.dqn.environment.state.next_state_decentralize)
+                            # print("next state : ", outlet.dqn.environment.state.next_state_decentralize)
                             outlet.dqn.environment.reward.services_requested = len(performance_logger.queue_requested_buffer[outlet])
                             outlet.dqn.environment.reward.services_ensured = len(performance_logger.queue_ensured_buffer[outlet])
 
@@ -311,13 +317,43 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                 service.service_power_allocate
 
                             ))
-                            print("outlet.dqn.environment.reward.reward_value  : ",outlet.dqn.environment.reward.reward_value)
+                            # print("outlet.dqn.environment.reward.reward_value  : ",outlet.dqn.environment.reward.reward_value)
 
-                            if outlet.dqn.environment.reward.services_requested == 0 and (
-                                    outlet.dqn.agents.action.command.action_value_decentralize != 0):
-                                remember_flag = False
-                            else:
-                                remember_flag = True
+                            add_value_to_pickle(
+                                os.path.join(reward_decentralized_path, f"reward{j}.pkl"),
+                                outlet.dqn.environment.reward.reward_value,
+                            )
+
+                            add_value_to_pickle(
+                                os.path.join(requested_decentralized_path, f"requested{j}.pkl"),
+                                outlet.dqn.environment.reward.services_requested,
+                            )
+
+                            add_value_to_pickle(
+                                os.path.join(ratio_of_occupancy_decentralized_path, f"capacity{j}.pkl"),
+                                outlet.current_capacity,
+                            )
+
+                            add_value_to_pickle(
+                                os.path.join(ensured_decentralized_path, f"ensured{j}.pkl"),
+                                outlet.dqn.environment.reward.services_ensured,
+                            )
+
+                            add_value_to_pickle(
+                                os.path.join(action_decentralized_path, f"action{j}.pkl"),
+                                outlet.dqn.agents.action.command.action_value_decentralize,
+                            )
+
+                            add_value_to_pickle(
+                                os.path.join(supported_service_decentralized_path, f"supported_services{j}.pkl"),
+                                outlet.supported_services,
+                            )
+
+                            # if outlet.dqn.environment.reward.services_requested == 0 and (
+                            #         outlet.dqn.agents.action.command.action_value_decentralize != 0):
+                            #     remember_flag = False
+                            # else:
+                            remember_flag = True
 
                             outlet.dqn.agents.remember_decentralize(
                                 flag,

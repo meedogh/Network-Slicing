@@ -84,3 +84,4 @@ def rolling_average(data, window_size):
     #     window_sum = sum(data[i:i + window_size])
     #     rolling_avg = window_sum / window_size
     return rolling_avg
+
