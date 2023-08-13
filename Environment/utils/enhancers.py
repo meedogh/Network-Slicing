@@ -292,7 +292,7 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                             action = outlet.dqn.agents.action.command.action_value_decentralize
                             # print("action value : ",action )
 
-
+                            served = 0
                             if action == 1 :
                                 performance_logger.queue_requested_buffer[outlet].appendleft(1)
                                 performance_logger.queue_power_for_requested_in_buffer[outlet].appendleft(
@@ -315,10 +315,10 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                             outlet.dqn.environment.reward.services_requested = len(performance_logger.queue_requested_buffer[outlet])
                             outlet.dqn.environment.reward.services_ensured = len(performance_logger.queue_ensured_buffer[outlet])
 
-                            outlet.dqn.environment.reward.reward_value = math.tanh(outlet.dqn.environment.reward.calculate_reward2(
+                            outlet.dqn.environment.reward.reward_value = (outlet.dqn.environment.reward.calculate_reward2(
+                                served,
                                 outlet.dqn.agents.action.command.action_value_decentralize,
-                                outlet.current_capacity,
-                                service.service_power_allocate
+
 
                             ))
 

@@ -69,7 +69,7 @@ last_exploitation_period = [2 * number_of_episodes_for_each_period * episode_ste
 TIME = 34 * episode_steps
 day_time = 1280
 
-decentralized_replay_buffer = 30
+decentralized_replay_buffer = 32
 centralized_replay_buffer = 32
 def get_position_vehicle(id_):
     try:

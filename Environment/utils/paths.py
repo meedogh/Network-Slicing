@@ -2,7 +2,7 @@ import os
 import sys
 
 results_dir = os.path.join(sys.path[0],
-                           'action_each_single_request2')
+                           'action_each_single_request_reward2')
 centralized_weights = os.path.join(results_dir, 'centralized_weights')
 decentralized_weights = os.path.join(results_dir, 'decentralized_weights')
 path_memory_centralize = os.path.join(results_dir, 'centralize_memory')
@@ -23,6 +23,8 @@ supported_service_decentralized_path = os.path.join(results_dir, 'supported_serv
 # centralize_qvalue_path = os.path.join(prev_results_dir, 'qvalue_centralized_for_plotting')
 # decentralize_qvalue_path = os.path.join(prev_results_dir, 'qvalue_decentralized_for_plotting')
 prev_results_3tanh_dir = "//content//drive//MyDrive//network_slicing//results3_tanh"
+
+    # "C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//results3_tanh//results3_tanh"
 utility_decentralized_path = os.path.join(results_dir, 'utility_decentralized')
 sum_power_allocation_path = os.path.join(results_dir, "sum_power_allocation//")
 #

@@ -392,7 +392,7 @@ class Environment:
                 self.previous_steps = self.steps
                 for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
                     for i, outlet in enumerate(gridcell_dqn.agents.grid_outlets):
-                        if len(outlet.dqn.agents.memory) > 31:
+                        if len(outlet.dqn.agents.memory) > 32:
                             # print("replay buffer of decentralize ")
                             outlet.dqn.agents.qvalue = (
                                 outlet.dqn.agents.replay_buffer_decentralize(

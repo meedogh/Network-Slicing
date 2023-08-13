@@ -155,9 +155,9 @@ class DeCentralizedState(State):
 
     def calculate_state(self):
         final_state = []
-        final_state.append(self.max_tower_capacity)
-        final_state.append(self._tower_capacity)
-        final_state.append(self.power_of_requests)
+        final_state.append((self.max_tower_capacity/self.max_tower_capacity)*100)
+        final_state.append(round((self._tower_capacity/self.max_tower_capacity)*100,2))
+        final_state.append(round((self.power_of_requests/self.max_tower_capacity)*100,2))
 
         if len(final_state) == 0:
             final_state = [0.0] * 3
