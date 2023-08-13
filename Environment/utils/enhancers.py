@@ -234,7 +234,6 @@ def provisioning_time_services(outlets, performance_logger, time_step_simulation
             start_time = time[0]
             period_of_termination = time[1]
             if start_time + period_of_termination == time_step_simulation:
-                print(outlet.__class__.__name__)
                 # print("outlet.current_capacity :before ",outlet.current_capacity)
                 # print("req complete ")
                 count = count + 1
