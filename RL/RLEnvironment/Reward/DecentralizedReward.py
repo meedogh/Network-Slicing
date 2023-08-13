@@ -153,6 +153,11 @@ class DeCentralizedReward(Reward):
             return reward - 100
         elif accepted == 0 and current_capacity < power_allocation:
             return reward
+        # reward = -1
+        # if accepted == False :
+        #
+        # elif serving == True :
+        # elif serving == True :
 
 
 
