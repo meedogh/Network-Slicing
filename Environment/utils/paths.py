@@ -22,7 +22,7 @@ action_decentralized_path = os.path.join(results_dir, 'action_decentralized')
 supported_service_decentralized_path = os.path.join(results_dir, 'supported_service_decentralized')
 # centralize_qvalue_path = os.path.join(prev_results_dir, 'qvalue_centralized_for_plotting')
 # decentralize_qvalue_path = os.path.join(prev_results_dir, 'qvalue_decentralized_for_plotting')
-prev_results_3tanh_dir = "//content//drive//MyDrive//Network_Slicing//results3_tanh"
+prev_results_3tanh_dir = "//content//drive//MyDrive//network_slicing//results3_tanh"
 utility_decentralized_path = os.path.join(results_dir, 'utility_decentralized')
 sum_power_allocation_path = os.path.join(results_dir, "sum_power_allocation//")
 #

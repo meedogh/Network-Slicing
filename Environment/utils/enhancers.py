@@ -234,9 +234,14 @@ def provisioning_time_services(outlets, performance_logger, time_step_simulation
             start_time = time[0]
             period_of_termination = time[1]
             if start_time + period_of_termination == time_step_simulation:
+                print(outlet.__class__.__name__)
+                # print("outlet.current_capacity :before ",outlet.current_capacity)
+                # print("req complete ")
                 count = count + 1
                 terminated_services.append(service)
                 outlet.current_capacity = outlet.current_capacity + service.service_power_allocate
+                # print("outlet.current_capacity :after ",outlet.current_capacity)
+
         for service in terminated_services:
             performance_logger.queue_provisioning_time_buffer[outlet].pop(service)
 
@@ -317,6 +322,8 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                 service.service_power_allocate
 
                             ))
+
+                            outlet.dqn.environment.reward.reward_value_accumilated=outlet.dqn.environment.reward.reward_value_accumilated+outlet.dqn.environment.reward.reward_value
                             # print("outlet.dqn.environment.reward.reward_value  : ",outlet.dqn.environment.reward.reward_value)
 
                             add_value_to_pickle(
