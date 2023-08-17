@@ -304,6 +304,7 @@ class Environment:
         outlets = self.get_all_outlets(performance_logger)
         self.Grids = self.fill_grids(self.fill_grids_with_the_nearest(outlets[:4]))
         step = 0
+        step_for_each_episode_change_period = 0
         print("\n")
         for i in outlets:
             print("out ", i.__class__.__name__)
@@ -349,16 +350,20 @@ class Environment:
             self.car_distribution(step)
             self.remove_vehicles_arrived()
             print("step is ....................................... ", step)
+            if step % 320 == 0:
+                step_for_each_episode_change_period = 0
+            #     print("each refresh episode : ", step_for_each_episode_change_period)
+            # print("step_for_each_episode_change_period : ", step_for_each_episode_change_period)
 
-            if env_variables.period1 == step:
+            if 0 <= step_for_each_episode_change_period <= env_variables.period1_episode:
                 Period('period1')
-            if env_variables.period2==step:
+            if env_variables.period1_episode < step_for_each_episode_change_period <= env_variables.period2_episode:
                 Period('period2')
-            if env_variables.period3==step:
+            if env_variables.period2_episode < step_for_each_episode_change_period <= env_variables.period3_episode:
                 Period('period3')
-            if env_variables.period4==step:
+            if env_variables.period3_episode < step_for_each_episode_change_period <= env_variables.period4_episode:
                 Period('period4')
-            if env_variables.period5==step:
+            if env_variables.period4_episode < step_for_each_episode_change_period <= env_variables.period5_episode:
                 Period('period5')
 
             # if self.steps - previous_steps_sending == frame_rate_for_sending_requests:
@@ -376,9 +381,7 @@ class Environment:
 
             provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps)
 
-            buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets , performance_logger, self.steps)
-
-
+            buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps)
 
             if self.steps - self.previous_steps_centralize_action >= 40:
                 self.previous_steps_centralize_action = self.steps
@@ -419,7 +422,6 @@ class Environment:
                 for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
 
                     for i, out in enumerate(gridcell_dqn.agents.grid_outlets):
-
                         add_value_to_pickle(
                             os.path.join(decentralize_qvalue_path, f"qvalue{i}.pkl"),
                             out.dqn.agents.qvalue,
@@ -435,7 +437,6 @@ class Environment:
                         out.dqn.environment.reward.reward_value_accumilated = 0
                         out.current_capacity = out.set_max_capacity(out.__class__.__name__)
 
-
                         # print(" out : ", out.current_capacity)
                         # out.dqn.environment.state.state_value_decentralize = out.dqn.environment.state.calculate_state()
 
@@ -445,17 +446,18 @@ class Environment:
                 performance_logger.reset_state_decentralize_requirement()
 
             step += 1
+            step_for_each_episode_change_period += 1
             self.steps += 1
             if step == 30:
-                save_weigths_buffer(self.gridcells_dqn[0],30)
+                save_weigths_buffer(self.gridcells_dqn[0], 30)
             if step == 35:
-                save_weigths_buffer(self.gridcells_dqn[0],35)
+                save_weigths_buffer(self.gridcells_dqn[0], 35)
             if step == 40:
-                save_weigths_buffer(self.gridcells_dqn[0],40)
+                save_weigths_buffer(self.gridcells_dqn[0], 40)
             if step == 45:
-                save_weigths_buffer(self.gridcells_dqn[0],45)
+                save_weigths_buffer(self.gridcells_dqn[0], 45)
             if step == env_variables.TIME:
-                save_weigths_buffer(self.gridcells_dqn[0],50)
+                save_weigths_buffer(self.gridcells_dqn[0], 50)
 
         self.close()
 

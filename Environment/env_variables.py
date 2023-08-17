@@ -73,6 +73,16 @@ period2 = 10*320
 period3 = 20*320
 period4 = 30*320
 period5 = 40*320
+
+
+
+period1_episode = 64
+period2_episode = 64*2
+period3_episode = 64*3
+period4_episode = 64*4
+period5_episode = 64*5
+
+length_each_period = 320/5
 decentralized_replay_buffer = 32
 centralized_replay_buffer = 32
 def get_position_vehicle(id_):
