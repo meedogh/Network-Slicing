@@ -37,9 +37,14 @@ class PerformanceLogger(metaclass=SingletonMeta):
 
     _queue_power_for_requested_in_buffer: Dict[Outlet, deque[Service,bool:False]] = field(default_factory=dict)
 
+    _queue_waiting_requests_in_buffer : Dict[Outlet, deque[Service,bool:False]] = field(default_factory=dict)
+
+    _queue_time_out_buffer: Dict[Outlet,Dict[Service, List[int]]] = field(default_factory=dict)
+
+
     _queue_ensured_buffer: Dict[Outlet, deque[int]] = field(default_factory=dict)
 
-    _queue_provisioning_time_buffer: Dict[Outlet,Dict[Service, List[int]] ]= field(default_factory=dict)
+    _queue_provisioning_time_buffer: Dict[Outlet,Dict[Service, List[int]]] = field(default_factory=dict)
 
     _outlet_services_power_allocation: Dict[Outlet, List[float]] = field(default_factory=dict)
 
@@ -65,6 +70,16 @@ class PerformanceLogger(metaclass=SingletonMeta):
         self._queue_requested_buffer[outlet] = value
 
     @property
+    def queue_time_out_buffer(self):
+        return self._queue_time_out_buffer
+
+    def set_queue_time_out_buffer(self, outlet, service, value):
+        if service not in self._queue_time_out_buffer:
+            self._queue_time_out_buffer[outlet] = {}
+        new_value = {service: value}
+        self._queue_time_out_buffer[outlet].update(new_value)
+
+    @property
     def queue_provisioning_time_buffer(self):
         return self._queue_provisioning_time_buffer
 
@@ -76,6 +91,24 @@ class PerformanceLogger(metaclass=SingletonMeta):
 
 
     @property
+    def queue_waiting_requests_in_buffer(self):
+        return self._queue_waiting_requests_in_buffer
+
+    def set_queue_waiting_requests_in_buffer(self, outlet,value):
+        max_len = 0
+        if outlet.__class__.__name__ == "wifi":
+            max_len= 45
+        if outlet.__class__.__name__ == "ThreeG":
+            max_len= 125
+        if outlet.__class__.__name__ == "FourG":
+            max_len= 250
+        if outlet.__class__.__name__ == "FiveG":
+            max_len= 500
+        if outlet not in self._queue_waiting_requests_in_buffer:
+            self._queue_waiting_requests_in_buffer[outlet] = {}
+        self._queue_waiting_requests_in_buffer[outlet]=value
+
+    @property
     def queue_power_for_requested_in_buffer(self):
         return self._queue_power_for_requested_in_buffer
 
@@ -83,6 +116,7 @@ class PerformanceLogger(metaclass=SingletonMeta):
         if outlet not in self._queue_power_for_requested_in_buffer:
             self._queue_power_for_requested_in_buffer[outlet] = {}
         self._queue_power_for_requested_in_buffer[outlet]=value
+
 
     @property
     def queue_ensured_buffer(self):
@@ -217,12 +251,17 @@ class PerformanceLogger(metaclass=SingletonMeta):
             self._queue_ensured_buffer[key] = deque([])
         for key in self._queue_power_for_requested_in_buffer:
             self._queue_power_for_requested_in_buffer[key] = deque([])
+        for key in self._queue_waiting_requests_in_buffer:
+            self._queue_waiting_requests_in_buffer[key] = deque([])
         for key in self._queue_provisioning_time_buffer:
             self._queue_provisioning_time_buffer[key] = dict()
+        for key in self._queue_time_out_buffer:
+            self._queue_time_out_buffer[key] = dict()
         for key in self._outlet_services_requested_number:
             self._outlet_services_requested_number[key] = [0,0,0]
         for key in self._outlet_services_ensured_number:
             self._outlet_services_ensured_number[key] = [0,0,0]
+
         # for key in self._outlet_services_requested_number:
         #     self._outlet_services_requested_number[key] = [0, 0, 0]
         # for key in self._outlet_services_ensured_number:

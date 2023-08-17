@@ -139,11 +139,11 @@ class DeCentralizedReward(Reward):
 
     def calculate_reward2(self,served,accepted):
         reward = -1
-        if served == 1 and accepted == 1 :
+        if served == True and accepted == 1:
             return reward + 1000
-        elif served == 0 and accepted == 1:
+        elif served == False and accepted == 1:
             return reward - 100
-        elif accepted == 0 :
+        elif accepted == 0:
             return reward
         # reward = -1
         # if accepted == False :
@@ -154,7 +154,7 @@ class DeCentralizedReward(Reward):
 
 
     def calculate_reward3(self,requested,ensured):
-        if requested != 0 and ensured != 0 :
+        if requested != 0 and ensured != 0:
             self.utility = ensured / requested
         else :
             self.utility = 0

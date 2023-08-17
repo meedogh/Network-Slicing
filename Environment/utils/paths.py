@@ -2,7 +2,7 @@ import os
 import sys
 
 results_dir = os.path.join(sys.path[0],
-                           'action_each_single_request_reward2')
+                           'action_each_single_request_reward2_method2')
 centralized_weights = os.path.join(results_dir, 'centralized_weights')
 decentralized_weights = os.path.join(results_dir, 'decentralized_weights')
 path_memory_centralize = os.path.join(results_dir, 'centralize_memory')
@@ -20,9 +20,15 @@ ensured_decentralized_path = os.path.join(results_dir, 'ensured_decentralized')
 available_capacity_decentralized_path = os.path.join(results_dir, 'available_capacity_decentralized')
 action_decentralized_path = os.path.join(results_dir, 'action_decentralized')
 supported_service_decentralized_path = os.path.join(results_dir, 'supported_service_decentralized')
+waiting_buffer_length_path = os.path.join(results_dir, "waiting_buffer_length")
+timed_out_length_path = os.path.join(results_dir, "timed_out_length")
+from_waiting_to_serv_length_path = os.path.join(results_dir, "from_waiting_to_serv_length")
+
 # centralize_qvalue_path = os.path.join(prev_results_dir, 'qvalue_centralized_for_plotting')
 # decentralize_qvalue_path = os.path.join(prev_results_dir, 'qvalue_decentralized_for_plotting')
-prev_results_3tanh_dir = "//content//drive//MyDrive//network_slicing//results3_tanh"
+prev_results_3tanh_dir ="//content//drive//MyDrive//network_slicing//results3_tanh"
+    #"C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//results3_tanh//results3_tanh"
+
 
     # "C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//results3_tanh//results3_tanh"
 utility_decentralized_path = os.path.join(results_dir, 'utility_decentralized')
@@ -63,3 +69,6 @@ os.makedirs(supported_service_decentralized_path, exist_ok=True)
 os.makedirs(utility_decentralized_path, exist_ok=True)
 os.makedirs(reward_accumilated_decentralize_path, exist_ok=True)
 os.makedirs(sum_power_allocation_path, exist_ok=True)
+os.makedirs(waiting_buffer_length_path,exist_ok=True)
+os.makedirs(timed_out_length_path,exist_ok=True)
+os.makedirs(from_waiting_to_serv_length_path,exist_ok=True)

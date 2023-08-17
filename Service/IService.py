@@ -27,7 +27,7 @@ class Service(ABC):
         self._service_power_allocate = 0
         self._processing_time = 0
         self._dec_services_types_mapping= {"FactorySafety":0,"FactoryEntertainment":1,"FactoryAutonomous":2}
-
+        self.__id = +1
     # def __str__(self):
     #     return f"service criticality : {self.criticality} ,  service bandwidth : {self.bandwidth} , " \
     #            f"service real time : {self.realtime}"
@@ -74,6 +74,14 @@ class Service(ABC):
     @realtime.setter
     def realtime(self, r):
         self._realtime = r
+
+    @property
+    def _id(self):
+        return self.__id
+
+    @_id.setter
+    def _id(self, r):
+        self.__id = r
 
     @abstractmethod
     def calcualate_processing_time(self):

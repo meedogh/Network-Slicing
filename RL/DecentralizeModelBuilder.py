@@ -7,7 +7,7 @@ class ModelBuilder_Decentralize:
 
     def __init__(self, model=None):
         if model is None:
-            self.model = DecentralizeModel(state_size=3, action_size=2,
+            self.model = DecentralizeModel(state_size=5, action_size=2,
                                activation_function="relu", loss_function="mse", optimization_algorithm=Adam,
                                learning_rate=0.5, output_activation="sigmoid").build_model()
         else:

@@ -7,8 +7,8 @@ from itertools import product
 from keras.layers import Input, Dense, Lambda
 from keras.models import Model
 class DecentralizeModel():
-    def __init__(self, state_size = 3, action_size =2, activation_function = "relu", loss_function = "mse", optimization_algorithm = Adam,
-                 learning_rate = 0.5, output_activation = "tanh", **kwargs):
+    def __init__(self, state_size = 5, action_size =2, activation_function = "relu", loss_function = "mse", optimization_algorithm = Adam,
+                 learning_rate = 0.5, output_activation = "sigmoid", **kwargs):
         self.state_size = state_size
         self.action_size = action_size
         self.activation_function = activation_function

@@ -17,7 +17,10 @@ class FactoryEntertainment(Service):
 
     def calcualate_processing_time(self):
         # self._network_latency + self._data_size
-        return np.random.choice(np.arange(4,10))
+        return np.random.choice(np.arange(7,12))
+
+    def time_out(self):
+        return np.random.choice(np.arange(20,26))
 
     def calculate_arrival_rate(self):
         # TODO: add doc string

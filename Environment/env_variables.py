@@ -66,9 +66,13 @@ advisor_period = [2, number_of_episodes_for_each_period * episode_steps]
 exploitation_exploration_period = [number_of_episodes_for_each_period * episode_steps , number_of_episodes_for_each_period * episode_steps*2]
 last_exploitation_period = [2 * number_of_episodes_for_each_period * episode_steps , number_of_episodes_for_each_period * episode_steps * 3]
 
-TIME = 34 * episode_steps
+TIME = 50 * episode_steps
 day_time = 1280
-
+period1 = 0
+period2 = 10*320
+period3 = 20*320
+period4 = 30*320
+period5 = 40*320
 decentralized_replay_buffer = 32
 centralized_replay_buffer = 32
 def get_position_vehicle(id_):

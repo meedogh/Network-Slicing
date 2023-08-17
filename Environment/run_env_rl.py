@@ -31,7 +31,7 @@ class Environment:
     previouse_steps_reward32 = 0
 
     def __init__(self, period: str):
-        Period(period)
+        # Period(period)
         self.polygon = traci.polygon
         self.route = traci.route
         self.vehicle = traci.vehicle
@@ -123,12 +123,16 @@ class Environment:
                 performancelogger.set_queue_requested_buffer(outlet, deque([]))
                 performancelogger.set_queue_ensured_buffer(outlet, deque([]))
                 performancelogger.set_queue_power_for_requested_in_buffer(outlet, deque([]))
+                performancelogger.set_queue_waiting_requests_in_buffer(outlet, deque([]))
                 performancelogger.set_outlet_services_requested_number_all_periods(outlet, [0, 0, 0])
                 performancelogger.set_outlet_services_requested_number(outlet, [0, 0, 0])
                 performancelogger.set_outlet_services_ensured_number(outlet, [0, 0, 0])
-                performancelogger.set_outlet_services_power_allocation_10_TimeStep(outlet, [0, 0, 0])
+                # performancelogger.set_outlet_services_power_allocation_10_TimeStep(outlet, [0, 0, 0])
                 if outlet not in performancelogger.queue_provisioning_time_buffer:
                     performancelogger.queue_provisioning_time_buffer[outlet] = dict()
+
+                if outlet not in performancelogger.queue_time_out_buffer:
+                    performancelogger.queue_time_out_buffer[outlet] = dict()
                 outlets.append(outlet)
 
         list(map(lambda x: append_outlets(x), poi_ids))
@@ -346,11 +350,22 @@ class Environment:
             self.remove_vehicles_arrived()
             print("step is ....................................... ", step)
 
+            if env_variables.period1 == step:
+                Period('period1')
+            if env_variables.period2==step:
+                Period('period2')
+            if env_variables.period3==step:
+                Period('period3')
+            if env_variables.period4==step:
+                Period('period4')
+            if env_variables.period5==step:
+                Period('period5')
+
             # if self.steps - previous_steps_sending == frame_rate_for_sending_requests:
             #     previous_steps_sending = self.steps
 
             number_of_cars_will_send_requests = round(
-                len(list(env_variables.vehicles.values())) * 0.1
+                len(list(env_variables.vehicles.values())) * 0.3
             )
             vehicles = ra.sample(
                 list(env_variables.vehicles.values()), number_of_cars_will_send_requests
@@ -361,18 +376,7 @@ class Environment:
 
             provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps)
 
-
-
-            # for index, outlet in enumerate(self.temp_outlets):
-            #
-            #
-            #
-            #
-            #     number_of_decentralize_periods = number_of_decentralize_periods + 1
-                # update_figures(self.steps / 10, self.temp_outlets, self.gridcells_dqn)
-
-                # update_lines_reward_320_decentralized(lines_out_reward_320_decentralize, self.steps / 10,
-                #                                       self.temp_outlets)
+            buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets , performance_logger, self.steps)
 
 
 
@@ -433,7 +437,7 @@ class Environment:
 
 
                         # print(" out : ", out.current_capacity)
-                        out.dqn.environment.state.state_value_decentralize = out.dqn.environment.state.calculate_state()
+                        # out.dqn.environment.state.state_value_decentralize = out.dqn.environment.state.calculate_state()
 
                     gridcell_dqn.environment.reward.resetreward()
                     gridcell_dqn.environment.state.resetsate(self.temp_outlets)
@@ -442,9 +446,16 @@ class Environment:
 
             step += 1
             self.steps += 1
-
+            if step == 30:
+                save_weigths_buffer(self.gridcells_dqn[0],30)
+            if step == 35:
+                save_weigths_buffer(self.gridcells_dqn[0],35)
+            if step == 40:
+                save_weigths_buffer(self.gridcells_dqn[0],40)
+            if step == 45:
+                save_weigths_buffer(self.gridcells_dqn[0],45)
             if step == env_variables.TIME:
-                save_weigths_buffer(self.gridcells_dqn[0])
+                save_weigths_buffer(self.gridcells_dqn[0],50)
 
         self.close()
 

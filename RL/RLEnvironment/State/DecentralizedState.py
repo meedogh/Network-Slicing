@@ -11,8 +11,8 @@ class DeCentralizedState(State):
     _services_requested: int
     _tower_capacity = 0.0
     _max_tower_capacity = 0.0
-    _state_value_decentralize = [0.0] * 3
-    _next_state_decentralize = [0.0] * 3
+    _state_value_decentralize = [0.0] * 5
+    _next_state_decentralize = [0.0] * 5
 
     def __init__(self):
         super().__init__()
@@ -30,6 +30,10 @@ class DeCentralizedState(State):
         self._number_requested_in_period = np.zeros(self.num_services)
         self._number_ensured_in_period = np.zeros(self.num_services)
         self._ratio_of_occupancy = 0
+        self._waiting_buffer_len = 0
+        self._remaining_time_out = 0
+        self._timed_out_length = 0
+        self._from_waiting_to_serv_length = 0
 
 
 
@@ -37,6 +41,35 @@ class DeCentralizedState(State):
     def state_shape(num_services, grid_cell):
         return [num_services, grid_cell]
 
+    @property
+    def from_waiting_to_serv_length(self):
+        return self._from_waiting_to_serv_length
+
+    @from_waiting_to_serv_length.setter
+    def from_waiting_to_serv_length(self, value):
+        self._from_waiting_to_serv_length = value
+    @property
+    def timed_out_length(self):
+        return self._timed_out_length
+
+    @timed_out_length.setter
+    def timed_out_length(self, value):
+        self._timed_out_length = value
+
+    @property
+    def waiting_buffer_len(self):
+        return self._waiting_buffer_len
+
+    @waiting_buffer_len.setter
+    def waiting_buffer_len(self, value):
+        self._waiting_buffer_len = value
+    @property
+    def remaining_time_out(self):
+        return self._remaining_time_out
+
+    @remaining_time_out.setter
+    def remaining_time_out(self, value):
+        self._remaining_time_out = value
     @property
     def ratio_of_occupancy(self):
         return self._ratio_of_occupancy
@@ -149,28 +182,22 @@ class DeCentralizedState(State):
 
     def resetsate(self):
 
-        self.state_value_decentralize = [0.0] * 3
+        self.state_value_decentralize = [0.0] * 5
         self.power_of_requests = 0
         self.tower_capacity = self.max_tower_capacity
+        self.remaining_time_out = 0
+        self.waiting_buffer_len = 0
 
     def calculate_state(self):
         final_state = []
         final_state.append((self.max_tower_capacity/self.max_tower_capacity)*100)
-        final_state.append(round((self._tower_capacity/self.max_tower_capacity)*100,2))
-        final_state.append(round((self.power_of_requests/self.max_tower_capacity)*100,2))
+        final_state.append(self.remaining_time_out)
+        final_state.append(round(((self._tower_capacity/self.max_tower_capacity)*100),2))
+        final_state.append(round(((self.power_of_requests/self.max_tower_capacity)*100),2))
+        final_state.append(self.waiting_buffer_len)
 
         if len(final_state) == 0:
-            final_state = [0.0] * 3
+            final_state = [0.0] * 5
         return final_state
 
-    def calculate_initial_state(self):
-        state = []
-        state.append(self.tower_capacity)
-        state.append(self.power_of_requests)
-        if isinstance(self._supported_services[0], np.ndarray):
-            state.extend([i.item() for i in self._supported_services])
-        else:
-            state.extend(self._supported_services)
 
-        state.extend(self._allocated_power)
-        return state
