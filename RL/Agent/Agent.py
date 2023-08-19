@@ -81,6 +81,7 @@ class Agent(AbstractAgent):
             target_f[0][action] = target
             model.fit(state, target_f, epochs=1, verbose=0)
         if self.epsilon > self.min_epsilon:
+            # self.epsilon = self.min_epsilon + (self.epsilon_max - self.min_epsilon) * np.exp(-self.epsilon_decay * i)
             self.epsilon -= self.epsilon * self.epsilon_decay
         return target
 
