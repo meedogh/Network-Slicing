@@ -61,7 +61,7 @@ AUTONOMOUS_RATIO = 0
 
 number_of_days = 3
 episodes = 5 * number_of_days
-number_of_episodes_for_each_period = 50
+number_of_episodes_for_each_period = 110
 advisor_period = [2, number_of_episodes_for_each_period * episode_steps]
 exploitation_exploration_period = [number_of_episodes_for_each_period * episode_steps , number_of_episodes_for_each_period * episode_steps*2]
 last_exploitation_period = [2 * number_of_episodes_for_each_period * episode_steps , number_of_episodes_for_each_period * episode_steps * 3]
