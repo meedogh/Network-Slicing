@@ -244,7 +244,7 @@ def provisioning_time_services(outlets, performance_logger, time_step_simulation
         if outlet.__class__.__name__ == 'Wifi':
             count = 0
             terminated_services = []
-            print("performance_logger.queue_provisioning_time_buffer[outlet] ",len(performance_logger.queue_provisioning_time_buffer[outlet]))
+            # print("performance_logger.queue_provisioning_time_buffer[outlet] ",len(performance_logger.queue_provisioning_time_buffer[outlet]))
             for service, time in performance_logger.queue_provisioning_time_buffer[outlet].items():
                 start_time = time[0]
                 period_of_termination = time[1]
@@ -529,7 +529,8 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                     outlet.dqn.agents.epsilon,
                                 )
                                 action = outlet.dqn.agents.action.command.action_value_decentralize
-                                print("action is : ", action)
+                                # print("action is : ", action)
+
 
                                 if action == 0 :
                                     # print(" state value : ", outlet.dqn.environment.state.state_value_decentralize)
