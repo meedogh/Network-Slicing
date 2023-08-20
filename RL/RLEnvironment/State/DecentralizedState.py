@@ -187,6 +187,8 @@ class DeCentralizedState(State):
         self.tower_capacity = self.max_tower_capacity
         self.remaining_time_out = 0
         self.waiting_buffer_len = 0
+        self.timed_out_length = 0
+        self.from_waiting_to_serv_length = 0
 
     def calculate_state(self):
         final_state = []

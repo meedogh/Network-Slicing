@@ -376,10 +376,11 @@ class Environment:
                 list(env_variables.vehicles.values()), number_of_cars_will_send_requests
             )
 
+            provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps)
+
+
             list(map(lambda veh: enable_sending_requests(veh, observer, self.gridcells_dqn, performance_logger,
                                                          self.steps), vehicles, ))
-
-            provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps)
 
             buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps)
 
@@ -395,18 +396,7 @@ class Environment:
             else:
                 close_figures()
 
-            if self.steps - self.previous_steps >= env_variables.decentralized_replay_buffer:
-                self.previous_steps = self.steps
-                for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
-                    for i, outlet in enumerate(gridcell_dqn.agents.grid_outlets):
-                        if len(outlet.dqn.agents.memory) > 32:
-                            # print("replay buffer of decentralize ")
-                            outlet.dqn.agents.qvalue = (
-                                outlet.dqn.agents.replay_buffer_decentralize(
-                                    30, outlet.dqn.model
-                                )
-                            )
-
+            # if self.steps - self.previ
             # if self.steps - self.previous_steps_centralize >= env_variables.centralized_replay_buffer:
             #     self.previous_steps_centralize = self.steps
             #     for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
@@ -447,20 +437,20 @@ class Environment:
 
             step += 1
             step_for_each_episode_change_period += 1
-            # self.steps += 1
-            # if step == 50:
-            #     save_weigths_buffer(self.gridcells_dqn[0], 50)
-            # if step == 60:
-            #     save_weigths_buffer(self.gridcells_dqn[0], 60)
-            # if step == 70:
-            #     save_weigths_buffer(self.gridcells_dqn[0], 70)
-            # if step == 80:
-            #     save_weigths_buffer(self.gridcells_dqn[0], 80)
-            # if step == 90:
-            #     save_weigths_buffer(self.gridcells_dqn[0], 90)
+            self.steps += 1
+            if step == 50:
+                save_weigths_buffer(self.gridcells_dqn[0], 50)
+            if step == 60:
+                save_weigths_buffer(self.gridcells_dqn[0], 60)
+            if step == 70:
+                save_weigths_buffer(self.gridcells_dqn[0], 70)
+            if step == 80:
+                save_weigths_buffer(self.gridcells_dqn[0], 80)
+            if step == 90:
+                save_weigths_buffer(self.gridcells_dqn[0], 90)
             if step == env_variables.TIME:
                 last_20 = 20
-                save_weigths_buffer(self.gridcells_dqn[0], last_20)
+                save_weigths_buffer(self.gridcells_dqn[0], 100)
 
         self.close()
 

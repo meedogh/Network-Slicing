@@ -215,7 +215,8 @@ def centralize_nextstate_reward(gridcells_dqn):
             utility_value_centralize
         )
 
-
+def rule_based():
+    print("rules ")
 def serving_requests(performancelogger, outlet, start_time, service_):
     if outlet not in performancelogger.queue_provisioning_time_buffer:
         performancelogger.queue_provisioning_time_buffer[outlet] = dict()
@@ -243,15 +244,81 @@ def provisioning_time_services(outlets, performance_logger, time_step_simulation
         if outlet.__class__.__name__ == 'Wifi':
             count = 0
             terminated_services = []
+            print("performance_logger.queue_provisioning_time_buffer[outlet] ",len(performance_logger.queue_provisioning_time_buffer[outlet]))
             for service, time in performance_logger.queue_provisioning_time_buffer[outlet].items():
                 start_time = time[0]
                 period_of_termination = time[1]
+                # print("start_time : ", start_time)
+                # print("period_of_termination  : ", period_of_termination)
+                # print("start_time + period_of_termination : ", start_time + period_of_termination)
+                # print("time_step_simulation : ", time_step_simulation)
                 if start_time + period_of_termination == time_step_simulation:
+                    # print("terminated :   .......   ")
                     count = count + 1
                     terminated_services.append(service)
                     outlet.current_capacity = outlet.current_capacity + service.service_power_allocate
             for service in terminated_services:
                 performance_logger.queue_provisioning_time_buffer[outlet].pop(service)
+
+def time_out(outlets, performancelogger, time_step_simulation):
+    for outlet_index, outlet in enumerate(outlets):
+        if outlet.__class__.__name__ == 'Wifi':
+            services_timed_out = []
+            for i, (service, flag) in enumerate(performancelogger.queue_waiting_requests_in_buffer[outlet]):
+                if flag == True:
+                    start_time = performancelogger.queue_time_out_buffer[outlet][service][0]
+                    time_out = performancelogger.queue_time_out_buffer[outlet][service][1]
+                    if start_time + time_out <= time_step_simulation and len(
+                            performancelogger.queue_waiting_requests_in_buffer[outlet]) > 0:
+                        services_timed_out.append(service)
+                        outlet.dqn.environment.state.remaining_time_out = 0
+                        outlet.dqn.environment.state.waiting_buffer_len = len(
+                            performancelogger.queue_waiting_requests_in_buffer[outlet]) - len(services_timed_out)
+                        outlet.dqn.environment.state.timed_out_length =  len(services_timed_out)
+            for ser in services_timed_out:
+                performancelogger.queue_waiting_requests_in_buffer[outlet].remove([ser, True])
+                # performancelogger.queue_ensured_buffer[outlet].popleft()
+                # performancelogger.queue_requested_buffer[outlet].popleft()
+
+def from_wait_to_serve(outlets, performancelogger, time_step_simulation):
+    for outlet_index, outlet in enumerate(outlets):
+        if outlet.__class__.__name__ == 'Wifi':
+            service_moved_to_served = []
+            for i, (service, flag) in enumerate(performancelogger.queue_waiting_requests_in_buffer[outlet]):
+                if flag == True:
+                    start_time = performancelogger.queue_time_out_buffer[outlet][service][0]
+                    time_out = performancelogger.queue_time_out_buffer[outlet][service][1]
+                    if start_time + time_out > time_step_simulation and outlet.current_capacity >= service.service_power_allocate and len(
+                            performancelogger.queue_waiting_requests_in_buffer[outlet]) > 0:
+
+                        service_moved_to_served.append(service)
+                        if [service, False] in performancelogger.queue_power_for_requested_in_buffer[outlet]:
+                            index = performancelogger.queue_power_for_requested_in_buffer[outlet].index(
+                                [service, False])
+                            performancelogger.queue_power_for_requested_in_buffer[outlet][index][1] = True
+                            # print("moved from wait to serv")
+                            # print("the index ...................... ",index)
+
+                        performancelogger.queue_provisioning_time_buffer[outlet][service] = [start_time,
+                                                                                             service.calcualate_processing_time()]
+                        performancelogger.queue_ensured_buffer[outlet].appendleft(1)
+                        outlet.dqn.environment.reward.services_requested = len(
+                            performancelogger.queue_requested_buffer[outlet])
+                        outlet.dqn.environment.reward.services_ensured = len(
+                            performancelogger.queue_ensured_buffer[outlet])
+
+
+
+                        outlet.current_capacity = outlet.current_capacity - service.service_power_allocate
+                        outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
+
+                        outlet.dqn.environment.state.waiting_buffer_len = len(
+                            performancelogger.queue_waiting_requests_in_buffer[outlet]) - len( service_moved_to_served)
+
+                        outlet.dqn.environment.state.from_waiting_to_serv_length =  len(service_moved_to_served)
+            for ser in service_moved_to_served:
+                performancelogger.queue_waiting_requests_in_buffer[outlet].remove([ser, True])
+                # print("removed2 : ", len(performancelogger.queue_waiting_requests_in_buffer[outlet]))
 
 
 def buffering_not_served_requests(outlets, performancelogger, time_step_simulation):
@@ -281,6 +348,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                     # print("time_step_simulation : ", time_step_simulation)
                     if start_time + time_out <= time_step_simulation and len(
                             performancelogger.queue_waiting_requests_in_buffer[outlet]) > 0:
+
                         outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state()
                         # print("time outed case , state for services in waited buffer ",
                         #       outlet.dqn.environment.state.state_value_decentralize)
@@ -289,10 +357,10 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                         outlet.dqn.environment.state.remaining_time_out = 0
                         outlet.dqn.environment.state.waiting_buffer_len = len(
                             performancelogger.queue_waiting_requests_in_buffer[outlet]) - (
-                                                                                      len(services_timed_out) + len(
-                                                                                  service_moved_to_served))
+                                                                                      len(services_timed_out)
+                                                                                )
 
-                        outlet.dqn.environment.state.from_waiting_to_serv_length = len(service_moved_to_served)
+                        # outlet.dqn.environment.state.from_waiting_to_serv_length += len(service_moved_to_served)
                         outlet.dqn.environment.state.timed_out_length = len(services_timed_out)
 
                         # print("outlet.dqn.environment.state.waiting_buffer_len : ", outlet.dqn.environment.state.waiting_buffer_len)
@@ -329,8 +397,6 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                     elif start_time + time_out > time_step_simulation and outlet.current_capacity >= service.service_power_allocate and len(
                             performancelogger.queue_waiting_requests_in_buffer[outlet]) > 0:
 
-                        # print("moved from wait to serv ",
-                        #       len(performancelogger.queue_waiting_requests_in_buffer[outlet]))
                         service_moved_to_served.append(service)
                         if [service, False] in performancelogger.queue_power_for_requested_in_buffer[outlet]:
                             index = performancelogger.queue_power_for_requested_in_buffer[outlet].index(
@@ -354,12 +420,11 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                         outlet.current_capacity = outlet.current_capacity - service.service_power_allocate
                         outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                         outlet.dqn.environment.state.waiting_buffer_len = len(
-                            performancelogger.queue_waiting_requests_in_buffer[outlet]) - (
-                                                                                      len(services_timed_out) + len(
-                                                                                  service_moved_to_served))
+                            performancelogger.queue_waiting_requests_in_buffer[outlet]) - len(
+                                                                                  service_moved_to_served)
 
                         outlet.dqn.environment.state.from_waiting_to_serv_length = len(service_moved_to_served)
-                        outlet.dqn.environment.state.timed_out_length = len(services_timed_out)
+                        # outlet.dqn.environment.state.timed_out_length = len(services_timed_out)
                         # print("outlet.dqn.environment.state.from_waiting_to_serv_length ",outlet.dqn.environment.state.from_waiting_to_serv_length)
                         outlet.dqn.environment.state.remaining_time_out = time_out - (
                                     time_step_simulation - start_time) - 1
@@ -394,8 +459,8 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
 
             for ser in services_timed_out:
                 performancelogger.queue_waiting_requests_in_buffer[outlet].remove([ser, True])
-                performancelogger.queue_ensured_buffer[outlet].popleft()
-                performancelogger.queue_requested_buffer[outlet].popleft()
+                # performancelogger.queue_ensured_buffer[outlet].popleft()
+                # performancelogger.queue_requested_buffer[outlet].popleft()
                 # print("removed1 : ", len(performancelogger.queue_waiting_requests_in_buffer[outlet]))
 
             for ser in service_moved_to_served:
@@ -464,12 +529,14 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                     outlet.dqn.agents.epsilon,
                                 )
                                 action = outlet.dqn.agents.action.command.action_value_decentralize
-                                # print("action is : ", action)
+                                print("action is : ", action)
 
                                 if action == 0 :
                                     # print(" state value : ", outlet.dqn.environment.state.state_value_decentralize)
 
                                     # print(" not accepted .............................")
+
+
                                     outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                                     outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
 
@@ -489,6 +556,13 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                     outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                                     # print("outlet.dqn.environment.reward.reward_value  : ",
                                     #       outlet.dqn.environment.reward.reward_value)
+                                    if len(
+                                            performance_logger.queue_waiting_requests_in_buffer[outlet]) > 0:
+                                        provisioning_time_services(gridcell.agents.grid_outlets,
+                                                                   performance_logger, start_time)
+                                        time_out(gridcell.agents.grid_outlets, performance_logger, start_time)
+
+                                        from_wait_to_serve(gridcell.agents.grid_outlets, performance_logger, start_time)
 
                                     logging_important_info_for_testing(j, outlet, reward_decentralized_path,
                                                                        requested_decentralized_path,
@@ -509,6 +583,9 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                         outlet.dqn.environment.state.next_state_decentralize,
 
                                     )
+                                    # if len(performance_logger.queue_waiting_requests_in_buffer ) == 0 :
+                                    #     outlet.dqn.environment.state.timed_out_length = 0
+                                    #     outlet.dqn.environment.state.from_waiting_to_serv_length = 0
 
                                 if action == 1 and len(
                                         performance_logger.queue_waiting_requests_in_buffer[outlet]) == 0:
