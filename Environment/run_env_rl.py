@@ -121,6 +121,7 @@ class Environment:
                 outlet.radius = val
                 performancelogger.set_outlet_services_power_allocation(outlet, [0, 0, 0])
                 performancelogger.set_queue_requested_buffer(outlet, deque([]))
+                performancelogger.set_queue_wasted_req_buffer(outlet, deque([]))
                 performancelogger.set_queue_ensured_buffer(outlet, deque([]))
                 performancelogger.set_queue_power_for_requested_in_buffer(outlet, deque([]))
                 performancelogger.set_queue_waiting_requests_in_buffer(outlet, deque([]))

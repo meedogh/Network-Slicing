@@ -41,6 +41,9 @@ class PerformanceLogger(metaclass=SingletonMeta):
 
     _queue_time_out_buffer: Dict[Outlet,Dict[Service, List[int]]] = field(default_factory=dict)
 
+    _queue_wasted_req_buffer: Dict[Outlet,Dict[Service, List[int]]] = field(default_factory=dict)
+
+
 
     _queue_ensured_buffer: Dict[Outlet, deque[int]] = field(default_factory=dict)
 
@@ -69,6 +72,15 @@ class PerformanceLogger(metaclass=SingletonMeta):
             self._queue_requested_buffer[outlet] = {}
         self._queue_requested_buffer[outlet] = value
 
+    @property
+    def queue_wasted_req_buffer(self):
+        return self._queue_wasted_req_buffer
+
+    def set_queue_wasted_req_buffer(self, outlet, service, value):
+        if service not in self._queue_wasted_req_buffer:
+            self._queue_wasted_req_buffer[outlet] = {}
+        new_value = {service: value}
+        self._queue_wasted_req_buffer[outlet].update(new_value)
     @property
     def queue_time_out_buffer(self):
         return self._queue_time_out_buffer
