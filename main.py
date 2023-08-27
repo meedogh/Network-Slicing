@@ -1,6 +1,6 @@
 from Environment import run_env_rl
 from memory_profiler import profile
-
+# from Environment import run_fifo
 # from Greedy import run_env_greedy
 # from FairDistribuition import run_env_fair_distribuition
 import gc

@@ -381,7 +381,7 @@ class Environment:
             ra.seed(seed_value)
 
             number_of_cars_will_send_requests = round(
-                len(list(env_variables.vehicles.values())) * 0.3
+                len(list(env_variables.vehicles.values())) * 0.8
             )
             vehicles = ra.sample(
                 list(env_variables.vehicles.values()), number_of_cars_will_send_requests
@@ -389,7 +389,7 @@ class Environment:
 
             provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps)
 
-
+            print("vehicles number : ",len(vehicles))
             list(map(lambda veh: enable_sending_requests(veh, observer, self.gridcells_dqn, performance_logger,
                                                          self.steps), vehicles, ))
 
@@ -405,18 +405,18 @@ class Environment:
 
             else:
                 close_figures()
-
-            if self.steps - self.previous_steps >= env_variables.decentralized_replay_buffer:
-                self.previous_steps = self.steps
-                for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
-                    for i, outlet in enumerate(gridcell_dqn.agents.grid_outlets):
-                        if len(outlet.dqn.agents.memory) > 31:
-                            # print("replay buffer of decentralize ")
-                            outlet.dqn.agents.qvalue = (
-                                outlet.dqn.agents.replay_buffer_decentralize(
-                                    30, outlet.dqn.model
-                                )
-                            )
+            #
+            # if self.steps - self.previous_steps >= env_variables.decentralized_replay_buffer:
+            #     self.previous_steps = self.steps
+            #     for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
+            #         for i, outlet in enumerate(gridcell_dqn.agents.grid_outlets):
+            #             if len(outlet.dqn.agents.memory) > 31:
+            #                 # print("replay buffer of decentralize ")
+            #                 outlet.dqn.agents.qvalue = (
+            #                     outlet.dqn.agents.replay_buffer_decentralize(
+            #                         30, outlet.dqn.model
+            #                     )
+            #                 )
 
 
             # if self.steps - self.previ

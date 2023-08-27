@@ -234,7 +234,7 @@ def serving_requests(performancelogger, outlet, start_time, service_):
                 if outlet.current_capacity >= service.service_power_allocate:
                     performancelogger.queue_power_for_requested_in_buffer[outlet][i][1] = True
                     performancelogger.queue_requests_with_execution_time_buffer[outlet][service] = [start_time,
-                                                                                         service.calcualate_processing_time()]
+                                                                                                    service.time_execution]
                     performancelogger.queue_ensured_buffer[outlet].appendleft(1)
                     outlet.current_capacity = outlet.current_capacity - service.service_power_allocate
                     return True
@@ -243,7 +243,7 @@ def serving_requests(performancelogger, outlet, start_time, service_):
 
 def provisioning_time_services(outlets, performance_logger, time_step_simulation):
     for i, outlet in enumerate(outlets):
-        if outlet.__class__.__name__ == 'Wifi':
+        # if outlet.__class__.__name__ == 'Wifi':
             count = 0
             terminated_services = []
             # print("performance_logger.queue_requests_with_execution_time_buffer[outlet] ",len(performance_logger.queue_requests_with_execution_time_buffer[outlet]))
@@ -255,12 +255,12 @@ def provisioning_time_services(outlets, performance_logger, time_step_simulation
                     count = count + 1
                     terminated_services.append(service)
                     outlet.current_capacity = outlet.current_capacity + service.service_power_allocate
-            # for service in terminated_services:
-            #     performance_logger.queue_requests_with_execution_time_buffer[outlet].pop(service)
+            for service in terminated_services:
+                performance_logger.queue_requests_with_execution_time_buffer[outlet].pop(service)
 def wasting_requests_case(gridcells_dqn, performancelogger):
     for gridcell in gridcells_dqn:
         for j, outlet in enumerate(gridcell.agents.grid_outlets):
-            if outlet.__class__.__name__ == 'Wifi':
+            # if outlet.__class__.__name__ == 'Wifi':
                 services_wasted = []
                 for i, (service, flag) in enumerate(performancelogger.queue_wasted_req_buffer[outlet]):
                     if flag == True:
@@ -290,7 +290,7 @@ def wasting_requests_case(gridcells_dqn, performancelogger):
 
 def buffering_not_served_requests(outlets, performancelogger, time_step_simulation):
     for outlet_index, outlet in enumerate(outlets):
-        if outlet.__class__.__name__ == 'Wifi':
+        # if outlet.__class__.__name__ == 'Wifi':
             services_timed_out = []
             service_moved_to_served = []
             # print("for outlet : ", outlet.__class__.__name__, " outlet current capacity : ", outlet.current_capacity)
@@ -355,7 +355,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             performancelogger.queue_power_for_requested_in_buffer[outlet][index][1] = True
 
                         performancelogger.queue_requests_with_execution_time_buffer[outlet][service] = [start_time,
-                                                                                             service.calcualate_processing_time()]
+                                                                                             service.time_execution]
                         performancelogger.queue_ensured_buffer[outlet].appendleft(1)
                         outlet.dqn.environment.reward.services_requested = len(
                             performancelogger.queue_requested_buffer[outlet])
@@ -433,7 +433,7 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                     if outlet == outlet_:
                         service_index = service._dec_services_types_mapping[service.__class__.__name__]
                         if outlet.supported_services[service_index] == 1:
-                            if outlet.__class__.__name__ == 'Wifi':
+                            # if outlet.__class__.__name__ == 'Wifi':
                                 request_bandwidth = Bandwidth(service.bandwidth, service.criticality)
                                 request_cost = RequestCost(request_bandwidth, service.realtime)
                                 request_cost.cost_setter(service.realtime)
@@ -446,8 +446,25 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                 outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
                                 outlet.dqn.environment.state.waiting_buffer_len = len(
                                     performance_logger.queue_waiting_requests_in_buffer[outlet])
-                                remain_time_out = service.time_out()
-                                outlet.dqn.environment.state.remaining_time_out = remain_time_out
+
+                                service.time_out = service.time_out()
+                                service.time_execution = service.calcualate_processing_time()
+
+                                path = f"{request_info}outlet_{outlet.__class__.__name__}"
+                                main_string = service.__class__.__name__
+
+
+                                substring_dec = { 'Safety': "SAFETY",
+                                                  'Entertainment':"ENTERTAINMENT",
+                                                  'Autonomous':"AUTONOMOUS"}
+
+                                for key, value1 in substring_dec.items():
+                                    if key in main_string:
+                                        value = (value1,service.service_power_allocate,service.time_out,service.time_execution,start_time)
+                                        add_value_to_pickle(path,value)
+
+
+                                outlet.dqn.environment.state.remaining_time_out = service.time_out
                                 outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state()
                                 lr = -1
                                 outlet.dqn.agents.action.command.action_object, outlet.dqn.agents.action.command.action_value_decentralize, flag = outlet.dqn.agents.chain_dec(
@@ -466,7 +483,7 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                     outlet.dqn.environment.state.waiting_buffer_len = len(
                                         performance_logger.queue_waiting_requests_in_buffer[outlet])
 
-                                    outlet.dqn.environment.state.remaining_time_out = remain_time_out
+                                    outlet.dqn.environment.state.remaining_time_out = service.time_out
 
                                     outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.agents.action.command.action_object.execute(
                                         outlet.dqn.environment.state,
@@ -516,7 +533,7 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                         outlet.dqn.environment.state.waiting_buffer_len = len(
                                             performance_logger.queue_waiting_requests_in_buffer[outlet])
 
-                                        outlet.dqn.environment.state.remaining_time_out = remain_time_out
+                                        outlet.dqn.environment.state.remaining_time_out = service.time_out
 
                                         outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.agents.action.command.action_object.execute(
                                             outlet.dqn.environment.state,
@@ -553,7 +570,7 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                         performance_logger.queue_waiting_requests_in_buffer[outlet].appendleft(
                                             [service, True])
                                         performance_logger.queue_requests_with_time_out_buffer[outlet][service] = [start_time,
-                                                                                                     remain_time_out]
+                                                                                                     service.time_out]
 
                                 if action == 1 and len(
                                         performance_logger.queue_waiting_requests_in_buffer[outlet]) != 0 \
@@ -573,7 +590,7 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                     performance_logger.queue_waiting_requests_in_buffer[outlet].appendleft(
                                         [service, True])
                                     performance_logger.queue_requests_with_time_out_buffer[outlet][service] = [start_time,
-                                                                                                 remain_time_out]
+                                                                                                 service.time_out]
 
                                 if action == 1 and len(
                                         performance_logger.queue_waiting_requests_in_buffer[outlet]) != 0 \

@@ -25,9 +25,10 @@ class Service(ABC):
         self.criticality = criticality
         self._realtime = realtime
         self._service_power_allocate = 0
-        self._processing_time = 0
         self._dec_services_types_mapping= {"FactorySafety":0,"FactoryEntertainment":1,"FactoryAutonomous":2}
         self.__id = +1
+        self._time_out = 0
+        self._time_execution = 0
     # def __str__(self):
     #     return f"service criticality : {self.criticality} ,  service bandwidth : {self.bandwidth} , " \
     #            f"service real time : {self.realtime}"
@@ -50,11 +51,18 @@ class Service(ABC):
             else :
                 return False
     @property
-    def processing_time(self):
-        return self._processing_time
-    @processing_time.setter
-    def processing_time(self,value):
-        self._processing_time = value
+    def time_execution(self):
+        return self._time_execution
+    @time_execution.setter
+    def time_execution(self,value):
+        self._time_execution = value
+
+    @property
+    def time_out(self):
+        return self._time_out
+    @time_out.setter
+    def time_out(self,value):
+        self._time_out = value
     @property
     def service_power_allocate(self):
         return self._service_power_allocate

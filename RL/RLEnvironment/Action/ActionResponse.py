@@ -36,6 +36,7 @@ class ActionResponse:
 
     def explore(self):
         ac = np.random.choice([0,1])
+        # print("explore ")
         return ac
 
     def exploit(self, model, state):
@@ -43,6 +44,7 @@ class ActionResponse:
         state = np.array(state).reshape([1, np.array(state).shape[0]])
         c=np.array(model.predict(state, verbose=0))
         c = np.array(c).reshape(1,2)
+        # print("exploit ")
         return np.argmax(c[0])
 
     def execute(self, state, action):
