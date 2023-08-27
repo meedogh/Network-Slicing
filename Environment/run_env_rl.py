@@ -1,6 +1,7 @@
 from typing import List
 
 from Outlet.Cellular.ICellular import Cellular
+from Utils.PerformanceLoggerFifo import PerformanceLoggerFifo
 from .utils.imports import *
 from .utils.period import Period
 from .utils.savingWeights import *
@@ -125,15 +126,19 @@ class Environment:
                 performancelogger.set_queue_ensured_buffer(outlet, deque([]))
                 performancelogger.set_queue_power_for_requested_in_buffer(outlet, deque([]))
                 performancelogger.set_queue_waiting_requests_in_buffer(outlet, deque([]))
+                performancelogger.set_queue_time_out_from_simulation(outlet, deque([]))
+                performancelogger.set_queue_from_wait_to_serve_over_simulation(outlet, deque([]))
                 performancelogger.set_outlet_services_requested_number_all_periods(outlet, [0, 0, 0])
                 performancelogger.set_outlet_services_requested_number(outlet, [0, 0, 0])
                 performancelogger.set_outlet_services_ensured_number(outlet, [0, 0, 0])
-                # performancelogger.set_outlet_services_power_allocation_10_TimeStep(outlet, [0, 0, 0])
-                if outlet not in performancelogger.queue_provisioning_time_buffer:
-                    performancelogger.queue_provisioning_time_buffer[outlet] = dict()
 
-                if outlet not in performancelogger.queue_time_out_buffer:
-                    performancelogger.queue_time_out_buffer[outlet] = dict()
+                # performancelogger.set_outlet_services_power_allocation_10_TimeStep(outlet, [0, 0, 0])
+                if outlet not in performancelogger.queue_requests_with_execution_time_buffer:
+                    performancelogger.queue_requests_with_execution_time_buffer[outlet] = dict()
+
+                if outlet not in performancelogger.queue_requests_with_time_out_buffer:
+                    performancelogger.queue_requests_with_time_out_buffer[outlet] = dict()
+
                 outlets.append(outlet)
 
         list(map(lambda x: append_outlets(x), poi_ids))
@@ -302,6 +307,7 @@ class Environment:
     def run(self):
         self.starting()
         performance_logger = PerformanceLogger()
+        # performance_logger_for_fifo = PerformanceLoggerFifo()
         outlets = self.get_all_outlets(performance_logger)
         self.Grids = self.fill_grids(self.fill_grids_with_the_nearest(outlets[:4]))
         step = 0
@@ -370,6 +376,10 @@ class Environment:
             # if self.steps - previous_steps_sending == frame_rate_for_sending_requests:
             #     previous_steps_sending = self.steps
 
+            seed_value = 1
+            # Seed the random number generator
+            ra.seed(seed_value)
+
             number_of_cars_will_send_requests = round(
                 len(list(env_variables.vehicles.values())) * 0.3
             )
@@ -384,7 +394,6 @@ class Environment:
                                                          self.steps), vehicles, ))
 
             buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps)
-
             if self.steps - self.previous_steps_centralize_action >= 40:
                 self.previous_steps_centralize_action = self.steps
                 # centralize_nextstate_reward(self.gridcells_dqn)
@@ -421,6 +430,17 @@ class Environment:
 
             if self.steps - self.previouse_steps_reseting >= env_variables.episode_steps:
                 self.previouse_steps_reseting = self.steps
+
+                add_value_to_pickle(
+                    os.path.join(requests_with_execution_time_path, f"requests_with_execution_time.pkl"),
+                    performance_logger.queue_requests_with_execution_time_buffer,
+                )
+
+                add_value_to_pickle(
+                    os.path.join(requests_with_out_time_path, f"requests_with_out_time.pkl"),
+                    performance_logger.queue_requests_with_time_out_buffer,
+                )
+
                 list_ = []
                 print("resetting ................. ")
                 for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
