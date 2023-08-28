@@ -381,7 +381,7 @@ class Environment:
             ra.seed(seed_value)
 
             number_of_cars_will_send_requests = round(
-                len(list(env_variables.vehicles.values())) * 0.8
+                len(list(env_variables.vehicles.values())) * 0.3
             )
             vehicles = ra.sample(
                 list(env_variables.vehicles.values()), number_of_cars_will_send_requests

@@ -1,70 +1,48 @@
 import numpy as np
-import pandas as pd
 import csv
 
-list_of_values = []
+import pandas as pd
 
-# Read the CSV file into a DataFrame
 path = 'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//wifi_action_req_add_wasting_buffer_rl_test1.csv'
 
-# import csv
-# column_data = []
-# Open the CSV file
-with open(path, 'r') as file:
-    reader = csv.reader(file)
+# Create empty lists for each column
+accepted, served, wasting, wait_to_serve, time_out, generated_requests, delayed = [], [], [], [], [], [], []
 
-    # Assuming the column you want to read is the second column (index 1)
-    index_of_accepted = 3
-    index_of_served = 4
-    index_of_wasting = 9
-    index_of_wait_to_serve = 10
-    index_of_time_out = 11
-    index_of_generated_requests = 12
-    index_of_delayed = 13
+# Read the CSV file into a DataFrame
+df = pd.read_csv(path)
 
-    accepted = []
-    served = []
-    wasting = []
-    wait_to_serve = []
-    time_out = []
-    generated_requests = []
-    delayed = []
+# Extract the columns using the column names
+accepted = df['accepted'].tolist()
+served = df['served'].tolist()
+wasting = df['wasting'].tolist()
+wait_to_serve = df['from_wait_to_serve'].tolist()
+time_out = df['time_out'].tolist()
+generated_requests = df['generated_requests_over_simulation'].tolist()
+delayed = df['delay_time'].tolist()
 
-    for row in reader:
-        accepted.append(row[index_of_accepted])
-    for row in reader:
-        served.append(row[index_of_served])
-    for row in reader:
-        wasting.append(row[index_of_wasting])
-    for row in reader:
-        wait_to_serve.append(row[index_of_wait_to_serve])
-    for row in reader:
-        time_out.append(row[index_of_time_out])
-    for row in reader:
-        generated_requests.append(row[index_of_generated_requests])
-    for row in reader:
-        delayed.append(row[index_of_delayed])
+# Convert the lists to 32-bit integers
+accepted = [np.int32(value) if pd.notna(value) else 0 for value in accepted]
+served = [np.int32(value) if pd.notna(value) else 0 for value in served]
+wasting = [np.int32(value) if pd.notna(value) else 0 for value in wasting]
+wait_to_serve = [np.int32(value) if pd.notna(value) else 0 for value in wait_to_serve]
+time_out = [np.int32(value) if pd.notna(value) else 0 for value in time_out]
+generated_requests = [np.int32(value) if pd.notna(value) else 0 for value in generated_requests]
+delayed = [np.int32(value) if pd.notna(value) else 0 for value in delayed]
 
-accepted = accepted[1:]
-served = served[1:]
-wasting = wasting[1:]
-wait_to_serve = wait_to_serve[1:]
-time_out = time_out[1:]
-generated_requests = generated_requests[1:]
-delayed = delayed[1:]
-accepted = accepted[1:]
+print(len(accepted))
+print(len(served))
+print(len(wait_to_serve))
+print(len(wasting))
+print(len(generated_requests))
+print(len(delayed))
+print(len(time_out))
 
-accepted = [np.int32(value) for value in accepted]
-served = [np.int32(value) for value in served]
-wasting = [np.int32(value) for value in wasting]
-wait_to_serve = [np.int32(value) for value in wait_to_serve]
-time_out = [np.int32(value) for value in time_out]
-generated_requests = [np.int32(value) for value in generated_requests]
-delayed = [np.int32(value) for value in delayed]
-accepted = [np.int32(value) for value in accepted]
+# Rest of your code...
+
 
 indices = [index for index, value in enumerate(accepted) if value == 1]
 index_of_end_day_one = 0
 if indices:
-    index_of_end_day_one = indices[-1]
-index_of_end_day_two = len(accepted) - 1
+    index_of_end_day_one = indices[-1] + 1
+index_of_end_day_two = len(accepted) + 1
+print(index_of_end_day_one , " ", index_of_end_day_two)
