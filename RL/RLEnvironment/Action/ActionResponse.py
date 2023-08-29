@@ -48,4 +48,4 @@ class ActionResponse:
         return np.argmax(c[0])
 
     def execute(self, state, action):
-        return state.calculate_state()
+        return state.calculate_state(45)

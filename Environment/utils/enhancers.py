@@ -311,7 +311,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                     if start_time + time_out <= time_step_simulation and len(
                             performancelogger.queue_waiting_requests_in_buffer[outlet]) > 0:
 
-                        outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state()
+                        outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state(45)
                         services_timed_out.append(service)
                         performancelogger.queue_time_out_from_simulation[outlet].appendleft([service,True])
                         outlet.dqn.environment.state.time_out_requests_over_simulation = len(performancelogger.queue_time_out_from_simulation[outlet])
@@ -325,7 +325,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                         outlet.dqn.environment.state.wasting_buffer_length = len(
                             performancelogger.queue_wasted_req_buffer[outlet])
                         outlet.dqn.environment.state.from_waiting_to_serv_length = 0
-                        outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state()
+                        outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(45)
                         outlet.dqn.environment.reward.reward_value = - 100
 
                         outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
@@ -362,7 +362,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                         outlet.dqn.environment.reward.services_ensured = len(
                             performancelogger.queue_ensured_buffer[outlet])
 
-                        outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state()
+                        outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state(45)
 
                         outlet.current_capacity = outlet.current_capacity - service.service_power_allocate
                         outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
@@ -383,7 +383,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                                     time_step_simulation - start_time) - 1
                         outlet.dqn.environment.state.delay_time = time_out -  outlet.dqn.environment.state.remaining_time_out
 
-                        outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state()
+                        outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(45)
                         outlet.dqn.environment.reward.reward_value = 1000
 
                         outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
@@ -465,7 +465,7 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
 
 
                                 outlet.dqn.environment.state.remaining_time_out = service.time_out
-                                outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state()
+                                outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state(45)
                                 lr = -1
                                 outlet.dqn.agents.action.command.action_object, outlet.dqn.agents.action.command.action_value_decentralize, flag = outlet.dqn.agents.chain_dec(
                                     outlet.dqn.model,
@@ -475,7 +475,7 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                 action = outlet.dqn.agents.action.command.action_value_decentralize
 
                                 #for fifo algorithm
-                                print("outlet.dqn.environment.state.state_value_decentralize : ",outlet.dqn.environment.state.state_value_decentralize)
+                                # print("outlet.dqn.environment.state.state_value_decentralize : ",outlet.dqn.environment.state.state_value_decentralize)
                                 if action == 0 :
 
                                     outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
