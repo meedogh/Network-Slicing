@@ -26,9 +26,7 @@ from_waiting_to_serv_length_path = os.path.join(results_dir, "from_waiting_to_se
 wasting_req_length_path =  os.path.join(results_dir, "wasting_req_length")
 # centralize_qvalue_path = os.path.join(prev_results_dir, 'qvalue_centralized_for_plotting')
 # decentralize_qvalue_path = os.path.join(prev_results_dir, 'qvalue_decentralized_for_plotting')
-prev_results_3tanh_dir ="//content//drive//MyDrive//network_slicing//results3_tanh"
-    # "C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//results3_tanh//results3_tanh"
-    #"//content//drive//MyDrive//network_slicing//results3_tanh"
+prev_results_3tanh_dir = "//content//drive//MyDrive//network_slicing//results3_tanh"
     #
 utility_decentralized_path = os.path.join(results_dir, 'utility_decentralized')
 sum_power_allocation_path = os.path.join(results_dir, "sum_power_allocation//")

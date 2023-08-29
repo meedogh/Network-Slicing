@@ -13,7 +13,7 @@ class FactorySafety(Service):
         return np.random.choice(np.arange(10,18))
 
     def time_out(self):
-        return np.random.choice(np.arange(30,35))
+        return np.random.choice(np.arange(18,22))
     def calculate_arrival_rate(self):
         # TODO: add doc string
 
