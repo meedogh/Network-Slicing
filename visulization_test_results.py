@@ -1,40 +1,75 @@
-import pickle as pk
-
-import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import csv
-list_of_values = []
 
+import pandas as pd
+import matplotlib.pyplot as plt
+
+path = 'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//3G_action_req_add_wasting_buffer_rl_test1.csv'
+
+# Create empty lists for each column
+accepted, served, wasting, wait_to_serve, time_out, generated_requests, delayed = [], [], [], [], [], [], []
 
 # Read the CSV file into a DataFrame
-path = 'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//wifi_action_req_add_wasting_buffer12.csv'
+df = pd.read_csv(path)
 
-#import csv
-# column_data = []
-# Open the CSV file
-with open(path, 'r') as file:
-    reader = csv.reader(file)
+# Extract the columns using the column names
+accepted = df['accepted'].tolist()
+served = df['served'].tolist()
+wasting = df['wasting'].tolist()
+wait_to_serve = df['wait_to_serve_over_simulation'].tolist()
+time_out = df['timed_out_over_simulation'].tolist()
+generated_requests = df['generated_requests_over_simulation'].tolist()
+delayed = df['delay_time'].tolist()
+waiting_buffer=df['waiting_buffer_length'].tolist()
 
-    # Assuming the column you want to read is the second column (index 1)
-    column_index = 5
-    index_of_delay = 13
-    column_data = []
-    delay_column =[]
+# Convert the lists to 32-bit integers
+accepted = [np.int32(value) if pd.notna(value) else 0 for value in accepted]
+served = [np.int32(value) if pd.notna(value) else 0 for value in served]
+wasting = [np.int32(value) if pd.notna(value) else 0 for value in wasting]
+wait_to_serve = [np.int32(value) if pd.notna(value) else 0 for value in wait_to_serve]
+time_out = [np.int32(value) if pd.notna(value) else 0 for value in time_out]
+generated_requests = [np.int32(value) if pd.notna(value) else 0 for value in generated_requests]
+delayed = [np.int32(value) if pd.notna(value) else 0 for value in delayed]
 
-    for row in reader:
-        column_data.append(row[column_index])
-    # for row in reader:
-    #     delay_column.append(row[index_of_delay])
-# print(column_data)
+print(len(accepted))
+print(len(served))
+print(len(wait_to_serve))
+print(len(wasting))
+print(len(generated_requests))
+print(len(delayed))
+print(len(time_out))
 
-delay_column = delay_column[1:]
-# print(delay_column)
-delay_column = [np.int32(value) for value in delay_column]
+# Rest of your code...
 
-# print(sum(delay_column))
-# Now, column_data contains the values from the specified column as a list
-# print(column_data)
+
+indices = [index for index, value in enumerate(accepted) if value == 1]
+index_of_end_day_one = 0
+if indices:
+    index_of_end_day_one = indices[-1] + 1
+index_of_end_day_two = len(accepted) + 1
+print(index_of_end_day_one , " ", index_of_end_day_two)
+
+number_of_accepted_requests_day_one = accepted[index_of_end_day_one-2]
+number_of_generated_regests_day_one = generated_requests[index_of_end_day_one-2]
+number_of_served_requests_day_one = served[index_of_end_day_one-2]
+number_of_timed_out_requests_day_one = time_out[index_of_end_day_one-2]
+number_of_wasting_requests_day_one = wasting[index_of_end_day_one-2]
+number_of_requests_moved_from_wait_buffer_to_serve_day_one = wait_to_serve[index_of_end_day_one-2]
+
+print(number_of_accepted_requests_day_one, " ",number_of_generated_regests_day_one , " ",number_of_served_requests_day_one , " ",
+      number_of_timed_out_requests_day_one , "  ",number_of_wasting_requests_day_one , " ", number_of_requests_moved_from_wait_buffer_to_serve_day_one)
+
+
+number_of_accepted_requests_day_two = accepted[index_of_end_day_two-2]
+number_of_generated_regests_day_two = generated_requests[index_of_end_day_two-2]
+number_of_served_requests_day_two = served[index_of_end_day_two-2]
+number_of_timed_out_requests_day_two = time_out[index_of_end_day_two-2]
+number_of_wasting_requests_day_two = wasting[index_of_end_day_two-2]
+number_of_requests_moved_from_wait_buffer_to_serve_day_two = wait_to_serve[index_of_end_day_two-2]
+
+print(number_of_accepted_requests_day_two, " ",number_of_generated_regests_day_two , " ",number_of_served_requests_day_two , " ",
+      number_of_timed_out_requests_day_two , "  ",number_of_wasting_requests_day_two , " ", number_of_requests_moved_from_wait_buffer_to_serve_day_two)
+
 
 def rolling_average(data, window_size):
     # Convert the data to a NumPy array with float type
@@ -50,24 +85,27 @@ def rolling_average(data, window_size):
     return rolling_avg
 
 # Example usage:
-window_size = 200
-column_data = column_data[1:]
-column_data = [np.int32(value) for value in column_data]
-result = rolling_average(column_data, window_size)
+window_size = 1
+waiting_buffer_day_one = waiting_buffer[:index_of_end_day_one-2]
+waiting_buffer_day_two = waiting_buffer[index_of_end_day_one-2:index_of_end_day_two]
+
+print(waiting_buffer_day_two)
+print(len(waiting_buffer_day_two))
+result = rolling_average(waiting_buffer_day_two, window_size)
 # Create a list of values for the y-axis
 # y_values = [10, 20, 30, 40, 50]
 
 # Create x-values (optional, if you want to specify x-coordinates)
-x_values = [i for i in range(3193)]
+x_values = [i for i in range(len(waiting_buffer_day_two))]
 
 # Create the plot
 plt.plot(x_values, result)
 
 # Add labels and a title
-plt.xlabel('X-axis Label')
-plt.ylabel('Y-axis Label')
-plt.title('waiting_buffer_for_lr')
-plt.savefig('waiting_buffer_for_lr.svg', format='svg')
+plt.xlabel('steps')
+plt.ylabel('length of waited buffer')
+plt.title('waiting_buffer_for_wifi , Day Two')
+plt.savefig('waiting_buffer_length_day_two.svg', format='svg')
 
 # Show the plot (or save it to a file using plt.savefig('filename.png'))
 plt.show()

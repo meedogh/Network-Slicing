@@ -2,7 +2,7 @@ import os
 import sys
 
 results_dir = os.path.join(sys.path[0],
-                           'action_each_single_request_reward2_method2_repeat_periods_each_episode_test4_on_first50_more_busy')
+                           'action_each_single_request_reward2_method2_repeat_periods_each_episode_retrain_buffer_percentage')
 centralized_weights = os.path.join(results_dir, 'centralized_weights')
 decentralized_weights = os.path.join(results_dir, 'decentralized_weights')
 path_memory_centralize = os.path.join(results_dir, 'centralize_memory')
@@ -27,8 +27,6 @@ wasting_req_length_path =  os.path.join(results_dir, "wasting_req_length")
 # centralize_qvalue_path = os.path.join(prev_results_dir, 'qvalue_centralized_for_plotting')
 # decentralize_qvalue_path = os.path.join(prev_results_dir, 'qvalue_decentralized_for_plotting')
 prev_results_3tanh_dir = "//content//drive//MyDrive//network_slicing//results3_tanh"
-    #"C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//results3_tanh//results3_tanh"
-#"//content//drive//MyDrive//network_slicing//results3_tanh"
     #
 utility_decentralized_path = os.path.join(results_dir, 'utility_decentralized')
 sum_power_allocation_path = os.path.join(results_dir, "sum_power_allocation//")
@@ -38,11 +36,11 @@ sum_power_allocation_path = os.path.join(results_dir, "sum_power_allocation//")
 # "/content/drive/MyDrive/network_slicing/results3_tanh"
 # os.path.join(sys.path[0],"results3_tanh//results3_tanh//")
 # results1_explor_decentralize = "//content//drive//MyDrive//network_slicing//results2_explor_decentralize//"
-prev_results_dec_weight = "//content//drive//MyDrive//network_slicing//action_each_single_request_reward2_method2_repeat_periods_each_episode//"
+# prev_results_dec_weight = "//content//drive//MyDrive//network_slicing//action_each_single_request_reward2_method2_repeat_periods_each_episode//"
     #"C://Users//Windows dunya//Downloads//action_each_single_request_reward2_method2_repeat_periods_each_episode_retrain//action_each_single_request_reward2_method2_repeat_periods_each_episode_retrain//"
 # prev_results_dec_memory = "//content//drive//MyDrive//network_slicing//action_each_single_request_reward2_method2_repeat_periods_each_episode100"
 prev_centralize_weights_path = os.path.join(prev_results_3tanh_dir, "centralized_weights//")
-prev_decentralize_weights_path = os.path.join(prev_results_dec_weight,"decentralized_weights//")
+# prev_decentralize_weights_path = os.path.join(prev_results_dec_weight,"decentralized_weights//")
 # prev_centralize_memory_path = os.path.join(prev_results_4tanh_dir,"centralize_memory//")
 # prev_decentralize_memory_path = os.path.join(prev_results_dec_memory,"decentralize_memory//")
 centralize_qvalue_path = os.path.join(results_dir, "qvalue_centralized_for_plotting//")

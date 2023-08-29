@@ -230,13 +230,13 @@ class DeCentralizedState(State):
         self._delay_time = 0
 
 
-    def calculate_state(self):
+    def calculate_state(self,outlet_max_len):
         final_state = []
         final_state.append((self.max_tower_capacity / self.max_tower_capacity) * 100)
         final_state.append(self.remaining_time_out)
         final_state.append(round(((self._tower_capacity / self.max_tower_capacity) * 100), 2))
         final_state.append(round(((self.power_of_requests / self.max_tower_capacity) * 100), 2))
-        final_state.append(self.waiting_buffer_len)
+        final_state.append(round(((self.waiting_buffer_len/outlet_max_len)*100),2))
 
         if len(final_state) == 0:
             final_state = [0.0] * 5

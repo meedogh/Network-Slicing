@@ -475,7 +475,7 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                 action = outlet.dqn.agents.action.command.action_value_decentralize
 
                                 #for fifo algorithm
-
+                                print("outlet.dqn.environment.state.state_value_decentralize : ",outlet.dqn.environment.state.state_value_decentralize)
                                 if action == 0 :
 
                                     outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
