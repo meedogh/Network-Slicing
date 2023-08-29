@@ -75,6 +75,7 @@ class Agent(AbstractAgent):
                 next_state = np.array(next_state).reshape([1, np.array(next_state).shape[0]])
                 # logit_model2 = keras.Model(inputs=model.input, outputs=model.layers[-2].output)
                 logit_value = model.predict(next_state, verbose=0)[0]
+                print("pred : ", logit_value)
                 target = reward + self.gamma * np.amax(logit_value)
             state = np.array(state).reshape([1, np.array(state).shape[0]])
             target_f = model.predict(state, verbose=0)
