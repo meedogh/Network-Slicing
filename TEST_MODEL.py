@@ -7,7 +7,7 @@ from keras.optimizers import Adam
 
 deque = []
 
-file_name="C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//time_out_next_state.pkl"
+file_name="C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//time_out_state.pkl"
 with open(file_name, 'rb') as file:
     try:
         while True:
@@ -27,8 +27,10 @@ def build_model() -> Sequential:
                        optimizer=Adam(learning_rate=0.5))
         return model_
 
+
+print(len(deque))
 model =  build_model()
-model.load_weights('C://Users//Windows dunya//PycharmProjects//pythonProject//action_each_single_request_reward2_method2_repeat_periods_each_episode_retrain//decentralized_weights/weights_0_100.hdf5')
+model.load_weights('C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//action_each_single_request_reward2_method2_repeat_periods_each_episode_retrain_buffer_percentage_replay//decentralized_weights/weights_0_140.hdf5')
 for i in deque :
     print("state : ", i)
     state = np.array(i).reshape([1, np.array(i).shape[0]])

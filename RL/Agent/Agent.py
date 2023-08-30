@@ -79,7 +79,10 @@ class Agent(AbstractAgent):
                 target = reward + self.gamma * np.amax(logit_value)
             state = np.array(state).reshape([1, np.array(state).shape[0]])
             target_f = model.predict(state, verbose=0)
+            # print("pred :target_f ", target_f)
+            # print("action: ",action)
             target_f[0][action] = target
+            # print("target_f after  : ", target_f)
             model.fit(state, target_f, epochs=1, verbose=0)
         if self.epsilon > self.min_epsilon:
             # self.epsilon = self.min_epsilon + (self.epsilon_max - self.min_epsilon) * np.exp(-self.epsilon_decay * i)
