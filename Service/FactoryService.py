@@ -1,3 +1,5 @@
+import numpy as np
+
 from Service.Entertainment.Entertainment import FactoryEntertainment
 from Service.Safety.safety import FactorySafety
 from Service.Autonomous.autonomous import FactoryAutonomous
@@ -22,3 +24,5 @@ class FactoryService:
         if product in self.var.keys():
             return self.var[product]
         raise Exception(f'{product} factory not available at the moment!')
+
+

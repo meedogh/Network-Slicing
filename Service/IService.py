@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+import numpy as np
+
 
 class Service(ABC):
 
@@ -25,51 +27,64 @@ class Service(ABC):
         self.criticality = criticality
         self._realtime = realtime
         self._service_power_allocate = 0
-        self._dec_services_types_mapping= {"FactorySafety":0,"FactoryEntertainment":1,"FactoryAutonomous":2}
+        self._dec_services_types_mapping = {"FactorySafety": 0, "FactoryEntertainment": 1, "FactoryAutonomous": 2}
         self.__id = +1
         self._time_out = 0
         self._time_execution = 0
+        self.request_failure = False
+
     # def __str__(self):
     #     return f"service criticality : {self.criticality} ,  service bandwidth : {self.bandwidth} , " \
     #            f"service real time : {self.realtime}"
+    def request_level_failure(self):
+        random_failure_value = np.random.rand()
+        if random_failure_value < 0.9:
+            return True
+        else:
+            return False
 
-    def request_supported(self,outlet):
+    def request_supported(self, outlet):
         # print("outlet.dqn.environment.state.supported_services  : ", outlet.dqn.environment.state.supported_services)
-        if self.__class__.__name__=='FactorySafety':
-            if outlet.dqn.environment.state.supported_services[0] == 1 :
+        if self.__class__.__name__ == 'FactorySafety':
+            if outlet.dqn.environment.state.supported_services[0] == 1:
                 return True
-            else :
+            else:
                 return False
-        elif self.__class__.__name__=='FactoryEntertainment':
-            if outlet.dqn.environment.state.supported_services[1] == 1 :
+        elif self.__class__.__name__ == 'FactoryEntertainment':
+            if outlet.dqn.environment.state.supported_services[1] == 1:
                 return True
-            else :
+            else:
                 return False
-        elif self.__class__.__name__=='FactoryAutonomous':
-            if outlet.dqn.environment.state.supported_services[2] == 1 :
+        elif self.__class__.__name__ == 'FactoryAutonomous':
+            if outlet.dqn.environment.state.supported_services[2] == 1:
                 return True
-            else :
+            else:
                 return False
+
     @property
     def time_execution(self):
         return self._time_execution
+
     @time_execution.setter
-    def time_execution(self,value):
+    def time_execution(self, value):
         self._time_execution = value
 
     @property
     def time_out(self):
         return self._time_out
+
     @time_out.setter
-    def time_out(self,value):
+    def time_out(self, value):
         self._time_out = value
+
     @property
     def service_power_allocate(self):
         return self._service_power_allocate
 
     @service_power_allocate.setter
-    def service_power_allocate(self,value):
+    def service_power_allocate(self, value):
         self._service_power_allocate = value
+
     @abstractmethod
     def calculate_arrival_rate(self):
         """ the rate at which messages or packets are received by a system or a network over a period of time """

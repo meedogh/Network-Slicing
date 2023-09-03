@@ -45,6 +45,7 @@ class ActionResponse:
         c=np.array(model.predict(state, verbose=0))
         c = np.array(c).reshape(1,2)
         # print("exploit ")
+        print("...............   ",c[0])
         return np.argmax(c[0])
 
     def execute(self, state, action):

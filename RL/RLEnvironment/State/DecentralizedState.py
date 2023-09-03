@@ -11,8 +11,8 @@ class DeCentralizedState(State):
     _services_requested: int
     _tower_capacity = 0.0
     _max_tower_capacity = 0.0
-    _state_value_decentralize = [0.0] * 6
-    _next_state_decentralize = [0.0] * 6
+    _state_value_decentralize = [0.0] * 4
+    _next_state_decentralize = [0.0] * 4
 
     def __init__(self):
         super().__init__()
@@ -49,14 +49,17 @@ class DeCentralizedState(State):
         return self._time_out_flag
 
     @time_out_flag.setter
-    def time_out_flag(self,value):
+    def time_out_flag(self, value):
         self._time_out_flag = value
+
     @property
     def delay_time(self):
         return self._delay_time
+
     @delay_time.setter
-    def delay_time(self,value):
-        self._delay_time =  value
+    def delay_time(self, value):
+        self._delay_time = value
+
     @property
     def from_wait_to_serve_over_simulation(self):
         return self._from_wait_to_serve_over_simulation
@@ -226,7 +229,7 @@ class DeCentralizedState(State):
         self._supported_services = supported_array
 
     def resetsate(self):
-        self.state_value_decentralize = [0.0] * 6
+        self.state_value_decentralize = [0.0] * 4
         self.power_of_requests = 0
         self.tower_capacity = self.max_tower_capacity
         self.remaining_time_out = 0
@@ -238,16 +241,15 @@ class DeCentralizedState(State):
         self._from_wait_to_serve_over_simulation = 0
         self._delay_time = 0
 
-
-    def calculate_state(self,outlet_max_len):
+    def calculate_state(self, outlet_max_len):
         final_state = []
-        final_state.append((self.max_tower_capacity / self.max_tower_capacity) * 100)
-        final_state.append(self.remaining_time_out)
+        # final_state.append((self.max_tower_capacity / self.max_tower_capacity) * 100)
+        # final_state.append(self.remaining_time_out)
         final_state.append(round(((self._tower_capacity / self.max_tower_capacity) * 100), 2))
         final_state.append(round(((self.power_of_requests / self.max_tower_capacity) * 100), 2))
-        final_state.append(round(((self.waiting_buffer_len/outlet_max_len)*100),2))
+        final_state.append(round(((self.waiting_buffer_len / outlet_max_len) * 100), 2))
         final_state.append(self._time_out_flag)
 
         if len(final_state) == 0:
-            final_state = [0.0] * 6
+            final_state = [0.0] * 4
         return final_state
