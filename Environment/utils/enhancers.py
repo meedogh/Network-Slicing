@@ -531,7 +531,11 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                         outlet.dqn.environment.state,
                                         outlet.dqn.agents.action.command.action_value_decentralize,
                                     )
-                                    outlet.dqn.environment.reward.reward_value = lr
+                                    if outlet.dqn.environment.state.time_out_flag == 0 :
+                                       outlet.dqn.environment.reward.reward_value = -100
+                                    if outlet.dqn.environment.state.time_out_flag == 1 :
+                                        outlet.dqn.environment.reward.reward_value = 100
+
                                     outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                                     outlet.dqn.environment.state.timed_out_length = 0
                                     outlet.dqn.environment.state.waiting_buffer_len = len(
