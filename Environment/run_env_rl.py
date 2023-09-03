@@ -128,6 +128,7 @@ class Environment:
                 performancelogger.set_queue_waiting_requests_in_buffer(outlet, deque([]))
                 performancelogger.set_queue_time_out_from_simulation(outlet, deque([]))
                 performancelogger.set_queue_from_wait_to_serve_over_simulation(outlet, deque([]))
+                performancelogger.set_queue_request_failure_flags(outlet,deque([]))
                 performancelogger.set_outlet_services_requested_number_all_periods(outlet, [0, 0, 0])
                 performancelogger.set_outlet_services_requested_number(outlet, [0, 0, 0])
                 performancelogger.set_outlet_services_ensured_number(outlet, [0, 0, 0])
@@ -381,7 +382,7 @@ class Environment:
             ra.seed(seed_value)
 
             number_of_cars_will_send_requests = round(
-                len(list(env_variables.vehicles.values())) * 0.5
+                len(list(env_variables.vehicles.values())) * 0.8
             )
             vehicles = ra.sample(
                 list(env_variables.vehicles.values()), number_of_cars_will_send_requests
@@ -389,7 +390,6 @@ class Environment:
 
             provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps)
 
-            print("vehicles number : ",len(vehicles))
             list(map(lambda veh: enable_sending_requests(veh, observer, self.gridcells_dqn, performance_logger,
                                                          self.steps), vehicles, ))
 
@@ -485,7 +485,7 @@ class Environment:
             if step == 140:
                 save_weigths_buffer(self.gridcells_dqn[0], 140)
             if step == env_variables.TIME:
-                save_weigths_buffer(self.gridcells_dqn[0], 100)
+                save_weigths_buffer(self.gridcells_dqn[0], 150)
 
         self.close()
 

@@ -17,7 +17,7 @@ class FactoryEntertainment(Service):
 
     def calcualate_processing_time(self):
         # self._network_latency + self._data_size
-        return np.random.choice(np.arange(7,12))
+        return np.random.choice(np.arange(8,12))
 
     def time_out(self):
         return np.random.choice(np.arange(2,4))

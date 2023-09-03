@@ -1,22 +1,50 @@
 import pickle as pk
+import random
 
 import numpy as np
 from keras import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
 
-deque = []
+wait_to_serve = []
+time_out=[]
+reject=[]
+serve=[]
+file_wait_to_serve="C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//test_files//wait_to_serve_state.pkl"
+file_time_out="C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//test_files//time_out_state.pkl"
 
-file_name="C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//time_out_state.pkl"
-with open(file_name, 'rb') as file:
+file_reject="C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//test_files//rejected_state.pkl"
+file_served="C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//test_files//served_state.pkl"
+
+with open(file_wait_to_serve, 'rb') as file:
     try:
         while True:
             loaded_value = pk.load(file)
-            deque.append(loaded_value)
+            wait_to_serve.append(loaded_value)
     except EOFError:
         pass
 
-
+with open(file_time_out, 'rb') as file:
+    try:
+        while True:
+            loaded_value = pk.load(file)
+            time_out.append(loaded_value)
+    except EOFError:
+        pass
+with open(file_served, 'rb') as file:
+    try:
+        while True:
+            loaded_value = pk.load(file)
+            serve.append(loaded_value)
+    except EOFError:
+        pass
+with open(file_reject, 'rb') as file:
+    try:
+        while True:
+            loaded_value = pk.load(file)
+            reject.append(loaded_value)
+    except EOFError:
+        pass
 def build_model() -> Sequential:
         model_ = Sequential()
         model_.add(Dense(24, input_dim=5, activation='relu'))
@@ -28,12 +56,23 @@ def build_model() -> Sequential:
         return model_
 
 
-print(len(deque))
+print(len(wait_to_serve))
 model =  build_model()
-model.load_weights('C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//action_each_single_request_reward2_method2_repeat_periods_each_episode_retrain_buffer_percentage_replay//decentralized_weights/weights_0_140.hdf5')
-for i in deque :
-    print("state : ", i)
-    state = np.array(i).reshape([1, np.array(i).shape[0]])
+model.load_weights('C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//action_each_single_request_reward2_method2_repeat_periods_each_episode_retrain_buffer_percentage_small_time_out//decentralized_weights/weights_0_140.hdf5')
+
+wait_to_serve.extend(serve)
+wait_to_serve.extend(time_out)
+wait_to_serve.extend(reject)
+
+shuffled_list = random.sample(wait_to_serve, len(wait_to_serve))
+for state in shuffled_list:
+    print(" reject state : ", state)
+    # print("serve state : ",serve)
+    # print("time out state : ",timeout)
+    # print("rejected state : ", rej)
+    #,serve,time_out,reject
+    #serve,timeout,rej
+    state = np.array(state).reshape([1, np.array(state).shape[0]])
     pred = model.predict(state)
     print(pred)
-    print(np.argmax(pred[0]))
+    print("output of the model : ",np.argmax(pred[0]))

@@ -54,6 +54,8 @@ class PerformanceLogger(metaclass=SingletonMeta):
 
     _generated_requests_over_simulation: deque[int] = field(default_factory=deque)
 
+    _queue_request_failure_flags:Dict[Outlet, deque[Service, bool:False]] = field(default_factory=dict)
+
     _outlet_services_requested_number: Dict[Outlet, List[int]] = field(default_factory=dict)
 
     _outlet_services_requested_number_all_periods: Dict[Outlet, List[int]] = field(default_factory=dict)
@@ -72,6 +74,15 @@ class PerformanceLogger(metaclass=SingletonMeta):
         if outlet not in self._queue_requested_buffer:
             self._queue_requested_buffer[outlet] = {}
         self._queue_requested_buffer[outlet] = value
+
+    @property
+    def queue_request_failure_flags(self):
+        return self._queue_request_failure_flags
+
+    def set_queue_request_failure_flags(self, outlet, value):
+        if outlet not in self._queue_request_failure_flags:
+            self._queue_request_failure_flags[outlet] = {}
+        self._queue_request_failure_flags[outlet] = value
 
     @property
     def generated_requests_over_simulation(self):

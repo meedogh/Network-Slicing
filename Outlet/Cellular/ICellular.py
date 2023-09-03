@@ -46,7 +46,7 @@ class Cellular(Outlet):
             RLBuilder()
             .agent.build_agent(ActionResponse())
             .environment.build_env(DeCentralizedReward(), DeCentralizedState())
-            .model_.build_model("decentralized", 5, 2)
+            .model_.build_model("decentralized", 6, 2)
             .build()
         )
 
