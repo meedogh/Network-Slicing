@@ -352,7 +352,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             # print("state time out  : ", outlet.dqn.environment.state.state_value_decentralize)
                             # add_value_to_pickle('c',outlet.dqn.environment.state.next_state_decentralize)
 
-                            outlet.dqn.environment.reward.reward_value = -100 -1
+                            outlet.dqn.environment.reward.reward_value = -100
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                             outlet.dqn.environment.state.delay_time = 0
@@ -419,7 +419,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             outlet.dqn.environment.state.time_out_flag = 0
                             outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(
                                 45)
-                            outlet.dqn.environment.reward.reward_value = 100 -1
+                            outlet.dqn.environment.reward.reward_value = 100
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
 
@@ -553,11 +553,11 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                         outlet.dqn.environment.state,
                                         outlet.dqn.agents.action.command.action_value_decentralize,
                                     )
-                                    outlet.dqn.environment.reward.reward_value = -1
-                                    # if outlet.dqn.environment.state.time_out_flag == 0:
-                                    #     outlet.dqn.environment.reward.reward_value = math.tanh(-100)
-                                    # if outlet.dqn.environment.state.time_out_flag == 1:
-                                    #     outlet.dqn.environment.reward.reward_value = math.tanh(100)
+                                    # outlet.dqn.environment.reward.reward_value = -1
+                                    if outlet.dqn.environment.state.time_out_flag == 0:
+                                        outlet.dqn.environment.reward.reward_value = -100
+                                    if outlet.dqn.environment.state.time_out_flag == 1:
+                                        outlet.dqn.environment.reward.reward_value = 100
                                     # print("action 0 flage : ", outlet.dqn.environment.state.time_out_flag)
                                     # print("action 0 state : ", outlet.dqn.environment.state.state_value_decentralize)
 
@@ -623,7 +623,7 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                         outlet.dqn.environment.reward.services_ensured = len(
                                             performance_logger.queue_ensured_buffer[outlet])
 
-                                        outlet.dqn.environment.reward.reward_value = 100 -1
+                                        outlet.dqn.environment.reward.reward_value = 100
 
                                         outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
 
