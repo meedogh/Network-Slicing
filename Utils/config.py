@@ -4,13 +4,13 @@ import numpy as np
 
 SERVICES_TYPES = {
     "ENTERTAINMENT": {
-        "REALTIME": np.arange(start=5, stop=10),
+        "REALTIME": np.arange(start=7, stop=10),
         "BANDWIDTH": np.arange(start=8, stop=10 + 1),
-        "CRITICAL": np.arange(start=1, stop=2 + 1),
+        "CRITICAL": np.arange(start=5, stop=7 + 1),
     },
     "SAFETY": {
-        "REALTIME": np.arange(start=9, stop=10 ),
-        "BANDWIDTH": np.arange(start=1, stop=3 + 1),
+        "REALTIME": np.arange(start=9, stop=10),
+        "BANDWIDTH": np.arange(start=6, stop=7 + 1),
         "CRITICAL": np.arange(start=9, stop=10 + 1),
     },
     "AUTONOMOUS": {
@@ -20,13 +20,12 @@ SERVICES_TYPES = {
     },
 }
 
-Grids={
-    "grid1":[],
-    "grid2":[],
-    "grid3":[],
-    "grid4":[],
+Grids = {
+    "grid1": [],
+    "grid2": [],
+    "grid3": [],
+    "grid4": [],
 }
-
 
 REALTIME_BANDWIDTH = {
     "Wifi": list(range(1, 3)),
@@ -69,7 +68,7 @@ outlet_types = {
         "NUM_SLOTS_PER_FRAME": [10],
         "NUM_FRAMES_PER_SECOND": [60],
     },
-    "wifi":{
+    "wifi": {
         "NUM_ANTENNAS": [2],
         "CHANNEL_BANDWIDTH": np.arange(1.0, 5, 0.25),
         "CODING_RATE": [1 / 2, 1 / 3],
@@ -80,5 +79,3 @@ outlet_types = {
     }
 
 }
-
-

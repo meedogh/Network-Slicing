@@ -139,7 +139,7 @@ class Cellular(Outlet):
         elif type == "FourG":
             return 25000
         elif type == "Wifi":
-            return 4500
+            return 3500
         else:
             return 50000
 

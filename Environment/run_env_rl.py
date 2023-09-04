@@ -30,6 +30,7 @@ class Environment:
     flag_processing_old_requests = [False] * 3
     reset_decentralize = False
     previouse_steps_reward32 = 0
+    previous_steps_of_update_target_model =  0
 
     def __init__(self, period: str):
         # Period(period)
@@ -408,15 +409,19 @@ class Environment:
             #
             if self.steps - self.previous_steps >= env_variables.decentralized_replay_buffer:
                 self.previous_steps = self.steps
-                for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
-                    for i, outlet in enumerate(gridcell_dqn.agents.grid_outlets):
-                        if len(outlet.dqn.agents.memory) > 31:
+                for i, outlet in enumerate(self.temp_outlets):
+                        if len(outlet.dqn.agents.memory) > 32:
                             # print("replay buffer of decentralize ")
                             outlet.dqn.agents.qvalue = (
                                 outlet.dqn.agents.replay_buffer_decentralize(
-                                    30, outlet.dqn.model
+                                    32, outlet.dqn.model,
                                 )
                             )
+            # if self.steps - self.previous_steps_of_update_target_model >= env_variables.decentralized_target_model_update:
+            #     self.previous_steps_of_update_target_model = self.steps
+            #     for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
+            #         for i, outlet in enumerate(gridcell_dqn.agents.grid_outlets):
+            #             outlet.dqn.agents.hard_update_target_network(outlet.dqn.model,outlet.dqn.model_target)
 
 
             # if self.steps - self.previ

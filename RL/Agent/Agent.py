@@ -22,6 +22,7 @@ class Agent(AbstractAgent):
         self._action_value = 0
         self._qvalue = 0.0
         self.mask = []
+        self.C = 1000
 
     @property
     def outlets_id(self):
@@ -65,7 +66,7 @@ class Agent(AbstractAgent):
         self._action_value = a
 
 
-
+    #
     def replay_buffer_decentralize(self, batch_size, model):
         minibatch = random.sample(self.memory, batch_size)
         target = 0
@@ -81,6 +82,7 @@ class Agent(AbstractAgent):
             target_f = model.predict(state, verbose=0)
             # print("pred :target_f ", target_f)
             # print("action: ",action)
+            # print("target : ",target)
             target_f[0][action] = target
             # print("target_f after  : ", target_f)
             model.fit(state, target_f, epochs=1, verbose=0)
@@ -89,6 +91,57 @@ class Agent(AbstractAgent):
             self.epsilon -= self.epsilon * self.epsilon_decay
         return target
 
+    # def replay_buffer_decentralize(self,batchsize,model,target_model):
+    #     if len(self.memory) < batchsize:
+    #         minibatch = self.memory
+    #     else:
+    #         minibatch = random.sample(self.memory, batchsize)
+    #
+    #     # instantiate
+    #     states = []
+    #     Q_wants = []
+
+        # Find updates
+        # for event in minibatch:
+        #     exploitation, state, action, reward, next_state = event
+        #     states.append(state)
+        #
+        #     # Find Q_target
+        #     state_tensor = np.reshape(state, (1, len(state)))  # keras takes 2d arrays
+        #     Q_want = model.predict(state_tensor)[0]  # all elements of this, except the action chosen, stay
+        #     # the same
+        #
+        #
+        #     next_state_tensor = np.reshape(next_state, (1, len(next_state)))
+        #     Q_next_state_vec = model.predict(next_state_tensor)
+        #     action_max = np.argmax(Q_next_state_vec)
+        #     print("action_max : ", action_max)
+        #
+        #     Q_target_next_state_vec = target_model.predict(next_state_tensor)[0]
+        #     print("Q_target_next_state_vec : ",Q_target_next_state_vec)
+        #     Q_target_next_state_max = Q_target_next_state_vec[action_max]
+        #     print("Q_target_next_state_max : ", Q_target_next_state_max)
+        #
+        #     Q_want[action] = reward + self.gamma * Q_target_next_state_max
+        #     Q_want_tensor = np.reshape(Q_want, (1, len(Q_want)))
+        #         # self.model.fit(state_tensor,Q_want_tensor,verbose=False,epochs=1)
+        #     print("Q_want[action] : ", Q_want[action])
+        #
+        #     Q_wants.append(Q_want)
+        #
+        # # Here I fit on the whole batch. Others seem to fit line-by-line
+        # # Dont' think (hope) it makes much difference
+        # states = np.array(states)
+        # Q_wants = np.array(Q_wants)
+        # model.fit(states, Q_wants, verbose=False, epochs=1)
+
+    def hard_update_target_network(self, step,model,target_model):
+        """ Here the target network is updated every K timesteps
+            By update, I mean clone the behavior network.
+        """
+        if step % self.C == 0:
+            pars = model.get_weights()
+            target_model.set_weights(pars)
     def replay_buffer_centralize(self, batch_size, model):
         minibatch = random.sample(self.memory, batch_size)
         target = []
