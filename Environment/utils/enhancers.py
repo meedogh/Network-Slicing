@@ -243,7 +243,7 @@ def serving_requests(performancelogger, outlet, start_time, service_):
 
 def provisioning_time_services(outlets, performance_logger, time_step_simulation):
     for i, outlet in enumerate(outlets):
-        if outlet.__class__.__name__ == 'Wifi':
+        # if outlet.__class__.__name__ == 'Wifi':
             count = 0
             terminated_services = []
             # print("performance_logger.queue_requests_with_execution_time_buffer[outlet] ",len(performance_logger.queue_requests_with_execution_time_buffer[outlet]))
@@ -295,13 +295,13 @@ def check_timed_out(performance_logger, outlet, request_time_out_period, demandi
 
 def buffering_not_served_requests(outlets, performancelogger, time_step_simulation):
     for outlet_index, outlet in enumerate(outlets):
-        if outlet.__class__.__name__ == 'Wifi':
+        # if outlet.__class__.__name__ == 'Wifi':
             services_timed_out = []
             service_moved_to_served = []
             # print("for outlet : ", outlet.__class__.__name__, " outlet current capacity : ", outlet.current_capacity)
             for i, (service, flag) in enumerate(performancelogger.queue_waiting_requests_in_buffer[outlet]):
                 if flag == True:
-                    failure_rate = 0.3
+
                     # if time_step_simulation < 320*3:
                     #     service.request_failure = np.random.rand() >= failure_rate
                     # elif time_step_simulation >= 320*3:
@@ -309,6 +309,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                     #        service.request_failure = np.random.rand() >= failure_rate
                     #     if failure_rate < 0.5 :
                     #         failure_rate += failure_rate * 0.01
+                    failure_rate = 0.3
                     service.request_failure = np.random.rand() >= failure_rate
 
                     if service.request_failure == False :
@@ -328,8 +329,9 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             outlet.dqn.environment.state.time_out_flag = 1
                             outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state(
                                 45)
-                            # add_value_to_pickle('C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//time_out_state.pkl',
-                            #                     outlet.dqn.environment.state.state_value_decentralize)
+                            add_value_to_pickle('C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//time_out_state.pkl',
+                                                outlet.dqn.environment.state.state_value_decentralize)
+
                             services_timed_out.append(service)
                             performancelogger.queue_time_out_from_simulation[outlet].appendleft([service, True])
                             outlet.dqn.environment.state.time_out_requests_over_simulation = len(
@@ -395,9 +397,9 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                                 45)
                             # print("action ", outlet.dqn.agents.action.command.action_value_decentralize)
                             # print("state wait to serve  : ", outlet.dqn.environment.state.state_value_decentralize)
-                            # add_value_to_pickle(
-                            #     'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//wait_to_serve_state.pkl',
-                            #     outlet.dqn.environment.state.state_value_decentralize)
+                            add_value_to_pickle(
+                                'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//wait_to_serve_state.pkl',
+                                outlet.dqn.environment.state.state_value_decentralize)
                             outlet.current_capacity = outlet.current_capacity - service.service_power_allocate
                             outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                             outlet.dqn.environment.state.waiting_buffer_len = len(
@@ -468,8 +470,8 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                     if outlet == outlet_:
                         service_index = service._dec_services_types_mapping[service.__class__.__name__]
                         if outlet.supported_services[service_index] == 1:
-
-                            if outlet.__class__.__name__ == 'Wifi' and len(
+                            #outlet.__class__.__name__ == 'Wifi' and
+                            if  len(
                                     performance_logger.queue_waiting_requests_in_buffer[
                                         outlet]) < outlet_max_waiting_buffer_length(outlet):
                                 # print("when waiting buffer len >>>>>>>>>>>>>>>>>>>>>>>>>> :  ",
@@ -539,9 +541,9 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                 if action == 0:
                                     # print("action ", action)
                                     # print("state  : ",outlet.dqn.environment.state.state_value_decentralize)
-                                    # add_value_to_pickle(
-                                    #     'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//rejected_state.pkl',
-                                    #     outlet.dqn.environment.state.state_value_decentralize)
+                                    add_value_to_pickle(
+                                        'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//rejected_state.pkl',
+                                        outlet.dqn.environment.state.state_value_decentralize)
 
                                     outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                                     outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
@@ -600,9 +602,9 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                         outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
                                         # print("served state : ",
                                         #       outlet.dqn.environment.state.state_value_decentralize)
-                                        # add_value_to_pickle(
-                                        #     'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//served_state.pkl',
-                                        #     outlet.dqn.environment.state.state_value_decentralize)
+                                        add_value_to_pickle(
+                                            'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//served_state.pkl',
+                                            outlet.dqn.environment.state.state_value_decentralize)
                                         outlet.dqn.environment.state.waiting_buffer_len = len(
                                             performance_logger.queue_waiting_requests_in_buffer[outlet])
 
@@ -681,10 +683,12 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
                                     outlet.dqn.environment.state.wasting_buffer_length = len(
                                         performance_logger.queue_wasted_req_buffer[outlet])
 
-                            if outlet.__class__.__name__ == 'Wifi' and len(
+                            if len(
                                     performance_logger.queue_waiting_requests_in_buffer[outlet]) != 0 \
                                     and len(performance_logger.queue_waiting_requests_in_buffer[
                                                 outlet]) >= outlet_max_waiting_buffer_length(outlet):
+
+                                #  outlet.__class__.__name__ == 'Wifi'
                                 performance_logger.queue_wasted_req_buffer[outlet].appendleft(
                                     [service, True])
                                 outlet.dqn.environment.state.wasting_buffer_length = len(

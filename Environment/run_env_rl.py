@@ -407,16 +407,16 @@ class Environment:
             else:
                 close_figures()
             #
-            if self.steps - self.previous_steps >= env_variables.decentralized_replay_buffer:
-                self.previous_steps = self.steps
-                for i, outlet in enumerate(self.temp_outlets):
-                        if len(outlet.dqn.agents.memory) > 32:
-                            # print("replay buffer of decentralize ")
-                            outlet.dqn.agents.qvalue = (
-                                outlet.dqn.agents.replay_buffer_decentralize(
-                                    32, outlet.dqn.model,
-                                )
-                            )
+            # if self.steps - self.previous_steps >= env_variables.decentralized_replay_buffer:
+            #     self.previous_steps = self.steps
+            #     for i, outlet in enumerate(self.temp_outlets):
+            #             if len(outlet.dqn.agents.memory) > 32:
+            #                 # print("replay buffer of decentralize ")
+            #                 outlet.dqn.agents.qvalue = (
+            #                     outlet.dqn.agents.replay_buffer_decentralize(
+            #                         32, outlet.dqn.model,
+            #                     )
+            #                 )
             # if self.steps - self.previous_steps_of_update_target_model >= env_variables.decentralized_target_model_update:
             #     self.previous_steps_of_update_target_model = self.steps
             #     for ind, gridcell_dqn in enumerate(self.gridcells_dqn):

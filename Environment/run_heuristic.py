@@ -311,8 +311,8 @@ class Environment:
             #     previous_steps_sending = self.steps
 
 
-            provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps,"FourG")
-            path = 'C://Users//Windows dunya//PycharmProjects//pythonProject//action_each_single_request_reward2_method2_repeat_periods_each_episode_test//request_info//outlet_FourG'
+            provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps,"FiveG")
+            path = 'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//small_time_out_add_flag_small_state_my_reward_failure_testalloutlets//request_info//outlet_FiveG.pkl'
 
             list_of_values = read_from_pickle(path)
             for serv_info in list_of_values:
@@ -324,9 +324,9 @@ class Environment:
                 service.time_out = serv_info[2]
                 service.time_execution = serv_info[3]
                 if self.steps == serv_info[4]:
-                   enable_sending_requests(service,self.gridcells_dqn, performance_logger ,self.steps,"FourG")
+                   enable_sending_requests(service,self.gridcells_dqn, performance_logger ,self.steps,"FiveG")
 
-            buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps,"FourG")
+            buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps,"FiveG")
             if self.steps - self.previous_steps_centralize_action >= 40:
                 self.previous_steps_centralize_action = self.steps
                 # centralize_nextstate_reward(self.gridcells_dqn)

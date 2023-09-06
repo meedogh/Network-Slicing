@@ -25,27 +25,27 @@ var1_grid, var2_grid = np.meshgrid(var1_values, var2_values)
 prev_var1, prev_var2 = 6.86, 2.3  # Replace with initial values
 
 # Function to update the plot for each time step
-file_time_out="C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//test_files//time_out_state.pkl"
-time_out = []
-with open(file_time_out, 'rb') as file:
+file_serve="C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//test_files//serve_state.pkl"
+serve = []
+with open(file_serve, 'rb') as file:
     try:
         while True:
             loaded_value = pk.load(file)
-            time_out.append(loaded_value)
+            serve.append(loaded_value)
     except EOFError:
         pass
 
-for i in time_out:
+for i in serve:
     print(i)
 def update_plot(index):
     global a, b, c, prev_var1, prev_var2
 
-    # Get the value from time_out list using the index
-    time_out_value = time_out[index]
+    # Get the value from serve list using the index
+    serve_value = serve[index]
 
     # Generate random values for var1 and var2
-    var1 = time_out_value[2]
-    var2 = time_out_value[3]
+    var1 = serve_value[0]
+    var2 = serve_value[2]
     # print(var1)
     # print(var2)
     # Update the hyperplane coefficients based on prev_var1 and prev_var2
@@ -67,8 +67,8 @@ def update_plot(index):
     prev_var1, prev_var2 = var1, var2
 
 # Create the animation and store it in a variable
-# Pass the range of indices of time_out list as frames
-ani = FuncAnimation(fig, update_plot, frames=len(time_out), repeat=False)
+# Pass the range of indices of serve list as frames
+ani = FuncAnimation(fig, update_plot, frames=len(serve), repeat=False)
 
 # Display the animation
 plt.show()
