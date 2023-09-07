@@ -26,7 +26,7 @@ from_waiting_to_serv_length_path = os.path.join(results_dir, "from_waiting_to_se
 wasting_req_length_path =  os.path.join(results_dir, "wasting_req_length")
 # centralize_qvalue_path = os.path.join(prev_results_dir, 'qvalue_centralized_for_plotting')
 # decentralize_qvalue_path = os.path.join(prev_results_dir, 'qvalue_decentralized_for_plotting')
-prev_results_3tanh_dir ="C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//results3_tanh//results3_tanh"
+prev_results_3tanh_dir ="/content/drive/MyDrive/results3_tanh/results3_tanh"
     #
 utility_decentralized_path = os.path.join(results_dir, 'utility_decentralized')
 sum_power_allocation_path = os.path.join(results_dir, "sum_power_allocation//")
@@ -52,9 +52,10 @@ from_wait_to_serve_requests_over_the_simulation_path = os.path.join(results_dir,
 generated_requests_over_simulation_path = os.path.join(results_dir,"generated_requests_over_simulation//")
 delay_time_path = os.path.join(results_dir,"delay_time//")
 request_info = os.path.join(results_dir,"request_info//")
+number_of_timed_out_requests_from_algorithm_path = os.path.join(results_dir,"number_of_timed_out_requests_from_algorithm//")
 
 os.makedirs(request_info,exist_ok=True)
-
+os.makedirs(number_of_timed_out_requests_from_algorithm_path,exist_ok=True)
 os.makedirs(delay_time_path, exist_ok=True)
 os.makedirs(generated_requests_over_simulation_path,exist_ok=True)
 os.makedirs(timed_out_requests_over_the_simulation_path,exist_ok=True)

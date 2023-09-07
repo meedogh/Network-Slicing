@@ -74,4 +74,9 @@ def logging_important_info_for_testing(performance_logger,
         outlet.dqn.environment.state.delay_time,
     )
 
+    add_value_to_pickle(
+        os.path.join(number_of_timed_out_requests_from_algorithm_path,f"number_of_timed_out_requests_from_algorithm{outlet_index}.pkl")
+        , outlet.dqn.environment.state.number_of_timed_out_requests_from_algorithm,
+    )
+
 
