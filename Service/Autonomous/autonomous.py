@@ -22,5 +22,5 @@ class FactoryAutonomous(Service):
         # self._network_latency + self._task_complexity
         return np.random.choice(np.arange(12,15))
     def time_out(self):
-        return np.random.choice(np.arange(3,6))
+        return np.random.choice(np.arange(3,70))
 
