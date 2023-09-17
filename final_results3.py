@@ -5,8 +5,13 @@ import sys
 
 import pandas as pd
 
-folders = [os.path.join(sys.path[0], 'heuristic_wifi'), os.path.join(sys.path[0], 'heuristic_3G'), os.path.join(sys.path[0], 'heuristic_4G'),
-           os.path.join(sys.path[0], 'heuristic_5G')]
+
+outlet_name = ['wifi','3G','4G','5G']
+method_name =  ['rl' , 'fifo' ,'heuristic']
+outlet_num = 0
+
+folders = [os.path.join(sys.path[0], f'results//{method_name[outlet_num]}_wifi'), os.path.join(sys.path[0], f'results//{method_name[outlet_num]}_3G'), os.path.join(sys.path[0], f'results//{method_name[outlet_num]}_4G'),
+           os.path.join(sys.path[0], f'results//{method_name[outlet_num]}_5G')]
 day_name=["day_one","day_wo"]
 rows_to_extract = [
     'AcceptedRequests',
@@ -16,8 +21,7 @@ rows_to_extract = [
     'RequestsMovedFromWaitBufferToServe',
     'AverageDelayed',
     'ServingRatio',
-    'overall throughout',
-
+    'overall throughput',
 
 ]
 
@@ -91,7 +95,7 @@ print(data_day_two)
 # Create a DataFrame from the dictionary
 df = pd.DataFrame(data_day_one)
 
-with open('data_day_one_heuristic.csv', 'w', newline='') as csvfile:
+with open(f'final_results//data_day_one_{method_name[outlet_num]}.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
 
     # Write the header row with column names
@@ -103,7 +107,7 @@ with open('data_day_one_heuristic.csv', 'w', newline='') as csvfile:
 
 df = pd.DataFrame(data_day_two)
 
-with open('data_day_two_heuristic.csv', 'w', newline='') as csvfile:
+with open(f'final_results//data_day_two_{method_name[outlet_num]}.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
 
     # Write the header row with column names
