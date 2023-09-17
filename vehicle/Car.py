@@ -4,7 +4,7 @@ import math
 from Environment import env_variables
 from Service.FactoryService import FactoryService
 from Utils import config
-from Vehicle.IVehicle import Vehicle
+from vehicle.IVehicle import Vehicle
 from Utils.config import SERVICES_TYPES
 
 
