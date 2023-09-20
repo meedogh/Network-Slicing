@@ -21,21 +21,22 @@ class Cost:
     def cost(self):
         return self._cost
 
-    @cost.setter
-    def cost(self, value):
-        self._cost = self.cost_setter(value)
-
-    def cost_setter(self, realtime_value):
+    def cost_setter(self, outlet):
         cost = self.bit_rate
-        if realtime_value in cf.REALTIME_BANDWIDTH.get("Wifi"):
+        if outlet.__class__.__name__ == "Wifi":
+            # print("....  wifi")
             cost = self.bit_rate
-        elif realtime_value in cf.REALTIME_BANDWIDTH.get("ThreeG"):
+        elif outlet.__class__.__name__ == "ThreeG":
+            # print("....  3G")
             cost = self.bit_rate * 1.1
-        elif realtime_value in cf.REALTIME_BANDWIDTH.get("FourG"):
+        elif outlet.__class__.__name__ == "FourG":
+            # print("....  4G")
             cost = self.bit_rate * 1.3
-        elif realtime_value in cf.REALTIME_BANDWIDTH.get("FiveG"):
+        elif outlet.__class__.__name__ == "FiveG":
+            # print("....  5G")
             cost = self.bit_rate * 1.5
-        elif realtime_value in cf.REALTIME_BANDWIDTH.get("Satellite"):
+        elif outlet.__class__.__name__ == "Satellite":
+            print("....  SAT")
             cost = self.bit_rate * 2
         return cost
 

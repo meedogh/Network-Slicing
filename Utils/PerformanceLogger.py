@@ -3,7 +3,7 @@ import warnings
 from dataclasses import dataclass, field
 from typing import List, Dict
 from RL.Agent.Agent import Agent
-from Vehicle.IVehicle import Vehicle
+from vehicle.IVehicle import Vehicle
 from Service.IService import Service
 from Outlet.IOutlet import Outlet
 from collections import deque
@@ -31,6 +31,8 @@ class PerformanceLogger(metaclass=SingletonMeta):
     requested_services: List[Dict[Vehicle, Service]] = field(default_factory=list)
 
     handled_services: Dict[Outlet, Dict[Vehicle, Service]] = field(default_factory=dict)
+
+    _user_requests: Dict[Vehicle, Dict[str, deque[Service, bool:False,float]]] = field(default_factory=dict)
 
     _queue_requested_buffer: Dict[Outlet, deque[int]] = field(default_factory=dict)
 
@@ -217,6 +219,24 @@ class PerformanceLogger(metaclass=SingletonMeta):
             self.handled_services[outlet] = {}
         new_value = {car: service}
         self.handled_services[outlet].update(new_value)
+
+    @property
+    def user_requests(self):
+        return self._user_requests
+
+    def set_user_requests(self, outlet, car, service, boolValue):
+        if car not in self._user_requests:
+            self._user_requests[car] = {}
+
+        outlet_type = outlet.__class__.__name__
+
+        if outlet_type not in self._user_requests[car]:
+            self._user_requests[car][outlet_type] = deque([])
+
+        if [service, boolValue, 0.0] not in self._user_requests[car][outlet_type]:
+            self._user_requests[car][outlet_type].append([service, boolValue, 0.0])
+
+
 
     @property
     def request_costs(self):

@@ -14,8 +14,8 @@ outlet_name = ['wifi','3G','4G','5G']
 method_name =  ['rl' , 'fifo' ,'heuristic']
 outlet_num = 0
 
-results_dir_RL = os.path.join(sys.path[0],f"my_reward_with_failure_RL//{outlet_name[outlet_num]}_small_time_out_add_flag_small_state_my_reward_failure_test_rl.csv")
-results_dir_other = os.path.join(sys.path[0],f"my_reward_with_failure_RL//{outlet_name[outlet_num]}_small_time_out_add_flag_small_state_my_reward_failure_test_rl.csv")
+results_dir_RL = os.path.join(sys.path[0],f"{outlet_name[outlet_num]}_testing_results_rl.csv")
+results_dir_other = os.path.join(sys.path[0],f"{outlet_name[outlet_num]}_testing_results_rl.csv")
 
 # Create empty lists for each column
 accepted, served, wasting, wait_to_serve, time_out, generated_requests, delayed = [], [], [], [], [], [], []

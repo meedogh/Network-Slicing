@@ -237,11 +237,12 @@ class DeCentralizedState(State):
         self.waiting_buffer_len = 0
         self.timed_out_length = 0
         self.from_waiting_to_serv_length = 0
-
+        self.services_ensured = 0
+        self.services_requested = 0
         self._time_out_requests_over_simulation = 0
         self._from_wait_to_serve_over_simulation = 0
         self._delay_time = 0
-
+        self.number_of_timed_out_requests_from_algorithm = 0
     def calculate_state(self, outlet_max_len):
         final_state = []
         # final_state.append((self.max_tower_capacity / self.max_tower_capacity) * 100)

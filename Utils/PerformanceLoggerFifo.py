@@ -3,7 +3,7 @@ import warnings
 from dataclasses import dataclass, field
 from typing import List, Dict
 from RL.Agent.Agent import Agent
-from Vehicle.IVehicle import Vehicle
+from vehicle.IVehicle import Vehicle
 from Service.IService import Service
 from Outlet.IOutlet import Outlet
 from collections import deque

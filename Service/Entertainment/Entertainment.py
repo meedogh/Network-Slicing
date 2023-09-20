@@ -15,11 +15,11 @@ class FactoryEntertainment(Service):
         # add weights for each parameter
 
 
-    def calcualate_processing_time(self):
+    def calculate_processing_time(self):
         # self._network_latency + self._data_size
         return np.random.choice(np.arange(8,12))
 
-    def time_out(self):
+    def calculate_time_out(self):
         return np.random.choice(np.arange(2,90))
 
     def calculate_arrival_rate(self):

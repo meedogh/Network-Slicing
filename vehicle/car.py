@@ -3,7 +3,6 @@ import math
 
 from Environment import env_variables
 from Service.FactoryService import FactoryService
-from Utils import config
 from vehicle.IVehicle import Vehicle
 from Utils.config import SERVICES_TYPES
 
@@ -59,15 +58,12 @@ class Car(Vehicle):
             return sorted_indices[:2]
 
         car_request_tuple = self.car_requests()[0]
-        distance  = list(map(lambda x: euclidian_distance(x), self.outlets_serve))
-        if len(distance)==0:
+        distance = list(map(lambda x: euclidian_distance(x), self.outlets_serve))
+        if len(distance) == 0:
             return None, None
-        else :
+        else:
             indices = get_smallest_indices(distance)
             # min1 = distance.index(min(distance))
-            # print("distance : ", distance)
-            # print("all outlets : ", self.outlets_serve)
-            # print(" indices :  ", indices)
             if len(distance) == 1:
                 # print("choice 1 :  " , self.outlets_serve[indices[0]] )
                 return [self.outlets_serve[indices[0]]], car_request_tuple

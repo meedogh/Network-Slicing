@@ -1,5 +1,6 @@
 from Communications.IComs import Communications
 from Outlet.IOutlet import Outlet
+from collections import deque
 
 
 class Satellite(Outlet):
@@ -19,8 +20,15 @@ class Satellite(Outlet):
         self.vehicles = kwargs.get("vehicles_list", [])
         self._supported_services_distinct = []
         self._max_capacity = 200000000
+        self.rejected_requests_buffer = deque([])
+        self._sum_of_costs_of_all_requests = 0
 
-
+    @property
+    def sum_of_costs_of_all_requests(self):
+        return self._sum_of_costs_of_all_requests
+    @sum_of_costs_of_all_requests.setter
+    def sum_of_costs_of_all_requests(self,value ):
+        self._sum_of_costs_of_all_requests=  value
     @property
     def supported_services_distinct(self):
         return [self.supported_services, self._distinct]
@@ -28,6 +36,8 @@ class Satellite(Outlet):
     @property
     def max_capacity(self):
         return self._max_capacity
+
+
     def calculate_coverage_area(self):
         """Returns
             -------

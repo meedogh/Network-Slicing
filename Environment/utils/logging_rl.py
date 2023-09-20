@@ -4,7 +4,7 @@ from Environment.utils.helpers import add_value_to_pickle
 from Environment.utils.paths import *
 
 def logging_important_info_for_testing(performance_logger,
-        outlet_index,outlet ):
+        outlet_index,outlet,satellite ):
 
     add_value_to_pickle(
         os.path.join(reward_decentralized_path, f"reward{outlet_index}.pkl"),
@@ -78,5 +78,25 @@ def logging_important_info_for_testing(performance_logger,
         os.path.join(number_of_timed_out_requests_from_algorithm_path,f"number_of_timed_out_requests_from_algorithm{outlet_index}.pkl")
         , outlet.dqn.environment.state.number_of_timed_out_requests_from_algorithm,
     )
+    add_value_to_pickle(
+        os.path.join(number_of_rejected_requests_over_simulation_path,f"number_of_rejected_requests_over_simulation{outlet_index}.pkl"),
+        len(satellite.rejected_requests_buffer)
+    )
+
+    add_value_to_pickle(
+        os.path.join(sum_of_cost_of_all_rejected_requests_path,
+                     f"sum_of_cost_of_all_rejected_requests{outlet_index}.pkl"),
+        satellite.sum_of_costs_of_all_requests
+    )
+    add_value_to_pickle(
+        os.path.join(number_of_abort_requests_over_the_simulation_path,
+                     f"number_of_abort_requests_over_the_simulation{outlet_index}.pkl"),
+        outlet.abort_requests
+    )
 
 
+# def logging_user_info_for_utility():
+#     add_value_to_pickle(
+#         os.path.join(,""),
+#
+#     )

@@ -1,6 +1,8 @@
 from typing import List
 
+from Communications.IComs import Communications
 from Outlet.Cellular.ICellular import Cellular
+from Outlet.Sat.sat import Satellite
 from Utils.PerformanceLoggerFifo import PerformanceLoggerFifo
 from .utils.imports import *
 from .utils.period import Period
@@ -312,6 +314,13 @@ class Environment:
         # performance_logger_for_fifo = PerformanceLoggerFifo()
         outlets = self.get_all_outlets(performance_logger)
         self.Grids = self.fill_grids(self.fill_grids_with_the_nearest(outlets[:4]))
+        satellite = Satellite(1,
+                    [1, 1, 0],
+                    'sat',
+                    [100, 100],
+                    1000000000000000,
+                    [],
+                    [10, 10, 10])
         step = 0
         step_for_each_episode_change_period = 0
         print("\n")
@@ -383,7 +392,7 @@ class Environment:
             ra.seed(seed_value)
 
             number_of_cars_will_send_requests = round(
-                len(list(env_variables.vehicles.values())) * 0.8
+                len(list(env_variables.vehicles.values())) * 0.7
             )
             vehicles = ra.sample(
                 list(env_variables.vehicles.values()), number_of_cars_will_send_requests
@@ -392,9 +401,10 @@ class Environment:
             provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps)
 
             list(map(lambda veh: enable_sending_requests(veh, observer, self.gridcells_dqn, performance_logger,
-                                                         self.steps), vehicles, ))
+                                                         self.steps , satellite), vehicles, ))
 
-            buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps)
+            buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps,satellite)
+
             if self.steps - self.previous_steps_centralize_action >= 40:
                 self.previous_steps_centralize_action = self.steps
                 # centralize_nextstate_reward(self.gridcells_dqn)
@@ -411,7 +421,6 @@ class Environment:
                 self.previous_steps = self.steps
                 for i, outlet in enumerate(self.temp_outlets):
                         if len(outlet.dqn.agents.memory) > 32:
-                            # print("replay buffer of decentralize ")
                             outlet.dqn.agents.qvalue = (
                                 outlet.dqn.agents.replay_buffer_decentralize(
                                     32, outlet.dqn.model,
@@ -465,6 +474,9 @@ class Environment:
                         out.dqn.environment.reward.resetreward()
                         out.dqn.environment.reward.reward_value_accumilated = 0
                         out.current_capacity = out.set_max_capacity(out.__class__.__name__)
+                        satellite.rejected_requests_buffer = deque([])
+                        satellite.sum_of_costs_of_all_requests = 0
+                        out.abort_request = 0
 
                         # print(" out : ", out.current_capacity)
                         # out.dqn.environment.state.state_value_decentralize = out.dqn.environment.state.calculate_state()

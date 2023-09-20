@@ -62,6 +62,12 @@ class Cellular(Outlet):
         self._qvalue = 0.0
         self._current_capacity = self.set_max_capacity(self.__class__.__name__)
         self._max_capacity = self.set_max_capacity(self.__class__.__name__)
+        self.threshold_aborting_request = 0.02  # Adjust as needed
+        self.max_threshold_aborting_request = 0.5
+        self.increasing_amount_aborting_request = 0.005
+        self.abort_requests = 0
+        self.sum_of_costs_of_all_requests = 0
+
         # self._max_buffer_size = int(self._max_capacity / 30)
         # self._buffer_request = deque(maxlen=self._max_buffer_size)
         # print("int(self._max_capacity / 30) ", int(self._max_capacity / 30))

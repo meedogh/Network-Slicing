@@ -14,9 +14,9 @@ from Utils.Bandwidth import Bandwidth
 from Utils.Cost import TowerCost, RequestCost
 from Utils.PerformanceLogger import PerformanceLogger
 from Utils.config import outlet_types, Grids
-from Vehicle.Car import Car
+from vehicle.car import Car
 from Outlet.Cellular.FactoryCellular import FactoryCellular
-from Vehicle.VehicleOutletObserver import ConcreteObserver
+from vehicle.VehicleOutletObserver import ConcreteObserver
 import numpy as np
 import matplotlib.pyplot as plt
 

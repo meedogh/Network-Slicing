@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
+import Utils.config as cf
 
 
 class Service(ABC):
@@ -32,6 +33,10 @@ class Service(ABC):
         self._time_out = 0
         self._time_execution = 0
         self.request_failure = False
+        self.cost_in_bit_rate = 0
+        self.total_cost_in_dolars = 0
+        self.remaining_time_out = 0
+
 
     # def __str__(self):
     #     return f"service criticality : {self.criticality} ,  service bandwidth : {self.bandwidth} , " \
@@ -42,6 +47,18 @@ class Service(ABC):
             return True
         else:
             return False
+
+
+    def calculate_service_cost_in_Dolar_per_bit(self):
+        if self.__class__.__name__ == "FactoryEntertainment":
+            return cf.CostForBitOfENTERTAINMENT * self.cost_in_bit_rate
+        elif self.__class__.__name__ == "FactorySafety":
+            return cf.CostForBitOfSAFETY * self.cost_in_bit_rate
+        elif self.__class__.__name__ == "FactoryAutonomous":
+            return cf.CostForBitOfAUTONOMOUS * self.cost_in_bit_rate
+
+
+
 
     def request_supported(self, outlet):
         # print("outlet.dqn.environment.state.supported_services  : ", outlet.dqn.environment.state.supported_services)
@@ -107,5 +124,8 @@ class Service(ABC):
         self.__id = r
 
     @abstractmethod
-    def calcualate_processing_time(self):
+    def calculate_processing_time(self):
+        pass
+    @abstractmethod
+    def calculate_time_out(self):
         pass

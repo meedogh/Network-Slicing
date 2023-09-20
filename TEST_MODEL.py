@@ -1,3 +1,8 @@
+import itertools
+import os
+import sys
+
+import matplotlib
 import matplotlib.pyplot as plt
 import  numpy as np
 import pickle as pk
@@ -11,7 +16,7 @@ ax = fig.add_subplot(1, 1, 1, projection='3d')
 
 
 
-file_serve = "C://Users//Windows dunya//PycharmProjects//pythonProject//the final results exp//served_state.pkl"
+file_serve = f"{os.path.join(sys.path[0])}//served_state.pkl"
 serve = []
 with open(file_serve, 'rb') as file:
     try:
@@ -36,33 +41,56 @@ def build_model() -> Sequential:
 
 model = build_model()
 model.load_weights(
-    'C://Users//Windows dunya//Downloads//action_each_single_request_reward2_method2_repeat_periods_each_episode_retrain_buffer_percentage_small_time_out_add_flag_small_state_my_reward_failure//decentralized_weights/weights_0_140.hdf5')
+    f'{os.path.join(sys.path[0])}//action_each_single_request_reward_method4//decentralized_weights/weights_0_140.hdf5')
 
 # Calculate Q-values for each (x1, x2) pair (replace this with your actual Q-values)
-x = np.arange(1, 100, 10)
-y = np.arange(1, 50, 10)
+x = np.arange(80,90, 0.5)
+y = np.arange(85,105,0.5)
 
 # x = np.arange(1, 10, 2)
 # y = np.arange(80,90,2)
-(x1, y1) = np.meshgrid(x,y )
-
+(x1, y1) = np.meshgrid(x,y)
+print(x1.shape)
+print(y1.shape)
+print(x1)
+print(y1)
+x_flattened =  x1.flatten()
+# print(x_flattened)
+y_flattened =  y1.flatten()
+# print(y_flattened)
 states = []
-number_of_points_in_mesh = 5
+
 buffer_length = 20
 flag_value = 0
-for i in range(number_of_points_in_mesh):
-    states.append([x[i],y[i], buffer_length,flag_value])
+
+# print(len(x_flattened))
+# permutations = list(itertools.product(x_flattened, y_flattened))
+# x_permutations = []
+# y_permutations = []
+number_of_points_in_mesh = len(x_flattened)
+for index in range(number_of_points_in_mesh):
+    states.append([x_flattened[index],y_flattened[index],buffer_length,flag_value])
+
 
 action = []
+
 for i in range(number_of_points_in_mesh):
     states[i] = np.array(states[i]).reshape([1, np.array(states[i]).shape[0]])
+    print("action model : ",np.argmax(model.predict(states[i])))
     action.append(np.argmax(model.predict(states[i])))
 
-action = np.array(action).reshape(number_of_points_in_mesh,1)
-print(action.shape)
-# print(z)
+print(action)
+action = np.array(action).reshape(x1.shape[0],x1.shape[1])
+print(action)
+# # x_flattened = np.array(x_flattened).reshape(np.array(x_flattened).shape[0],1)
+# # y_flattened = np.array(y_flattened).reshape(np.array(y_flattened).shape[0],1)
+#
 
-ax.plot_surface(x1, y1, action)
-ax.set(xlabel='tower available capacity%', ylabel='request power allocation%', zlabel='z', title='z = argmax(qvalue)')
-plt.savefig("plot(CC,PA).svg", format="svg")
+
+
+ax.plot_surface(x1, y1, action , cmap='coolwarm')
+ax.set(xlabel='request power allocation%', ylabel='buffer length%', zlabel='z', title='z = argmax(qvalue)')
+
+
+plt.savefig("plot(PA,BL).svg", format="svg")
 plt.show()

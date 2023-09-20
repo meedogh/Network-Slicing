@@ -2,15 +2,20 @@ import random
 
 import numpy as np
 
+
+CostForBitOfENTERTAINMENT =  0.3
+CostForBitOfSAFETY =  1
+CostForBitOfAUTONOMOUS =  0.7
+
 SERVICES_TYPES = {
     "ENTERTAINMENT": {
         "REALTIME": np.arange(start=7, stop=10),
-        "BANDWIDTH": np.arange(start=8, stop=10 + 1),
+        "BANDWIDTH": np.arange(start=6, stop=8 + 1),
         "CRITICAL": np.arange(start=5, stop=7 + 1),
     },
     "SAFETY": {
         "REALTIME": np.arange(start=9, stop=10),
-        "BANDWIDTH": np.arange(start=6, stop=7 + 1),
+        "BANDWIDTH": np.arange(start=7, stop=7 + 1),
         "CRITICAL": np.arange(start=9, stop=10 + 1),
     },
     "AUTONOMOUS": {

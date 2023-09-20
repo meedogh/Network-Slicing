@@ -1,0 +1,33 @@
+def choosing_abort_requests(performance_logger,outlet,time_step_simulation):
+    alpha = 1
+    beta_value = 3
+    np.random.seed(42)
+    num_requests = len(performance_logger.queue_waiting_requests_in_buffer[outlet])
+    # Generate random probabilities from the beta distribution
+    probabilities = np.random.beta(alpha, beta_value, num_requests)
+    # Define a threshold for aborting requests
+    abort_requests = []
+    if time_step_simulation % 320 == 0:
+        outlet.threshold_aborting_request = 0.02
+        outlet.max_threshold_aborting_request = 0.5
+        outlet.increasing_amount_aborting_request = 0.005
+        outlet.abort_requests = 0
+    if time_step_simulation % 320 != 0:
+        abort = 0
+        non_abort = 0
+        # Iterate through the requests and decide whether to abort
+        for i,(service,flag) in enumerate(performance_logger.queue_waiting_requests_in_buffer[outlet]):
+            if probabilities[i] < outlet.threshold_aborting_request:
+                abort += 1
+                if flag == True :
+                    abort_requests.append(service)
+            else:
+                non_abort += 1
+        if outlet.threshold_aborting_request < outlet.max_threshold_aborting_request:
+            outlet.threshold_aborting_request += outlet.threshold_aborting_request * outlet.increasing_amount_aborting_request
+
+        outlet.abort_requests +=len(abort_requests)
+        for serv in abort_requests:
+            performance_logger.queue_waiting_requests_in_buffer[outlet].remove([serv, True])
+        # print("len of waiting req after : ", len(performance_logger.queue_waiting_requests_in_buffer[outlet]))
+        # print("outlet.abort_requests  over simulation : ", outlet.abort_requests )

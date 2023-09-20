@@ -2,7 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from Vehicle.Car import Car
+from vehicle.car import Car
 
 
 @pytest.fixture

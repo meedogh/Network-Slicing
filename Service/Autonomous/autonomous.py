@@ -18,9 +18,9 @@ class FactoryAutonomous(Service):
 
         return 3
 
-    def calcualate_processing_time(self):
+    def calculate_processing_time(self):
         # self._network_latency + self._task_complexity
         return np.random.choice(np.arange(12,15))
-    def time_out(self):
+    def calculate_time_out(self):
         return np.random.choice(np.arange(3,70))
 
