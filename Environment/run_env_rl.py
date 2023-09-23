@@ -445,26 +445,26 @@ class Environment:
             if self.steps - self.previouse_steps_reseting >= env_variables.episode_steps:
                 self.previouse_steps_reseting = self.steps
                 # print(" performance_logger.user_requests : ", performance_logger.user_requests)
-                for key, value in performance_logger.user_requests.items():
-                    for outlet_name , val in value.items():
-                        services_costs=0
-                        number_of_served_req=0
-                        number_of_timed_out_requests=0
-                        number_of_accepted_req = 0
-                        if val:
-                            for (ser, flag, cost) in val:
-                                number_of_accepted_req += 1
-                                if flag == True :
-                                    services_costs+=cost
-                                    number_of_served_req+=1
-                                if flag == False :
-                                    number_of_timed_out_requests+=1
-                        throughput = number_of_served_req/number_of_accepted_req
-                        print("user : ",key,"  ",outlet_name,"total cost : ",services_costs,"served num : ",number_of_served_req,"accepted num : ",number_of_accepted_req,"throughput : ",throughput,"number_of_timed_out_requests : ",number_of_timed_out_requests)
-                        add_value_to_pickle(
-                            os.path.join(users_logging_info_path, f"users_logging_info.pkl"),
-                            (key,outlet_name,services_costs,number_of_served_req,number_of_accepted_req,throughput,number_of_timed_out_requests)
-                        )
+                # for key, value in performance_logger.user_requests.items():
+                #     for outlet_name , val in value.items():
+                #         services_costs=0
+                #         number_of_served_req=0
+                #         number_of_timed_out_requests=0
+                #         number_of_accepted_req = 0
+                #         if val:
+                #             for (ser, flag, cost) in val:
+                #                 number_of_accepted_req += 1
+                #                 if flag == True :
+                #                     services_costs+=cost
+                #                     number_of_served_req+=1
+                #                 if flag == False :
+                #                     number_of_timed_out_requests+=1
+                #         throughput = number_of_served_req/number_of_accepted_req
+                #         print("user : ",key,"  ",outlet_name,"total cost : ",services_costs,"served num : ",number_of_served_req,"accepted num : ",number_of_accepted_req,"throughput : ",throughput,"number_of_timed_out_requests : ",number_of_timed_out_requests)
+                #         add_value_to_pickle(
+                #             os.path.join(users_logging_info_path, f"users_logging_info.pkl"),
+                #             (key,outlet_name,services_costs,number_of_served_req,number_of_accepted_req,throughput,number_of_timed_out_requests)
+                #         )
 
                 add_value_to_pickle(
                     os.path.join(requests_with_execution_time_path, f"requests_with_execution_time.pkl"),
@@ -484,7 +484,7 @@ class Environment:
                             os.path.join(decentralize_qvalue_path, f"qvalue{i}.pkl"),
                             out.dqn.agents.qvalue,
                         )
-                        print("out.dqn.environment.reward.reward_value_accumilated  : ", out.dqn.environment.reward.reward_value_accumilated)
+                        # print("out.dqn.environment.reward.reward_value_accumilated  : ", out.dqn.environment.reward.reward_value_accumilated)
 
                         add_value_to_pickle(
                             os.path.join(reward_accumilated_decentralize_path, f"accu_reward{i}.pkl"),
