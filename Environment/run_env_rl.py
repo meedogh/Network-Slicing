@@ -456,14 +456,14 @@ class Environment:
                 )
 
                 list_ = []
-                print("resetting ................. ")
+                # print("resetting ................. ")
                 for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
-
                     for i, out in enumerate(gridcell_dqn.agents.grid_outlets):
                         add_value_to_pickle(
                             os.path.join(decentralize_qvalue_path, f"qvalue{i}.pkl"),
                             out.dqn.agents.qvalue,
                         )
+                        print("out.dqn.environment.reward.reward_value_accumilated  : ", out.dqn.environment.reward.reward_value_accumilated)
 
                         add_value_to_pickle(
                             os.path.join(reward_accumilated_decentralize_path, f"accu_reward{i}.pkl"),

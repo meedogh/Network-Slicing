@@ -347,6 +347,9 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             outlet.dqn.environment.reward.reward_value = -100
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
+                            # print("outlet.dqn.environment.reward.reward_value_accumilated  : ",
+                            #       outlet.dqn.environment.reward.reward_value_accumilated)
+
                             outlet.dqn.environment.state.delay_time = 0
                             logging_important_info_for_testing(performancelogger, outlet_index, outlet, satellite)
 
@@ -429,6 +432,8 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             outlet.dqn.environment.reward.reward_value = 100
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
+                            # print("outlet.dqn.environment.reward.reward_value_accumilated  : ",
+                            #       outlet.dqn.environment.reward.reward_value_accumilated)
 
                             logging_important_info_for_testing(performancelogger, outlet_index, outlet, satellite)
 
@@ -551,13 +556,14 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
                                 outlet.dqn.environment.state.time_out_flag = 0
 
                             if outlet.dqn.environment.state.time_out_flag == 1:
+                                # print("....1....")
                                 outlet.dqn.environment.state.number_of_timed_out_requests_from_algorithm += 1
 
                                 # print("flag 1 : ",
                                 #       outlet.dqn.environment.state.number_of_timed_out_requests_from_algorithm)
 
-                            # if outlet.dqn.environment.state.time_out_flag == 0:
-                            #     print("flag : zero ")
+                            if outlet.dqn.environment.state.time_out_flag == 0:
+                                # print("flag : zero ")
 
                                 outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state(
                                     45)
@@ -593,7 +599,7 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
 
                                     # print("rejecting next state : ", outlet.dqn.environment.state.next_state_decentralize)
                                     outlet.dqn.environment.reward.reward_value = lr
-
+                                    # print("outlet.dqn.environment.reward.reward_value_accumilated  : ", outlet.dqn.environment.reward.reward_value_accumilated)
                                     outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                                     outlet.dqn.environment.state.timed_out_length = 0
                                     outlet.dqn.environment.state.waiting_buffer_len = len(
@@ -690,6 +696,7 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
                                         outlet.dqn.environment.reward.reward_value = 100
 
                                         outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
+                                        # print("outlet.dqn.environment.reward.reward_value_accumilated  : ", outlet.dqn.environment.reward.reward_value_accumilated)
 
                                     outlet.dqn.environment.state.timed_out_length = 0
                                     outlet.dqn.environment.state.from_waiting_to_serv_length = 0

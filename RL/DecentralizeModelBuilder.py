@@ -10,10 +10,6 @@ class ModelBuilder_Decentralize:
             self.model = DecentralizeModel(state_size=4, action_size=2,
                                activation_function="relu", loss_function="mse", optimization_algorithm=Adam,
                                learning_rate=0.0001, output_activation="sigmoid").build_model()
-            # self.target_model = DecentralizeModel(state_size=4, action_size=2,
-            #                    activation_function="relu", loss_function="mse", optimization_algorithm=Adam,
-            #                    learning_rate=0.00025, output_activation="sigmoid").build_model()
-
         else:
             self.model = model
             # self.target_model = target_model
