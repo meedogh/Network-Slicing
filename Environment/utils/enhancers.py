@@ -27,6 +27,7 @@ def rolling_average(data, window_size):
 
 def centralize_state_action(gridcells_dqn, step, performance_logger):
     number_of_services = 3
+    print("step inside centralize agent :  ", step )
     performance_logger.number_of_periods_until_now = 1
 
     for gridcell in gridcells_dqn:
@@ -80,51 +81,50 @@ def centralize_state_action(gridcells_dqn, step, performance_logger):
                         count_zero += 1
                 if count_zero == 3:
                     supported[0] = 1
-                outlet.supported_services = supported
+                outlet.supported_services = [1,1,1]
 
             if step > 2:
-                if (
-                        step > env_variables.exploitation_exploration_period[0]
-                        and step <= env_variables.exploitation_exploration_period[1]
-                ):
-                    outlet.supported_services = []
-                    for serv_index in range(number_of_services):
-                        action_centralize, action, flag = gridcell.agents.chain(
-                            gridcell.model,
-                            gridcell.environment.state.state_value_centralize[j],
-                            [0, 1],
-                            gridcell.agents.epsilon,
-                        )
+                # if (
+                #         step > env_variables.exploitation_exploration_period[0]
+                #         and step <= env_variables.exploitation_exploration_period[1]
+                # ):
+                outlet.supported_services = []
+                for serv_index in range(number_of_services):
+                    action_centralize, action, flag = gridcell.agents.chain(
+                        gridcell.model,
+                        gridcell.environment.state.state_value_centralize[j],
+                        gridcell.agents.epsilon,
+                    )
 
-                        if isinstance(action, np.ndarray):
-                            action = action.item()
-                        outlet.supported_services.append(action)
-                        list_flags.append(flag)
+                    if isinstance(action, np.ndarray):
+                        action = action.item()
+                    outlet.supported_services.append(action)
+                    list_flags.append(flag)
 
-                if (
-                        env_variables.advisor_period[0]
-                        < step
-                        <= env_variables.advisor_period[1]
-                ):
-                    # print("centralize exploit : .................................... ")
-                    # if step > env_variables.advisor_period[0]  and  step <= env_variables.advisor_period[1]:
-                    outlet.supported_services = []
-                    for serv_index in range(number_of_services):
-                        (
-                            action_centralize,
-                            action,
-                            flag,
-                        ) = gridcell.agents.exploitation(
-
-                            gridcell.model,
-                            gridcell.environment.state.state_value_centralize[j],
-                        )
-                        # actions_objects.append(action_centralize)
-                        if isinstance(action, np.ndarray):
-                            action = action.item()
-                        outlet.supported_services.append(action)
-                        list_flags.append(flag)
-
+                # if (
+                #         env_variables.advisor_period[0]
+                #         < step
+                #         <= env_variables.advisor_period[1]
+                # ):
+                #     # print("centralize exploit : .................................... ")
+                #     # if step > env_variables.advisor_period[0]  and  step <= env_variables.advisor_period[1]:
+                #     outlet.supported_services = []
+                #     for serv_index in range(number_of_services):
+                #         (
+                #             action_centralize,
+                #             action,
+                #             flag,
+                #         ) = gridcell.agents.exploitation(
+                #
+                #             gridcell.model,
+                #             gridcell.environment.state.state_value_centralize[j],
+                #         )
+                #         # actions_objects.append(action_centralize)
+                #         if isinstance(action, np.ndarray):
+                #             action = action.item()
+                #         outlet.supported_services.append(action)
+                #         list_flags.append(flag)
+               # centralize random actions for supported services
                 if sum(outlet.supported_services) == 0:
                     while True:
                         a = random.randint(0, 1)
@@ -134,8 +134,9 @@ def centralize_state_action(gridcells_dqn, step, performance_logger):
                             break
 
                     outlet.supported_services = [a, b, c]
+
                 actions.extend(outlet.supported_services)
-            # print("outlet.supported_services : ", outlet.supported_services)
+            print("outlet.supported_services : ", outlet.supported_services)
             outlet.dqn.environment.state.supported_services = outlet.supported_services
 
         # gridcell.agents.action.command.action_objects = actions_objects
@@ -290,9 +291,9 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
         if outlet.__class__.__name__ == 'Wifi':
             services_timed_out = []
             service_moved_to_served = []
-            services = list(performancelogger.queue_waiting_requests_in_buffer[outlet])
-            services.sort(key=lambda ser: (ser[0].service_power_allocate, ser[0].time_out))
-            performancelogger.queue_waiting_requests_in_buffer[outlet] = deque(services)
+            # services = list(performancelogger.queue_waiting_requests_in_buffer[outlet])
+            # services.sort(key=lambda ser: (ser[0].service_power_allocate, ser[0].time_out))
+            # performancelogger.queue_waiting_requests_in_buffer[outlet] = deque(services)
 
             for i, (service, flag) in enumerate(performancelogger.queue_waiting_requests_in_buffer[outlet]):
                 if flag == True:
@@ -474,6 +475,7 @@ def choosing_abort_requests(performance_logger,outlet):
         if flag == True:
             if vals[i] >=0.3 :
                 aborted_services.append(service)
+    outlet.abort_requests += len(aborted_services)
     for ser in aborted_services :
         performance_logger.queue_waiting_requests_in_buffer[outlet].remove([ser, True])
 
@@ -499,11 +501,7 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
                     # print("equals outlets : ")
                     service_index = service._dec_services_types_mapping[service.__class__.__name__]
                     if outlet.supported_services[service_index] == 1:
-                        # outlet.__class__.__name__ == 'Wifi' and
-                        # print("service is supported ....  ")
-                        # print("outlet name is  :  ", outlet.__class__.__name__)
-                        if outlet.__class__.__name__ == 'Wifi' and len(
-                                performance_logger.queue_waiting_requests_in_buffer[
+                        if outlet.__class__.__name__ == 'Wifi'  and len(performance_logger.queue_waiting_requests_in_buffer[
                                     outlet]) < outlet_max_waiting_buffer_length(outlet):
                             request_bandwidth = Bandwidth(service.bandwidth, service.criticality)
                             request_cost = RequestCost(request_bandwidth, service.realtime)
@@ -627,11 +625,10 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
                                         request_reject_acceptance(car , performance_logger, gridcells_dqn, outlet2, service,
                                                                   start_time, satellite, info)
 
-                                    else :
+                                    else:
                                         service.cost_in_bit_rate = request_cost.cost_setter(satellite)
                                         service.service_power_allocate = request_bandwidth.allocated
                                         service.total_cost_in_dolar = service.calculate_service_cost_in_Dolar_per_bit()
-
                                         satellite.rejected_requests_buffer.append(service)
                                         satellite.sum_of_costs_of_all_requests += service.total_cost_in_dolar
                                         performance_logger.set_user_requests(satellite, car, service, False)
@@ -752,8 +749,7 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
                                     outlet.dqn.environment.state.wasting_buffer_length = len(
                                         performance_logger.queue_wasted_req_buffer[outlet])
 
-                        if outlet.__class__.__name__ == 'Wifi' and len(
-                                performance_logger.queue_waiting_requests_in_buffer[outlet]) != 0 \
+                        if outlet.__class__.__name__ == 'Wifi'  and  len(performance_logger.queue_waiting_requests_in_buffer[outlet]) != 0 \
                                 and len(performance_logger.queue_waiting_requests_in_buffer[
                                             outlet]) >= outlet_max_waiting_buffer_length(outlet):
                             performance_logger.queue_wasted_req_buffer[outlet].appendleft(

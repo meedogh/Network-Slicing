@@ -1,32 +1,14 @@
 import itertools
 import os
 import sys
-
-import matplotlib
 import matplotlib.pyplot as plt
-import  numpy as np
-import pickle as pk
-
+import numpy as np
 from keras import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
 
 fig = plt.figure(num=1, clear=True)
 ax = fig.add_subplot(1, 1, 1, projection='3d')
-
-
-
-file_serve = f"{os.path.join(sys.path[0])}//served_state.pkl"
-serve = []
-with open(file_serve, 'rb') as file:
-    try:
-        while True:
-            loaded_value = pk.load(file)
-            serve.append(loaded_value)
-    except EOFError:
-        pass
-
-
 
 def build_model() -> Sequential:
     model_ = Sequential()
@@ -41,56 +23,88 @@ def build_model() -> Sequential:
 
 model = build_model()
 model.load_weights(
-    f'{os.path.join(sys.path[0])}//action_each_single_request_reward_method4//decentralized_weights/weights_0_140.hdf5')
+    f'{os.path.join(sys.path[0])}//action_each_single_request_reward_method4_add_init_10_11_12_//decentralized_weights/weights_0_140.hdf5')
 
 # Calculate Q-values for each (x1, x2) pair (replace this with your actual Q-values)
-x = np.arange(80,90, 0.5)
-y = np.arange(85,105,0.5)
-
-# x = np.arange(1, 10, 2)
-# y = np.arange(80,90,2)
-(x1, y1) = np.meshgrid(x,y)
-print(x1.shape)
-print(y1.shape)
-print(x1)
-print(y1)
-x_flattened =  x1.flatten()
-# print(x_flattened)
-y_flattened =  y1.flatten()
-# print(y_flattened)
-states = []
-
-buffer_length = 20
-flag_value = 0
-
-# print(len(x_flattened))
-# permutations = list(itertools.product(x_flattened, y_flattened))
-# x_permutations = []
-# y_permutations = []
-number_of_points_in_mesh = len(x_flattened)
-for index in range(number_of_points_in_mesh):
-    states.append([x_flattened[index],y_flattened[index],buffer_length,flag_value])
-
-
-action = []
-
-for i in range(number_of_points_in_mesh):
-    states[i] = np.array(states[i]).reshape([1, np.array(states[i]).shape[0]])
-    print("action model : ",np.argmax(model.predict(states[i])))
-    action.append(np.argmax(model.predict(states[i])))
-
-print(action)
-action = np.array(action).reshape(x1.shape[0],x1.shape[1])
-print(action)
-# # x_flattened = np.array(x_flattened).reshape(np.array(x_flattened).shape[0],1)
-# # y_flattened = np.array(y_flattened).reshape(np.array(y_flattened).shape[0],1)
+# x1_time_out = np.arange(2, 80, 1)
+# y1_current_capacity = np.arange(0.05, 80, 1)
+# bl = 20.0
+# pa = 2.54
+# (x1_time_out_, y1_current_capacity_) = np.meshgrid(x1_time_out, y1_current_capacity)
+# x1_flattened = x1_time_out_.flatten()
+# y1_flattened = y1_current_capacity_.flatten()
 #
+# states1 = []
+# number_of_points_in_mesh = len(x1_flattened)
+# for index in range(number_of_points_in_mesh):
+#     states1.append([x1_flattened[index], y1_flattened[index], pa, bl])
+#
+# action1 = []
+# for i in range(number_of_points_in_mesh):
+#     states1[i] = np.array(states1[i]).reshape([1, np.array(states1[i]).shape[0]])
+#     print("action model : ", np.argmax(model.predict(states1[i])))
+#     action1.append(np.argmax(model.predict(states1[i])))
+#
+# action1 = np.array(action1).reshape(x1_time_out_.shape[0], y1_current_capacity_.shape[1])
+
+
+#
+x2_buffer_length = np.arange(90, 100, 1)
+y2_current_capacity = np.arange(0.05, 10.05, 1)
+tout = 40
+pa2 = 3.54
+
+(x2_buffer_length_, y2_current_capacity_) = np.meshgrid(x2_buffer_length, y2_current_capacity)
+x2_flattened = x2_buffer_length_.flatten()
+y2_flattened = y2_current_capacity_.flatten()
+
+states2 = []
+number_of_points_in_mesh = len(x2_flattened)
+for index in range(number_of_points_in_mesh):
+    states2.append([tout,y2_flattened[index],pa2,x2_flattened[index]])
+
+action2 = []
+for i in range(number_of_points_in_mesh):
+    states2[i] = np.array(states2[i]).reshape([1, np.array(states2[i]).shape[0]])
+    print("action model : ", np.argmax(model.predict(states2[i])))
+    action2.append(np.argmax(model.predict(states2[i])))
+
+action2 = np.array(action2).reshape(x2_buffer_length_.shape[0], x2_buffer_length_.shape[1])
+#
+# x3_power_allocation = np.arange(0.5, 5.5, 0.5)
+# y3_current_capacity = np.arange(80, 90, 1)
+# tout3 = 2
+# bl3 = 1
+#
+# (x3_power_allocation_, y3_current_capacity_) = np.meshgrid(x3_power_allocation, y3_current_capacity)
+# x3_flattened = x3_power_allocation_.flatten()
+# y3_flattened = y3_current_capacity_.flatten()
+# states3 = []
+# number_of_points_in_mesh = len(x3_flattened)
+# for index in range(number_of_points_in_mesh):
+#     states3.append([tout3,y3_flattened[index],x3_flattened[index],bl3])
+#
+# action3 = []
+# for i in range(number_of_points_in_mesh):
+#     states3[i] = np.array(states3[i]).reshape([1, np.array(states3[i]).shape[0]])
+#     print("action model : ", np.argmax(model.predict(states3[i])))
+#     action3.append(np.argmax(model.predict(states3[i])))
+#
+# action3 = np.array(action3).reshape(x3_power_allocation_.shape[0], x3_power_allocation_.shape[1])
 
 
 
-ax.plot_surface(x1, y1, action , cmap='coolwarm')
-ax.set(xlabel='request power allocation%', ylabel='buffer length%', zlabel='z', title='z = argmax(qvalue)')
+# ax.plot_surface(x1_time_out_, y1_current_capacity_, action1, cmap='coolwarm')
+# ax.set(xlabel='request time out%', ylabel='tower current capacity%', zlabel='z', title='z = argmax(qvalue)')
+# plt.savefig("plot(TO,CC).svg", format="svg")
+# plt.show()
 
-
-plt.savefig("plot(PA,BL).svg", format="svg")
+ax.plot_surface(x2_buffer_length_, y2_current_capacity_, action2, cmap='coolwarm')
+ax.set(xlabel='buffer length%', ylabel='tower current capacity%', zlabel='z', title='z = argmax(qvalue)')
+plt.savefig("plot(BL,CC).svg", format="svg")
 plt.show()
+#
+# ax.plot_surface(x3_power_allocation_, y3_current_capacity_, action3, cmap='coolwarm')
+# ax.set(xlabel='request power allocation%', ylabel='tower current capacity%', zlabel='z', title='z = argmax(qvalue)')
+# plt.savefig("plot(PA,CC).svg", format="svg")
+# plt.show()

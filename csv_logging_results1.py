@@ -6,9 +6,9 @@ import pandas as pd
 # outlet outlet_number [0,1,2,3]
 outlet_name = ['wifi','3G','4G','5G']
 method_name =  ['rl' , 'fifo' ,'heuristic']
-outlet_num = 0
+outlet_num = 3
 
-results_dir_train_results = f"{os.path.join(sys.path[0])}/action_each_single_request_reward_method4_test3"
+results_dir_train_results = f"{os.path.join(sys.path[0])}/action_each_single_request_reward_method4_add_init_10_11_12_test"
 results_dir_test_results = f"{os.path.join(sys.path[0])}/action_each_single_request_reward_method4_testalloutlets"
 
 
@@ -27,9 +27,9 @@ timed_out_requests_over_simulation = os.path.join(results_dir_train_results,f"ti
 generated_requests_over_simulation = os.path.join(results_dir_train_results,f"generated_requests_over_simulation/generated_requests_over_simulation{outlet_num}.pkl")
 print(generated_requests_over_simulation)
 delay_time_path = os.path.join(results_dir_train_results,f"delay_time/delay_time{outlet_num}.pkl")
-number_of_abort_requests_over_the_simulation_path = os.path.join(results_dir_train_results,f"number_of_abort_requests_over_the_simulation/number_of_abort_requests_over_the_simulation.pkl")
-number_of_rejected_requests_over_simulation_path = os.path.join(results_dir_train_results,f"number_of_rejected_requests_over_simulation/number_of_rejected_requests_over_simulation.pkl")
-sum_of_cost_of_all_rejected_requests_path =  os.path.join(results_dir_train_results,f"sum_of_cost_of_all_rejected_requests/sum_of_cost_of_all_rejected_requests.pkl")
+number_of_abort_requests_over_the_simulation_path = os.path.join(results_dir_train_results,f"number_of_abort_requests_over_the_simulation/number_of_abort_requests_over_the_simulation{outlet_num}.pkl")
+number_of_rejected_requests_over_simulation_path = os.path.join(results_dir_train_results,f"number_of_rejected_requests_over_simulation/number_of_rejected_requests_over_simulation{outlet_num}.pkl")
+sum_of_cost_of_all_rejected_requests_path =  os.path.join(results_dir_train_results,f"sum_of_cost_of_all_rejected_requests/sum_of_cost_of_all_rejected_requests{outlet_num}.pkl")
 abort_req=[]
 rejected_over_simulation =[]
 cost_of_rejected_requests=[]
@@ -235,6 +235,6 @@ data = list(
 
 df = pd.DataFrame(data=data, columns=list(columns.keys()))
 
-df.to_csv(f"{outlet_name[outlet_num]}_training_results_2episode_{method_name[outlet_num]}.csv", index=False)
+df.to_csv(f"{outlet_name[outlet_num]}_testing_results_1ep_{method_name[outlet_num]}.csv", index=False)
 
 

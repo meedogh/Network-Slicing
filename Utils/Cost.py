@@ -36,7 +36,7 @@ class Cost:
             # print("....  5G")
             cost = self.bit_rate * 1.5
         elif outlet.__class__.__name__ == "Satellite":
-            print("....  SAT")
+            # print("....  SAT")
             cost = self.bit_rate * 2
         return cost
 

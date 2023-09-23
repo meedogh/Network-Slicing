@@ -2,7 +2,7 @@ import os
 import sys
 
 results_dir = os.path.join(sys.path[0],
-                           'action_each_single_request_reward_method4_add_init_10_11_12')
+                           'action_each_single_request_reward_method4_add_init_10_11_12_retrain')
 centralized_weights = os.path.join(results_dir, 'centralized_weights')
 decentralized_weights = os.path.join(results_dir, 'decentralized_weights')
 path_memory_centralize = os.path.join(results_dir, 'centralize_memory')
@@ -33,7 +33,7 @@ sum_power_allocation_path = os.path.join(results_dir, "sum_power_allocation//")
 
 # os.path.join(sys.path[0],"results3_tanh//results3_tanh//")
 # results1_explor_decentralize = "//content//drive//MyDrive//network_slicing//results2_explor_decentralize//"
-prev_results_dec_weight = f"{os.path.join(sys.path[0])}//action_each_single_request_repeat_periods_each_episode_retrain_larg_time_out_ranges_with_failure_method4_reward//"
+prev_results_dec_weight = f"{os.path.join(sys.path[0])}//action_each_single_request_reward_method4_add_init_10_11_12_//"
 # prev_results_dec_memory = "//content//drive//MyDrive//network_slicing//action_each_single_request_reward2_method2_repeat_periods_each_episode100"
 prev_centralize_weights_path = os.path.join(prev_results_3tanh_dir, "centralized_weights//")
 prev_decentralize_weights_path = os.path.join(prev_results_dec_weight, "decentralized_weights//")
@@ -56,7 +56,9 @@ number_of_rejected_requests_over_simulation_path = os.path.join(results_dir,
                                                                 "number_of_rejected_requests_over_simulation//")
 sum_of_cost_of_all_rejected_requests_path = os.path.join(results_dir, "sum_of_cost_of_all_rejected_requests//")
 number_of_abort_requests_over_the_simulation_path = os.path.join(results_dir,"number_of_abort_requests_over_the_simulation//")
+users_logging_info_path  = os.path.join(results_dir,"users_logging_info//")
 
+os.makedirs(users_logging_info_path , exist_ok=True)
 os.makedirs(number_of_abort_requests_over_the_simulation_path,exist_ok=True)
 os.makedirs(number_of_rejected_requests_over_simulation_path, exist_ok=True)
 os.makedirs(sum_of_cost_of_all_rejected_requests_path, exist_ok=True)
