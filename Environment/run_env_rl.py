@@ -473,11 +473,11 @@ class Environment:
                 #         print("user : ", key, "  ", outlet_name, "total cost : ", services_costs, "served num : ",
                 #               number_of_served_req, "accepted num : ", number_of_accepted_req, "throughput : ",
                 #               throughput, "number_of_timed_out_requests : ", number_of_timed_out_requests)
-                        # add_value_to_pickle(
-                        #     os.path.join(users_logging_info_path, f"users_logging_info.pkl"),
-                        #     (key, outlet_name, services_costs, number_of_served_req, number_of_accepted_req, throughput,
-                        #      number_of_timed_out_requests)
-                        # )
+                #         add_value_to_pickle(
+                #             os.path.join(users_logging_info_path, f"users_logging_info.pkl"),
+                #             (key.__class__.__name__, outlet_name.__class__.__name__, services_costs, number_of_served_req, number_of_accepted_req, throughput,
+                #              number_of_timed_out_requests)
+                #         )
 
                 add_value_to_pickle(
                     os.path.join(requests_with_execution_time_path, f"requests_with_execution_time.pkl"),

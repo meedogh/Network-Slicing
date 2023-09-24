@@ -358,8 +358,8 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             # print("state time out  : ", outlet.dqn.environment.state.state_value_decentralize)
                             # add_value_to_pickle('c',outlet.dqn.environment.state.next_state_decentralize)
                             # print("next state time out : ", outlet.dqn.environment.state.next_state_decentralize)
-                            outlet.dqn.environment.reward.reward_value = -100
-                            outlet.dqn.environment.reward.time_out_reward+=-100
+                            outlet.dqn.environment.reward.reward_value = -10
+                            outlet.dqn.environment.reward.time_out_reward+=-10
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                             # print("outlet.dqn.environment.reward.reward_value_accumilated  : ",
@@ -448,8 +448,8 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(
                                 45)
                             # print("from wait to serve next state : ",outlet.dqn.environment.state.next_state_decentralize)
-                            outlet.dqn.environment.reward.reward_value = 100
-                            outlet.dqn.environment.reward.wait_to_serve_reward+=100
+                            outlet.dqn.environment.reward.reward_value = 10
+                            outlet.dqn.environment.reward.wait_to_serve_reward+=10
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                             # print("outlet.dqn.environment.reward.reward_value_accumilated  : ",
@@ -563,19 +563,19 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
 
                             outlet.dqn.environment.state.time_out_flag = 0
 
-                            if len(performance_logger.queue_waiting_requests_in_buffer) > 0:
-                                outlet.dqn.environment.state.time_out_flag,copy_of_capacity = check_timed_out(performance_logger,
-                                                                                         outlet,
-                                                                                         service.time_out,
-                                                                                         start_time,
-                                                                                         service.service_power_allocate,
-                                                                                         outlet.current_capacity)
+                            # if len(performance_logger.queue_waiting_requests_in_buffer) > 0:
+                            #     outlet.dqn.environment.state.time_out_flag,copy_of_capacity = check_timed_out(performance_logger,
+                            #                                                              outlet,
+                            #                                                              service.time_out,
+                            #                                                              start_time,
+                            #                                                              service.service_power_allocate,
+                            #                                                              outlet.current_capacity)
                                 #
                                 # print("flag  : " , outlet.dqn.environment.state.time_out_flag,"   ",copy_of_capacity ,outlet._max_capacity)
                                 # service.tower_capacity_before_time_out_step = copy_of_capacity
                                     # print("copy_of_capacity : >>>>  " , service.tower_capacity_before_time_out_step)
-                            else:
-                                outlet.dqn.environment.state.time_out_flag = 0
+                            # else:
+                            #     outlet.dqn.environment.state.time_out_flag = 0
 
                             if outlet.dqn.environment.state.time_out_flag == 1:
                                 # print("....1....")
@@ -720,8 +720,8 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
                                         outlet.dqn.environment.reward.services_ensured = len(
                                             performance_logger.queue_ensured_buffer[outlet])
 
-                                        outlet.dqn.environment.reward.reward_value = 100
-                                        outlet.dqn.environment.reward.serving_reward+=100
+                                        outlet.dqn.environment.reward.reward_value = 10
+                                        outlet.dqn.environment.reward.serving_reward+=10
 
                                         outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                                         # print("outlet.dqn.environment.reward.reward_value_accumilated  : ", outlet.dqn.environment.reward.reward_value_accumilated)
