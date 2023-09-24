@@ -2,7 +2,7 @@ import os
 import sys
 
 results_dir = os.path.join(sys.path[0],
-                           'action_each_single_request_reward_method4_add_init_10_11_12_no_protrization_less_failure')
+                           'action_each_single_request_reward_method4_add_init_10_11_12_no_protrization_less_failure2')
 centralized_weights = os.path.join(results_dir, 'centralized_weights')
 decentralized_weights = os.path.join(results_dir, 'decentralized_weights')
 path_memory_centralize = os.path.join(results_dir, 'centralize_memory')
@@ -35,12 +35,12 @@ sum_power_allocation_path = os.path.join(results_dir, "sum_power_allocation//")
 
 # os.path.join(sys.path[0],"results3_tanh//results3_tanh//")
 # results1_explor_decentralize = "//content//drive//MyDrive//network_slicing//results2_explor_decentralize//"
-prev_results_dec_weight = f"{os.path.join(sys.path[0])}//action_each_single_request_reward_method4_add_init_10_11_12_retrain_//"
-# prev_results_dec_memory = "//content//drive//MyDrive//network_slicing//action_each_single_request_reward2_method2_repeat_periods_each_episode100"
+prev_results_dec_weight = f"{os.path.join(sys.path[0])}//action_each_single_request_reward_method4_add_init_10_11_12_no_protrization_less_failure//"
+prev_results_dec_memory = f"{os.path.join(sys.path[0])}//action_each_single_request_reward_method4_add_init_10_11_12_no_protrization_less_failure//"
 prev_centralize_weights_path = os.path.join(prev_results_3tanh_dir, "centralized_weights//")
 prev_decentralize_weights_path = os.path.join(prev_results_dec_weight, "decentralized_weights//")
 # prev_centralize_memory_path = os.path.join(prev_results_4tanh_dir,"centralize_memory//")
-# prev_decentralize_memory_path = os.path.join(prev_results_dec_memory,"decentralize_memory//")
+prev_decentralize_memory_path = os.path.join(prev_results_dec_memory,"decentralize_memory//")
 centralize_qvalue_path = os.path.join(results_dir, "qvalue_centralized_for_plotting//")
 decentralize_qvalue_path = os.path.join(results_dir, "qvalue_decentralized_for_plotting//")
 ratio_of_occupancy_decentralized_path = os.path.join(results_dir, "ratio_of_occupancy_decentralized//")
@@ -58,7 +58,7 @@ number_of_rejected_requests_over_simulation_path = os.path.join(results_dir,
                                                                 "number_of_rejected_requests_over_simulation//")
 sum_of_cost_of_all_rejected_requests_path = os.path.join(results_dir, "sum_of_cost_of_all_rejected_requests//")
 number_of_abort_requests_over_the_simulation_path = os.path.join(results_dir,"number_of_abort_requests_over_the_simulation//")
-users_logging_info_path  = os.path.join(results_dir,"users_logging_info//")
+users_logging_info_path = os.path.join(results_dir,"users_logging_info//")
 reward_info_path = os.path.join(results_dir,"reward_info//")
 
 os.makedirs(reward_info_path , exist_ok=True)
