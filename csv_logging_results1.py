@@ -6,9 +6,9 @@ import pandas as pd
 # outlet outlet_number [0,1,2,3]
 outlet_name = ['wifi','3G','4G','5G']
 method_name =  ['rl' , 'fifo' ,'heuristic']
-outlet_num = 3
+outlet_num = 0
 
-results_dir_train_results = f"{os.path.join(sys.path[0])}/action_each_single_request_reward_method4_add_init_10_11_12_test"
+results_dir_train_results = f"{os.path.join(sys.path[0])}/action_each_single_request_reward_method4_add_init_10_11_12_retrain_"
 results_dir_test_results = f"{os.path.join(sys.path[0])}/action_each_single_request_reward_method4_testalloutlets"
 
 
@@ -235,6 +235,6 @@ data = list(
 
 df = pd.DataFrame(data=data, columns=list(columns.keys()))
 
-df.to_csv(f"{outlet_name[outlet_num]}_testing_results_1ep_{method_name[outlet_num]}.csv", index=False)
+df.to_csv(f"{outlet_name[outlet_num]}_10_11_12_retrain__{method_name[outlet_num]}.csv", index=False)
 
 

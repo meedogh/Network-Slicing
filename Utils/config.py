@@ -20,7 +20,7 @@ SERVICES_TYPES = {
     },
     "AUTONOMOUS": {
         "REALTIME": np.arange(start=9, stop=10),
-        "BANDWIDTH": np.arange(start=7, stop=8 + 1),
+        "BANDWIDTH": np.arange(start=6, stop=7 + 1),
         "CRITICAL": np.arange(start=8, stop=10 + 1),
     },
 }

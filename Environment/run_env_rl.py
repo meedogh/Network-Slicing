@@ -32,7 +32,7 @@ class Environment:
     flag_processing_old_requests = [False] * 3
     reset_decentralize = False
     previouse_steps_reward32 = 0
-    previous_steps_of_update_target_model =  0
+    previous_steps_of_update_target_model = 0
 
     def __init__(self, period: str):
         # Period(period)
@@ -131,7 +131,7 @@ class Environment:
                 performancelogger.set_queue_waiting_requests_in_buffer(outlet, deque([]))
                 performancelogger.set_queue_time_out_from_simulation(outlet, deque([]))
                 performancelogger.set_queue_from_wait_to_serve_over_simulation(outlet, deque([]))
-                performancelogger.set_queue_request_failure_flags(outlet,deque([]))
+                performancelogger.set_queue_request_failure_flags(outlet, deque([]))
                 performancelogger.set_outlet_services_requested_number_all_periods(outlet, [0, 0, 0])
                 performancelogger.set_outlet_services_requested_number(outlet, [0, 0, 0])
                 performancelogger.set_outlet_services_ensured_number(outlet, [0, 0, 0])
@@ -315,12 +315,12 @@ class Environment:
         outlets = self.get_all_outlets(performance_logger)
         self.Grids = self.fill_grids(self.fill_grids_with_the_nearest(outlets[:4]))
         satellite = Satellite(1,
-                    [1, 1, 0],
-                    'sat',
-                    [100, 100],
-                    1000000000000000,
-                    [],
-                    [10, 10, 10])
+                              [1, 1, 0],
+                              'sat',
+                              [100, 100],
+                              1000000000000000,
+                              [],
+                              [10, 10, 10])
         step = 0
         step_for_each_episode_change_period = 0
         print("\n")
@@ -401,9 +401,10 @@ class Environment:
             provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps)
 
             list(map(lambda veh: enable_sending_requests(veh, observer, self.gridcells_dqn, performance_logger,
-                                                         self.steps , satellite), vehicles, ))
+                                                         self.steps, satellite), vehicles, ))
 
-            buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps,satellite)
+            buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps,
+                                          satellite)
 
             if self.steps - self.previous_steps_centralize_action >= 40:
                 self.previous_steps_centralize_action = self.steps
@@ -432,7 +433,6 @@ class Environment:
             #         for i, outlet in enumerate(gridcell_dqn.agents.grid_outlets):
             #             outlet.dqn.agents.hard_update_target_network(outlet.dqn.model,outlet.dqn.model_target)
 
-
             # if self.steps - self.previ
             # if self.steps - self.previous_steps_centralize >= env_variables.centralized_replay_buffer:
             #     self.previous_steps_centralize = self.steps
@@ -445,26 +445,39 @@ class Environment:
             if self.steps - self.previouse_steps_reseting >= env_variables.episode_steps:
                 self.previouse_steps_reseting = self.steps
                 # print(" performance_logger.user_requests : ", performance_logger.user_requests)
+                # for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
+                #     for i, out in enumerate(gridcell_dqn.agents.grid_outlets):
+                #         add_value_to_pickle(
+                #             os.path.join(reward_info_path, f"reward_info.pkl"),
+                #             (out.__class__.__name__,out.dqn.environment.reward.serving_reward,
+                #             out.dqn.environment.reward.rejected_reward ,
+                #             out.dqn.environment.reward.wait_to_serve_reward ,
+                #             out.dqn.environment.reward.time_out_reward)
+                #         )
                 # for key, value in performance_logger.user_requests.items():
-                #     for outlet_name , val in value.items():
-                #         services_costs=0
-                #         number_of_served_req=0
-                #         number_of_timed_out_requests=0
+                #     for outlet_name, val in value.items():
+                #         services_costs = 0
+                #         number_of_served_req = 0
+                #         number_of_timed_out_requests = 0
                 #         number_of_accepted_req = 0
                 #         if val:
                 #             for (ser, flag, cost) in val:
                 #                 number_of_accepted_req += 1
-                #                 if flag == True :
-                #                     services_costs+=cost
-                #                     number_of_served_req+=1
-                #                 if flag == False :
-                #                     number_of_timed_out_requests+=1
-                #         throughput = number_of_served_req/number_of_accepted_req
-                #         print("user : ",key,"  ",outlet_name,"total cost : ",services_costs,"served num : ",number_of_served_req,"accepted num : ",number_of_accepted_req,"throughput : ",throughput,"number_of_timed_out_requests : ",number_of_timed_out_requests)
-                #         add_value_to_pickle(
-                #             os.path.join(users_logging_info_path, f"users_logging_info.pkl"),
-                #             (key,outlet_name,services_costs,number_of_served_req,number_of_accepted_req,throughput,number_of_timed_out_requests)
-                #         )
+                #                 if flag == True:
+                #                     services_costs += cost
+                #                     number_of_served_req += 1
+                #                 if flag == False:
+                #                     number_of_timed_out_requests += 1
+                #         throughput = number_of_served_req / number_of_accepted_req
+                #
+                #         print("user : ", key, "  ", outlet_name, "total cost : ", services_costs, "served num : ",
+                #               number_of_served_req, "accepted num : ", number_of_accepted_req, "throughput : ",
+                #               throughput, "number_of_timed_out_requests : ", number_of_timed_out_requests)
+                        # add_value_to_pickle(
+                        #     os.path.join(users_logging_info_path, f"users_logging_info.pkl"),
+                        #     (key, outlet_name, services_costs, number_of_served_req, number_of_accepted_req, throughput,
+                        #      number_of_timed_out_requests)
+                        # )
 
                 add_value_to_pickle(
                     os.path.join(requests_with_execution_time_path, f"requests_with_execution_time.pkl"),
@@ -477,21 +490,17 @@ class Environment:
                 )
 
                 list_ = []
-                # print("resetting ................. ")
                 for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
                     for i, out in enumerate(gridcell_dqn.agents.grid_outlets):
                         add_value_to_pickle(
                             os.path.join(decentralize_qvalue_path, f"qvalue{i}.pkl"),
                             out.dqn.agents.qvalue,
                         )
-                        # print("out.dqn.environment.reward.reward_value_accumilated  : ", out.dqn.environment.reward.reward_value_accumilated)
 
                         add_value_to_pickle(
                             os.path.join(reward_accumilated_decentralize_path, f"accu_reward{i}.pkl"),
                             out.dqn.environment.reward.reward_value_accumilated,
                         )
-
-
 
                         out.dqn.environment.state.resetsate()
                         out.dqn.environment.reward.resetreward()

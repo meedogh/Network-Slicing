@@ -43,6 +43,10 @@ class DeCentralizedReward(Reward):
         self.perv_wasting_requests_ratio = 0
         self.prev_remaining_requests = 0
         self.remaining_services_threshold = 100
+        self.serving_reward = 0
+        self.rejected_reward = 0
+        self.wait_to_serve_reward = 0
+        self.time_out_reward = 0
 
 
     @staticmethod

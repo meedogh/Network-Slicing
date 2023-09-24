@@ -36,6 +36,7 @@ class Service(ABC):
         self.cost_in_bit_rate = 0
         self.total_cost_in_dolars = 0
         self.remaining_time_out = 0
+        self._tower_capacity_before_time_out_step = 0
 
 
     # def __str__(self):
@@ -47,6 +48,14 @@ class Service(ABC):
             return True
         else:
             return False
+
+    @property
+    def tower_capacity_before_time_out_step(self):
+        return self._tower_capacity_before_time_out_step
+
+    @tower_capacity_before_time_out_step.setter
+    def tower_capacity_before_time_out_step(self,value):
+        self._tower_capacity_before_time_out_step  = value
 
 
     def calculate_service_cost_in_Dolar_per_bit(self):
