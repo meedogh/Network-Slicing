@@ -571,7 +571,7 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
                             #                                                              service.service_power_allocate,
                             #                                                              outlet.current_capacity)
                                 #
-                                # print("flag  : " , outlet.dqn.environment.state.time_out_flag,"   ",copy_of_capacity ,outlet._max_capacity)
+                                # print("flag  : " , outlet.dqn.environment.state.time_out_flag,"   ",copy_of_capacity ,"  ",outlet._max_capacity)
                                 # service.tower_capacity_before_time_out_step = copy_of_capacity
                                     # print("copy_of_capacity : >>>>  " , service.tower_capacity_before_time_out_step)
                             # else:
@@ -779,7 +779,7 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
                                     outlet.dqn.environment.state.wasting_buffer_length = len(
                                         performance_logger.queue_wasted_req_buffer[outlet])
                         #outlet.__class__.__name__ == 'Wifi'
-                        if outlet.__class__.__name__ == 'Wifi'  and len(performance_logger.queue_waiting_requests_in_buffer[outlet]) != 0 \
+                        if outlet.__class__.__name__ == 'Wifi' and len(performance_logger.queue_waiting_requests_in_buffer[outlet]) != 0 \
                                 and len(performance_logger.queue_waiting_requests_in_buffer[
                                             outlet]) >= outlet_max_waiting_buffer_length(outlet):
                             performance_logger.queue_wasted_req_buffer[outlet].appendleft(
