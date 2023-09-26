@@ -1,14 +1,13 @@
+import math
 import os
 
-import keras
-
+from collections import deque
 import random
 from RL.Agent.IAgent import AbstractAgent
 from RL.RLEnvironment.Action.ActionChain import Exploit, Explore, FallbackHandler
 import pickle
-import tensorflow as tf
-import numpy as np
 from Environment.utils.mask_generation import *
+
 
 class Agent(AbstractAgent):
     _grid_outlets = []
@@ -65,29 +64,55 @@ class Agent(AbstractAgent):
     def action_value(self, a):
         self._action_value = a
 
+    def filter_buffer(self, model):
+        def remove_below_threshold(dictionary, threshold):
+            return {key: value for key, value in dictionary.items() if value < threshold}
+        def find_median_first_half(data):
+            # sorted_data = sorted(data)
+            # print(sorted_data)
+            n = len(data)
+            half_length = n // 2 if n % 2 == 0 else (n - 1) // 2
+            # first_half_length = half_length // 2 if half_length % 2 == 0 else (half_length - 1) // 2
+            if n % 2 == 0:
+                median_first_half = (data[half_length] + data[half_length - 1]) / 2
+            else:
+                median_first_half = data[half_length]
+            return median_first_half
+        dictionary_sample_loss = dict()
+        for index ,(exploration, state, action, reward, next_state) in enumerate(self.memory):
+            if next_state is not None:
+                next_state = np.array(next_state).reshape([1, np.array(next_state).shape[0]])
+                state = np.array(state).reshape([1, np.array(state).shape[0]])
+                logit_value = model.predict(next_state, verbose=0)[0]
+                qvalue_for_state = model.predict(state,verbose=0)[0]
+                qvalue_for_state_max = np.amax(qvalue_for_state)
+                target = reward + self.gamma * np.amax(logit_value)
+                loss = math.pow((target - qvalue_for_state_max),2)
+                dictionary_sample_loss[index] = loss
+        sorted_dict = dict(sorted(dictionary_sample_loss.items(), key=lambda item: item[1]))
+        median = find_median_first_half(list(sorted_dict.values()))
+        samples_to_remove = remove_below_threshold(sorted_dict,median)
+        return list(samples_to_remove.keys())
 
-    #
     def replay_buffer_decentralize(self, batch_size, model):
+        filtered_samples_indices = self.filter_buffer(model)
+
+        updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
+        self.memory = updated_deque
+
         minibatch = random.sample(self.memory, batch_size)
-        target = 0
         for exploitation, state, action, reward, next_state in minibatch:
             target = reward
             if next_state is not None:
                 next_state = np.array(next_state).reshape([1, np.array(next_state).shape[0]])
                 # logit_model2 = keras.Model(inputs=model.input, outputs=model.layers[-2].output)
                 logit_value = model.predict(next_state, verbose=0)[0]
-                # print("pred : ", logit_value)
                 target = reward + self.gamma * np.amax(logit_value)
             state = np.array(state).reshape([1, np.array(state).shape[0]])
             target_f = model.predict(state, verbose=0)
-            # print("pred :target_f ", target_f)
-            # print("action: ",action)
-            # print("target : ",target)
             target_f[0][action] = target
-            # print("target_f after  : ", target_f)
             model.fit(state, target_f, epochs=1, verbose=0)
         if self.epsilon > self.min_epsilon:
-            # self.epsilon = self.min_epsilon + (self.epsilon_max - self.min_epsilon) * np.exp(-self.epsilon_decay * i)
             self.epsilon -= self.epsilon * self.epsilon_decay
         return target
 
@@ -101,47 +126,48 @@ class Agent(AbstractAgent):
     #     states = []
     #     Q_wants = []
 
-        # Find updates
-        # for event in minibatch:
-        #     exploitation, state, action, reward, next_state = event
-        #     states.append(state)
-        #
-        #     # Find Q_target
-        #     state_tensor = np.reshape(state, (1, len(state)))  # keras takes 2d arrays
-        #     Q_want = model.predict(state_tensor)[0]  # all elements of this, except the action chosen, stay
-        #     # the same
-        #
-        #
-        #     next_state_tensor = np.reshape(next_state, (1, len(next_state)))
-        #     Q_next_state_vec = model.predict(next_state_tensor)
-        #     action_max = np.argmax(Q_next_state_vec)
-        #     print("action_max : ", action_max)
-        #
-        #     Q_target_next_state_vec = target_model.predict(next_state_tensor)[0]
-        #     print("Q_target_next_state_vec : ",Q_target_next_state_vec)
-        #     Q_target_next_state_max = Q_target_next_state_vec[action_max]
-        #     print("Q_target_next_state_max : ", Q_target_next_state_max)
-        #
-        #     Q_want[action] = reward + self.gamma * Q_target_next_state_max
-        #     Q_want_tensor = np.reshape(Q_want, (1, len(Q_want)))
-        #         # self.model.fit(state_tensor,Q_want_tensor,verbose=False,epochs=1)
-        #     print("Q_want[action] : ", Q_want[action])
-        #
-        #     Q_wants.append(Q_want)
-        #
-        # # Here I fit on the whole batch. Others seem to fit line-by-line
-        # # Dont' think (hope) it makes much difference
-        # states = np.array(states)
-        # Q_wants = np.array(Q_wants)
-        # model.fit(states, Q_wants, verbose=False, epochs=1)
+    # Find updates
+    # for event in minibatch:
+    #     exploitation, state, action, reward, next_state = event
+    #     states.append(state)
+    #
+    #     # Find Q_target
+    #     state_tensor = np.reshape(state, (1, len(state)))  # keras takes 2d arrays
+    #     Q_want = model.predict(state_tensor)[0]  # all elements of this, except the action chosen, stay
+    #     # the same
+    #
+    #
+    #     next_state_tensor = np.reshape(next_state, (1, len(next_state)))
+    #     Q_next_state_vec = model.predict(next_state_tensor)
+    #     action_max = np.argmax(Q_next_state_vec)
+    #     print("action_max : ", action_max)
+    #
+    #     Q_target_next_state_vec = target_model.predict(next_state_tensor)[0]
+    #     print("Q_target_next_state_vec : ",Q_target_next_state_vec)
+    #     Q_target_next_state_max = Q_target_next_state_vec[action_max]
+    #     print("Q_target_next_state_max : ", Q_target_next_state_max)
+    #
+    #     Q_want[action] = reward + self.gamma * Q_target_next_state_max
+    #     Q_want_tensor = np.reshape(Q_want, (1, len(Q_want)))
+    #         # self.model.fit(state_tensor,Q_want_tensor,verbose=False,epochs=1)
+    #     print("Q_want[action] : ", Q_want[action])
+    #
+    #     Q_wants.append(Q_want)
+    #
+    # # Here I fit on the whole batch. Others seem to fit line-by-line
+    # # Dont' think (hope) it makes much difference
+    # states = np.array(states)
+    # Q_wants = np.array(Q_wants)
+    # model.fit(states, Q_wants, verbose=False, epochs=1)
 
-    def hard_update_target_network(self, step,model,target_model):
+    def hard_update_target_network(self, step, model, target_model):
         """ Here the target network is updated every K timesteps
             By update, I mean clone the behavior network.
         """
         if step % self.C == 0:
             pars = model.get_weights()
             target_model.set_weights(pars)
+
     def replay_buffer_centralize(self, batch_size, model):
         minibatch = random.sample(self.memory, batch_size)
         target = []
@@ -188,8 +214,8 @@ class Agent(AbstractAgent):
 
     def remember_decentralize(self, flag, state, action, reward, next_state):
 
-            # print(supported_services, "  \n  ",flag  , "  \n  ", state, "  \n  ", action, "  \n  ", reward, "  \n  ", next_state)
-            self.memory.append(( flag, state, action, reward, next_state))
+        # print(supported_services, "  \n  ",flag  , "  \n  ", state, "  \n  ", action, "  \n  ", reward, "  \n  ", next_state)
+        self.memory.append((flag, state, action, reward, next_state))
 
     def chain_dec(self, model, state, epsilon):
         "A chain with a default first successor"

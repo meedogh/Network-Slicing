@@ -421,10 +421,10 @@ class Environment:
             if self.steps - self.previous_steps >= env_variables.decentralized_replay_buffer:
                 self.previous_steps = self.steps
                 for i, outlet in enumerate(self.temp_outlets):
-                        if len(outlet.dqn.agents.memory) > 128:
+                        if len(outlet.dqn.agents.memory) > 32:
                             outlet.dqn.agents.qvalue = (
                                 outlet.dqn.agents.replay_buffer_decentralize(
-                                    128, outlet.dqn.model,
+                                    32, outlet.dqn.model,
                                 )
                             )
             # if self.steps - self.previous_steps_of_update_target_model >= env_variables.decentralized_target_model_update:
@@ -444,16 +444,16 @@ class Environment:
 
             if self.steps - self.previouse_steps_reseting >= env_variables.episode_steps:
                 self.previouse_steps_reseting = self.steps
-                # print(" performance_logger.user_requests : ", performance_logger.user_requests)
-                # for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
-                #     for i, out in enumerate(gridcell_dqn.agents.grid_outlets):
-                #         add_value_to_pickle(
-                #             os.path.join(reward_info_path, f"reward_info.pkl"),
-                #             (out.__class__.__name__,out.dqn.environment.reward.serving_reward,
-                #             out.dqn.environment.reward.rejected_reward ,
-                #             out.dqn.environment.reward.wait_to_serve_reward ,
-                #             out.dqn.environment.reward.time_out_reward)
-                #         )
+                print(" performance_logger.user_requests : ", performance_logger.user_requests)
+                for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
+                    for i, out in enumerate(gridcell_dqn.agents.grid_outlets):
+                        add_value_to_pickle(
+                            os.path.join(reward_info_path, f"reward_info.pkl"),
+                            (out.__class__.__name__,out.dqn.environment.reward.serving_reward,
+                            out.dqn.environment.reward.rejected_reward ,
+                            out.dqn.environment.reward.wait_to_serve_reward ,
+                            out.dqn.environment.reward.time_out_reward)
+                        )
                 # for key, value in performance_logger.user_requests.items():
                 #     for outlet_name, val in value.items():
                 #         services_costs = 0
@@ -488,6 +488,16 @@ class Environment:
                     os.path.join(requests_with_out_time_path, f"requests_with_out_time.pkl"),
                     performance_logger.queue_requests_with_time_out_buffer,
                 )
+                for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
+                    for i, out in enumerate(gridcell_dqn.agents.grid_outlets):
+                        states=[]
+                        for st in out.dqn.agents.memory:
+                            states.append(st[1])
+
+                        add_value_to_pickle(
+                            os.path.join(states_of_memory_path, f"states_of_memory_path{i}.pkl"),
+                            states,
+                        )
 
                 list_ = []
                 for ind, gridcell_dqn in enumerate(self.gridcells_dqn):

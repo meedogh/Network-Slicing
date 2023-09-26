@@ -1,4 +1,3 @@
-
 import random
 from collections import deque
 import traci
@@ -6,28 +5,12 @@ import random as ra
 from scipy.stats import beta
 from Utils.Bandwidth import Bandwidth
 from Utils.Cost import RequestCost, TowerCost
-from .helpers import add_value_to_pickle
 from .logging_rl import logging_important_info_for_testing
-from .. import env_variables
 from .mask_generation import *
-from Environment.utils.paths import *
-
-
-def rolling_average(data, window_size):
-    # Convert the data to a NumPy array with float type
-    data_array = np.array(data, dtype=np.float64)
-    # Calculate the rolling average using convolution with a window of ones
-    weights = np.ones(window_size) / window_size
-    rolling_avg = np.convolve(data_array, weights, mode='valid')
-    # for i in range(len(data) - window_size + 1):
-    #     window_sum = sum(data[i:i + window_size])
-    #     rolling_avg = window_sum / window_size
-    return rolling_avg
 
 
 def centralize_state_action(gridcells_dqn, step, performance_logger):
     number_of_services = 3
-    print("step inside centralize agent :  ", step )
     performance_logger.number_of_periods_until_now = 1
 
     for gridcell in gridcells_dqn:
@@ -81,7 +64,7 @@ def centralize_state_action(gridcells_dqn, step, performance_logger):
                         count_zero += 1
                 if count_zero == 3:
                     supported[0] = 1
-                outlet.supported_services = [1,1,1]
+                outlet.supported_services = [1, 1, 1]
 
             if step > 2:
                 # if (
@@ -100,8 +83,6 @@ def centralize_state_action(gridcells_dqn, step, performance_logger):
                         action = action.item()
                     outlet.supported_services.append(action)
                     list_flags.append(flag)
-
-
 
                 # if (
                 #         env_variables.advisor_period[0]
@@ -126,7 +107,7 @@ def centralize_state_action(gridcells_dqn, step, performance_logger):
                 #             action = action.item()
                 #         outlet.supported_services.append(action)
                 #         list_flags.append(flag)
-               # centralize random actions for supported services
+                # centralize random actions for supported services
                 if sum(outlet.supported_services) == 0:
                     while True:
                         a = random.randint(0, 1)
@@ -219,7 +200,6 @@ def centralize_nextstate_reward(gridcells_dqn):
 
 def serving_requests(performancelogger, outlet, start_time, service_):
     if outlet not in performancelogger.queue_requests_with_execution_time_buffer:
-        # _queue_requests_with_execution_time_buffer
         performancelogger.queue_requests_with_execution_time_buffer[outlet] = dict()
     if outlet not in performancelogger.queue_requested_buffer:
         performancelogger.queue_requested_buffer[outlet] = deque([])
@@ -242,14 +222,13 @@ def serving_requests(performancelogger, outlet, start_time, service_):
 
 def provisioning_time_services(outlets, performance_logger, time_step_simulation):
     for i, outlet in enumerate(outlets):
-        if outlet.__class__.__name__ == 'Wifi' :
+        if outlet.__class__.__name__ == 'Wifi':
             count = 0
             terminated_services = []
             for service, time in performance_logger.queue_requests_with_execution_time_buffer[outlet].items():
                 start_time = time[0]
                 period_of_termination = time[1]
                 if start_time + period_of_termination == time_step_simulation:
-                    # print("terminated :   .......   ")
                     count = count + 1
                     terminated_services.append(service)
                     outlet.current_capacity = outlet.current_capacity + service.service_power_allocate
@@ -283,9 +262,9 @@ def check_timed_out(performance_logger, outlet, request_time_out_period, demandi
             current_capacity += service.service_power_allocate
 
     if current_capacity >= request_power_allocation:
-        return 0,current_capacity
+        return 0, current_capacity
     else:
-        return 1,current_capacity
+        return 1, current_capacity
 
 
 def buffering_not_served_requests(outlets, performancelogger, time_step_simulation, satellite):
@@ -294,12 +273,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
             services_timed_out = []
             service_moved_to_served = []
             # services = list(performancelogger.queue_waiting_requests_in_buffer[outlet])
-            # print("befor services: ", services)
             # services.sort(key=lambda ser: (ser[0].service_power_allocate, ser[0].time_out))
-            # for ser in services :
-            #     print("power  : ",ser[0].service_power_allocate)
-            #     print("time  : ", ser[0].time_out)
-            # print("after services: ",services)
             # performancelogger.queue_waiting_requests_in_buffer[outlet] = deque(services)
 
             for i, (service, flag) in enumerate(performancelogger.queue_waiting_requests_in_buffer[outlet]):
@@ -354,12 +328,9 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             outlet.dqn.environment.state.time_out_flag = 1
                             outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(
                                 45)
-                            # print("action ", outlet.dqn.agents.action.command.action_value_decentralize)
-                            # print("state time out  : ", outlet.dqn.environment.state.state_value_decentralize)
-                            # add_value_to_pickle('c',outlet.dqn.environment.state.next_state_decentralize)
-                            # print("next state time out : ", outlet.dqn.environment.state.next_state_decentralize)
+
                             outlet.dqn.environment.reward.reward_value = -10
-                            outlet.dqn.environment.reward.time_out_reward+=-10
+                            outlet.dqn.environment.reward.time_out_reward += -10
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                             # print("outlet.dqn.environment.reward.reward_value_accumilated  : ",
@@ -382,7 +353,8 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                                 performancelogger.queue_waiting_requests_in_buffer[outlet]) > 0:
                             service_moved_to_served.append(service)
                             outlet.sum_of_costs_of_all_requests += service.total_cost_in_dolar
-                            performancelogger.queue_from_wait_to_serve_over_simulation[outlet].appendleft([service, True])
+                            performancelogger.queue_from_wait_to_serve_over_simulation[outlet].appendleft(
+                                [service, True])
                             outlet.dqn.environment.state.from_wait_to_serve_over_simulation = len(
                                 performancelogger.queue_from_wait_to_serve_over_simulation[outlet])
 
@@ -401,7 +373,6 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                                             performancelogger.user_requests[car][outlet_name][i][0] = True
                                             performancelogger.user_requests[car][outlet_name][i][
                                                 2] = service.total_cost_in_dolar
-
 
                             performancelogger.queue_ensured_buffer[outlet].appendleft(1)
                             outlet.dqn.environment.reward.services_requested = len(
@@ -449,7 +420,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                                 45)
                             # print("from wait to serve next state : ",outlet.dqn.environment.state.next_state_decentralize)
                             outlet.dqn.environment.reward.reward_value = 10
-                            outlet.dqn.environment.reward.wait_to_serve_reward+=10
+                            outlet.dqn.environment.reward.wait_to_serve_reward += 10
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                             # print("outlet.dqn.environment.reward.reward_value_accumilated  : ",
@@ -466,7 +437,6 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                                 outlet.dqn.environment.state.next_state_decentralize,
                             )
 
-
             for ser in services_timed_out:
                 performancelogger.queue_waiting_requests_in_buffer[outlet].remove([ser, True])
             choosing_abort_requests(performancelogger, outlet)
@@ -475,29 +445,28 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                     performancelogger.queue_waiting_requests_in_buffer[outlet].remove([ser, True])
 
 
-def choosing_abort_requests(performance_logger,outlet):
+def choosing_abort_requests(performance_logger, outlet):
     alpha = 1
     beta_value = 3
     # Generate random probabilities from the beta distribution
     timeout_durations = []
     remaining_time_out_duration = []
     # Normalize the timeout durations between 0 and 1 for the beta distribution
-    for i,(service,flag) in enumerate(performance_logger.queue_waiting_requests_in_buffer[outlet]):
-        if flag == True :
+    for i, (service, flag) in enumerate(performance_logger.queue_waiting_requests_in_buffer[outlet]):
+        if flag == True:
             timeout_durations.append(service.time_out)
             remaining_time_out_duration.append(service.remaining_time_out)
     normalized_timeouts = [1 - (el2 / el1) for el1, el2 in zip(timeout_durations, remaining_time_out_duration)]
     # Calculate the percent point function (inverse of the CDF)
     vals = beta.ppf(normalized_timeouts, alpha, beta_value)
     aborted_services = []
-    for i,(service , flag) in enumerate(performance_logger.queue_waiting_requests_in_buffer[outlet]):
+    for i, (service, flag) in enumerate(performance_logger.queue_waiting_requests_in_buffer[outlet]):
         if flag == True:
-            if vals[i] >=0.3 :
+            if vals[i] >= 0.3:
                 aborted_services.append(service)
     outlet.abort_requests += len(aborted_services)
-    for ser in aborted_services :
+    for ser in aborted_services:
         performance_logger.queue_waiting_requests_in_buffer[outlet].remove([ser, True])
-
 
 
 def outlet_max_waiting_buffer_length(outlet):
@@ -511,7 +480,7 @@ def outlet_max_waiting_buffer_length(outlet):
         return 500
 
 
-def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,service,start_time, satellite ,info):
+def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, service, start_time, satellite, info):
     # print(" outlet.supported_services  :  ", outlet.supported_services)
     if sum(outlet.supported_services) != 0:
         for gridcell in gridcells_dqn:
@@ -519,18 +488,16 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
                 if outlet == outlet_:
                     # print("equals outlets : ")
                     service_index = service._dec_services_types_mapping[service.__class__.__name__]
-                    #outlet.__class__.__name__ == 'Wifi'  and
-                    if outlet.__class__.__name__ == 'Wifi'  and outlet.supported_services[service_index] == 1:
+                    # outlet.__class__.__name__ == 'Wifi'  and
+                    if outlet.__class__.__name__ == 'Wifi' and outlet.supported_services[service_index] == 1:
                         if len(performance_logger.queue_waiting_requests_in_buffer[
-                                    outlet]) < outlet_max_waiting_buffer_length(outlet):
+                                   outlet]) < outlet_max_waiting_buffer_length(outlet):
                             request_bandwidth = Bandwidth(service.bandwidth, service.criticality)
                             request_cost = RequestCost(request_bandwidth, service.realtime)
                             # request_cost.cost_setter(service.realtime)
                             service.cost_in_bit_rate = request_cost.cost_setter(outlet)
                             service.service_power_allocate = request_bandwidth.allocated
                             service.total_cost_in_dolar = service.calculate_service_cost_in_Dolar_per_bit()
-                            # print("service.cost : ", service.total_cost_in_dolar)
-                            # print("service.service_power_allocate : ", service.service_power_allocate)
                             outlet._max_capacity = outlet.set_max_capacity(outlet.__class__.__name__)
                             gridcell.environment.state._max_capacity_each_outlet[j] = outlet._max_capacity
                             gridcell.environment.state._capacity_each_tower[j] = outlet.current_capacity
@@ -543,20 +510,18 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
                             service.time_out = service.calculate_time_out()
                             service.time_execution = service.calculate_processing_time()
 
-                            path = f"{request_info}outlet_{outlet.__class__.__name__}.pkl"
-                            main_string = service.__class__.__name__
-
-                            substring_dec = {'Safety': "SAFETY",
-                                             'Entertainment': "ENTERTAINMENT",
-                                             'Autonomous': "AUTONOMOUS"}
-
-                            for key, value1 in substring_dec.items():
-                                if key in main_string:
-                                    value = (value1, service.service_power_allocate, service.time_out,
-                                             service.time_execution, start_time)
-                                    add_value_to_pickle(path, value)
-
-
+                            # path = f"{request_info}outlet_{outlet.__class__.__name__}.pkl"
+                            # main_string = service.__class__.__name__
+                            #
+                            # substring_dec = {'Safety': "SAFETY",
+                            #                  'Entertainment': "ENTERTAINMENT",
+                            #                  'Autonomous': "AUTONOMOUS"}
+                            #
+                            # for key, value1 in substring_dec.items():
+                            #     if key in main_string:
+                            #         value = (value1, service.service_power_allocate, service.time_out,
+                            #                  service.time_execution, start_time)
+                            #         add_value_to_pickle(path, value)
                             service.remaining_time_out = outlet.dqn.environment.state.remaining_time_out
                             outlet.dqn.environment.state.remaining_time_out = service.time_out
                             service.remaining_time_out = outlet.dqn.environment.state.remaining_time_out
@@ -570,24 +535,17 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
                             #                                                              start_time,
                             #                                                              service.service_power_allocate,
                             #                                                              outlet.current_capacity)
-                                #
-                                # print("flag  : " , outlet.dqn.environment.state.time_out_flag,"   ",copy_of_capacity ,"  ",outlet._max_capacity)
-                                # service.tower_capacity_before_time_out_step = copy_of_capacity
-                                    # print("copy_of_capacity : >>>>  " , service.tower_capacity_before_time_out_step)
+                            #
+                            # print("flag  : " , outlet.dqn.environment.state.time_out_flag,"   ",copy_of_capacity ,"  ",outlet._max_capacity)
+                            # service.tower_capacity_before_time_out_step = copy_of_capacity
+                            # print("copy_of_capacity : >>>>  " , service.tower_capacity_before_time_out_step)
                             # else:
                             #     outlet.dqn.environment.state.time_out_flag = 0
 
                             if outlet.dqn.environment.state.time_out_flag == 1:
-                                # print("....1....")
                                 outlet.dqn.environment.state.number_of_timed_out_requests_from_algorithm += 1
 
-                                # print("flag 1 : ",
-                                #       outlet.dqn.environment.state.number_of_timed_out_requests_from_algorithm)
-
                             if outlet.dqn.environment.state.time_out_flag == 0:
-                                # print("flag  : " , outlet.dqn.environment.state.time_out_flag,"   ",copy_of_capacity ,outlet._max_capacity)
-
-                                # print("flag : zero ")
                                 outlet.dqn.environment.state.tower_capacity_before_time_out_step_service = service.tower_capacity_before_time_out_step
 
                                 outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state(
@@ -600,15 +558,7 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
                                     outlet.dqn.agents.epsilon,
                                 )
                                 action = outlet.dqn.agents.action.command.action_value_decentralize
-
-                                # print("action ", action)
-
                                 if action == 0:
-                                    # print("rejecting state : " , outlet.dqn.environment.state.state_value_decentralize)
-                                    # add_value_to_pickle(
-                                    #     'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//rejected_state.pkl',
-                                    #     outlet.dqn.environment.state.state_value_decentralize)
-                                    #service.tower_capacity_before_time_out_step
                                     outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                                     outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
                                     outlet.dqn.environment.state.waiting_buffer_len = len(
@@ -625,7 +575,7 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
 
                                     # print("rejecting next state : ", outlet.dqn.environment.state.next_state_decentralize)
                                     outlet.dqn.environment.reward.reward_value = lr
-                                    outlet.dqn.environment.reward.rejected_reward+=-1
+                                    outlet.dqn.environment.reward.rejected_reward += -1
                                     # print("outlet.dqn.environment.reward.reward_value_accumilated  : ", outlet.dqn.environment.reward.reward_value_accumilated)
                                     outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                                     outlet.dqn.environment.state.timed_out_length = 0
@@ -651,7 +601,8 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
                                         outlet2 = info[0][1]
                                         info[0].pop(0)
                                         performance_logger.set_user_requests(outlet2, car, service, False)
-                                        request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet2, service,
+                                        request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet2,
+                                                                  service,
                                                                   start_time, satellite, info)
 
                                     else:
@@ -661,12 +612,13 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
                                         satellite.rejected_requests_buffer.append(service)
                                         satellite.sum_of_costs_of_all_requests += service.total_cost_in_dolar
                                         performance_logger.set_user_requests(satellite, car, service, False)
-                                        for car,outlet_inner_dect in performance_logger.user_requests.items():
-                                            for outlet_name,services in outlet_inner_dect.items():
+                                        for car, outlet_inner_dect in performance_logger.user_requests.items():
+                                            for outlet_name, services in outlet_inner_dect.items():
                                                 for i, (ser, flag, cost) in enumerate(services):
-                                                    if service == ser and outlet_name == satellite.__class__.__name__ :
+                                                    if service == ser and outlet_name == satellite.__class__.__name__:
                                                         performance_logger.user_requests[car][outlet_name][i][1] = True
-                                                        performance_logger.user_requests[car][outlet_name][i][2] = service.total_cost_in_dolar
+                                                        performance_logger.user_requests[car][outlet_name][i][
+                                                            2] = service.total_cost_in_dolar
                                         break
 
                                 if action == 1 and len(
@@ -689,17 +641,14 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
                                         #       outlet.dqn.environment.state.state_value_decentralize)
                                         outlet.sum_of_costs_of_all_requests += service.total_cost_in_dolar
 
-                                        for car,outlet_inner_dect  in performance_logger.user_requests.items():
-                                            for outlet_name,services in outlet_inner_dect.items() :
-                                                for i , (ser, flag , cost) in enumerate(services) :
+                                        for car, outlet_inner_dect in performance_logger.user_requests.items():
+                                            for outlet_name, services in outlet_inner_dect.items():
+                                                for i, (ser, flag, cost) in enumerate(services):
                                                     if service == ser and outlet_name == outlet.__class__.__name__:
-                                                        performance_logger.user_requests[car][outlet_name][i][1]=True
+                                                        performance_logger.user_requests[car][outlet_name][i][1] = True
                                                         performance_logger.user_requests[car][outlet_name][i][
                                                             2] = service.total_cost_in_dolar
 
-                                        # add_value_to_pickle(
-                                        #     'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//served_state.pkl',
-                                        #     outlet.dqn.environment.state.state_value_decentralize)
                                         outlet.dqn.environment.state.waiting_buffer_len = len(
                                             performance_logger.queue_waiting_requests_in_buffer[outlet])
 
@@ -707,7 +656,7 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
                                         service.remaining_time_out = outlet.dqn.environment.state.remaining_time_out
 
                                         outlet.dqn.environment.state.time_out_flag = 0
-                                        outlet.dqn.environment.state.tower_capacity_before_time_out_step_service = service.tower_capacity_before_time_out_step -service.service_power_allocate
+                                        outlet.dqn.environment.state.tower_capacity_before_time_out_step_service = service.tower_capacity_before_time_out_step - service.service_power_allocate
 
                                         outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.agents.action.command.action_object.execute(
                                             outlet.dqn.environment.state,
@@ -721,7 +670,7 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
                                             performance_logger.queue_ensured_buffer[outlet])
 
                                         outlet.dqn.environment.reward.reward_value = 10
-                                        outlet.dqn.environment.reward.serving_reward+=10
+                                        outlet.dqn.environment.reward.serving_reward += 10
 
                                         outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                                         # print("outlet.dqn.environment.reward.reward_value_accumilated  : ", outlet.dqn.environment.reward.reward_value_accumilated)
@@ -778,8 +727,8 @@ def request_reject_acceptance(car , performance_logger,gridcells_dqn,outlet,serv
                                         [service, True])
                                     outlet.dqn.environment.state.wasting_buffer_length = len(
                                         performance_logger.queue_wasted_req_buffer[outlet])
-                        #outlet.__class__.__name__ == 'Wifi'
-                        if outlet.__class__.__name__ == 'Wifi' and len(performance_logger.queue_waiting_requests_in_buffer[outlet]) != 0 \
+                        if outlet.__class__.__name__ == 'Wifi' and len(
+                                performance_logger.queue_waiting_requests_in_buffer[outlet]) != 0 \
                                 and len(performance_logger.queue_waiting_requests_in_buffer[
                                             outlet]) >= outlet_max_waiting_buffer_length(outlet):
                             performance_logger.queue_wasted_req_buffer[outlet].appendleft(
@@ -792,21 +741,11 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
     car.attach(observer)
     car.set_state(
         float(round(traci.vehicle.getPosition(car.id)[0], 4)),
-        float(round(traci.vehicle.getPosition(car.id)[1], 4)),)
+        float(round(traci.vehicle.getPosition(car.id)[1], 4)), )
     info = car.send_request()
     if info != None:
         outlet = info[0][0]
         service = info[1][2]
-        performance_logger.set_user_requests(outlet, car, service,False)
-        # for key, value in performance_logger.user_requests.items():
-        #     counter = 0
-        #     for outlet_name , val in value.items():
-        #         if val:
-        #             for (ser, flag, cost) in val:
-        #                 if service == ser:
-        #                     counter += 1
-        #             print("times ", "     ", counter)
-        #         print("car : ",car , "    number of outlets : ", value)
+        performance_logger.set_user_requests(outlet, car, service, False)
         performance_logger.generated_requests_over_simulation.appendleft(1)
-        # print("user_requests : ", performance_logger.user_requests)
-        request_reject_acceptance(car , performance_logger, gridcells_dqn, outlet, service,start_time, satellite,info)
+        request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, service, start_time, satellite, info)
