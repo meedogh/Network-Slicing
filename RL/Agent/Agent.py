@@ -94,9 +94,9 @@ class Agent(AbstractAgent):
         return list(samples_to_remove.keys())
 
     def replay_buffer_decentralize(self, batch_size, model):
-        filtered_samples_indices = self.filter_buffer(model)
-        updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
-        self.memory = updated_deque
+        # filtered_samples_indices = self.filter_buffer(model)
+        # updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
+        # self.memory = updated_deque
         minibatch = random.sample(self.memory, batch_size)
         for exploitation, state, action, reward, next_state in minibatch:
             target = reward
