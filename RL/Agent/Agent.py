@@ -70,15 +70,19 @@ class Agent(AbstractAgent):
 
         def find_median_first_half(data):
             n = len(data)
-            half_length = n // 2 if n % 2 == 0 else (n - 1) // 2
-            # first_half_length = half_length // 2 if half_length % 2 == 0 else (half_length - 1) // 2
+            if n > 1 :
+                half_length = n // 2 if n % 2 == 0 else (n - 1) // 2
+                # first_half_length = half_length // 2 if half_length % 2 == 0 else (half_length - 1) // 2
 
-            if n % 2 == 0:
-                median_first_half = (data[half_length] + data[half_length - 1]) / 2
-            else:
-                median_first_half = data[half_length]
-            return median_first_half
-
+                if n % 2 == 0:
+                    median_first_half = (data[half_length] + data[half_length - 1]) / 2
+                else:
+                    median_first_half = data[half_length]
+                return median_first_half
+            elif len(data)==1 :
+                return data[0]
+            elif len(data)==0:
+                return None
         dictionary_sample_loss = dict()
         for index, (exploration, state, action, reward, next_state, prob) in enumerate(self.memory):
             if next_state is not None:
@@ -96,15 +100,20 @@ class Agent(AbstractAgent):
                     self.memory[index] = updated_tuple
         sorted_dict = dict(sorted(dictionary_sample_loss.items(), key=lambda item: item[1]))
         median = find_median_first_half(list(sorted_dict.values()))
-        samples_to_remove = remove_below_threshold(sorted_dict, median)
-        return list(samples_to_remove.keys())
+        if median != None :
+            samples_to_remove = remove_below_threshold(sorted_dict, median)
+            return list(samples_to_remove.keys())
+        else :
+            return None
 
     def replay_buffer_decentralize(self, batch_size, model):
         # print("self memory before filtering : ",self.memory )
         # print("len before : ", len(self.memory))
         filtered_samples_indices = self.filter_buffer(model)
-        updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
-        self.memory = updated_deque
+        if filtered_samples_indices != None :
+            updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
+            self.memory = updated_deque
+
         # print("self memory after filtering : ", self.memory)
         # print("len after : ", len(self.memory))
         minibatch = random.sample(self.memory, batch_size)
