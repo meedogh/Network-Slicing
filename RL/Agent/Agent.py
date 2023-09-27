@@ -72,6 +72,7 @@ class Agent(AbstractAgent):
             n = len(data)
             half_length = n // 2 if n % 2 == 0 else (n - 1) // 2
             # first_half_length = half_length // 2 if half_length % 2 == 0 else (half_length - 1) // 2
+
             if n % 2 == 0:
                 median_first_half = (data[half_length] + data[half_length - 1]) / 2
             else:
@@ -79,7 +80,6 @@ class Agent(AbstractAgent):
             return median_first_half
 
         dictionary_sample_loss = dict()
-        # print(" self.memory : befor : ", self.memory)
         for index, (exploration, state, action, reward, next_state, prob) in enumerate(self.memory):
             if next_state is not None:
                 if prob == 0.0:
@@ -94,21 +94,17 @@ class Agent(AbstractAgent):
                     dictionary_sample_loss[index] = loss
                     updated_tuple = (exploration, state, action, reward, next_state, loss)
                     self.memory[index] = updated_tuple
-
-        # print("self.memory : ", self.memory)
         sorted_dict = dict(sorted(dictionary_sample_loss.items(), key=lambda item: item[1]))
-        # print("sorted_dict  : ", sorted_dict)
         median = find_median_first_half(list(sorted_dict.values()))
         samples_to_remove = remove_below_threshold(sorted_dict, median)
-        # print(" samples_to_remove : ", samples_to_remove)
         return list(samples_to_remove.keys())
 
     def replay_buffer_decentralize(self, batch_size, model):
         # print("self memory before filtering : ",self.memory )
         # print("len before : ", len(self.memory))
-        # filtered_samples_indices = self.filter_buffer(model)
-        # updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
-        # self.memory = updated_deque
+        filtered_samples_indices = self.filter_buffer(model)
+        updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
+        self.memory = updated_deque
         # print("self memory after filtering : ", self.memory)
         # print("len after : ", len(self.memory))
         minibatch = random.sample(self.memory, batch_size)
