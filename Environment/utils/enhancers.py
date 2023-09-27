@@ -119,7 +119,7 @@ def centralize_state_action(gridcells_dqn, step, performance_logger):
                     outlet.supported_services = [a, b, c]
 
                 actions.extend(outlet.supported_services)
-            print("outlet.supported_services : ", outlet.supported_services)
+            # print("outlet.supported_services : ", outlet.supported_services)
             outlet.dqn.environment.state.supported_services = outlet.supported_services
 
         # gridcell.agents.action.command.action_objects = actions_objects

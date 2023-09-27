@@ -356,7 +356,6 @@ class Environment:
                 self.temp_outlets.append(outlet)
 
         load_weigths_buffer(self.gridcells_dqn[0])
-        number_of_decentralize_periods = 0
         while step < env_variables.TIME:
             process = psutil.Process()
             memory_usage = process.memory_info().rss / 1024.0 / 1024.0  # Convert to MB

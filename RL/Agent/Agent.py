@@ -98,6 +98,7 @@ class Agent(AbstractAgent):
         # updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
         # self.memory = updated_deque
         minibatch = random.sample(self.memory, batch_size)
+        target= 0
         for exploitation, state, action, reward, next_state in minibatch:
             target = reward
             if next_state is not None:
