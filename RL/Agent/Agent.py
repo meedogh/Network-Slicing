@@ -67,6 +67,7 @@ class Agent(AbstractAgent):
     def filter_buffer(self, model):
         def remove_below_threshold(dictionary, threshold):
             return {key: value for key, value in dictionary.items() if value < threshold}
+
         def find_median_first_half(data):
             n = len(data)
             half_length = n // 2 if n % 2 == 0 else (n - 1) // 2
@@ -76,37 +77,51 @@ class Agent(AbstractAgent):
             else:
                 median_first_half = data[half_length]
             return median_first_half
-        dictionary_sample_loss = dict()
-        for index ,(exploration, state, action, reward, next_state) in enumerate(self.memory):
-            if next_state is not None:
-                next_state = np.array(next_state).reshape([1, np.array(next_state).shape[0]])
-                state = np.array(state).reshape([1, np.array(state).shape[0]])
-                logit_value = model.predict(next_state, verbose=0)[0]
-                qvalue_for_state = model.predict(state,verbose=0)[0]
-                qvalue_for_state_max = np.amax(qvalue_for_state)
-                target = reward + self.gamma * np.amax(logit_value)
-                loss = math.pow((target - qvalue_for_state_max),2)
-                dictionary_sample_loss[index] = loss
 
+        dictionary_sample_loss = dict()
+        # print(" self.memory : befor : ", self.memory)
+        for index, (exploration, state, action, reward, next_state, prob) in enumerate(self.memory):
+            if next_state is not None:
+                if prob == 0.0:
+                    sh = np.array(next_state).shape
+                    next_state = np.array(next_state).reshape([1, max(sh)])
+                    state = np.array(state).reshape([1, max(sh)])
+                    logit_value = model.predict(next_state, verbose=0)[0]
+                    qvalue_for_state = model.predict(state, verbose=0)[0]
+                    qvalue_for_state_max = np.amax(qvalue_for_state)
+                    target = reward + self.gamma * np.amax(logit_value)
+                    loss = math.pow((target - qvalue_for_state_max), 2)
+                    dictionary_sample_loss[index] = loss
+                    updated_tuple = (exploration, state, action, reward, next_state, loss)
+                    self.memory[index] = updated_tuple
+
+        # print("self.memory : ", self.memory)
         sorted_dict = dict(sorted(dictionary_sample_loss.items(), key=lambda item: item[1]))
+        # print("sorted_dict  : ", sorted_dict)
         median = find_median_first_half(list(sorted_dict.values()))
-        samples_to_remove = remove_below_threshold(sorted_dict,median)
+        samples_to_remove = remove_below_threshold(sorted_dict, median)
+        # print(" samples_to_remove : ", samples_to_remove)
         return list(samples_to_remove.keys())
 
     def replay_buffer_decentralize(self, batch_size, model):
-        # filtered_samples_indices = self.filter_buffer(model)
-        # updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
-        # self.memory = updated_deque
+        # print("self memory before filtering : ",self.memory )
+        # print("len before : ", len(self.memory))
+        filtered_samples_indices = self.filter_buffer(model)
+        updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
+        self.memory = updated_deque
+        # print("self memory after filtering : ", self.memory)
+        # print("len after : ", len(self.memory))
         minibatch = random.sample(self.memory, batch_size)
-        target= 0
-        for exploitation, state, action, reward, next_state in minibatch:
+        target = 0
+        for exploitation, state, action, reward, next_state, prob in minibatch:
             target = reward
             if next_state is not None:
-                next_state = np.array(next_state).reshape([1, np.array(next_state).shape[0]])
+                sh = np.array(next_state).shape
+                next_state = np.array(next_state).reshape([1, max(sh)])
                 # logit_model2 = keras.Model(inputs=model.input, outputs=model.layers[-2].output)
                 logit_value = model.predict(next_state, verbose=0)[0]
                 target = reward + self.gamma * np.amax(logit_value)
-            state = np.array(state).reshape([1, np.array(state).shape[0]])
+                state = np.array(state).reshape([1, max(sh)])
             target_f = model.predict(state, verbose=0)
             target_f[0][action] = target
             model.fit(state, target_f, epochs=1, verbose=0)
@@ -213,10 +228,10 @@ class Agent(AbstractAgent):
     def remember(self, flag, state, action, reward, next_state):
         self.memory.append((flag, state, action, reward, next_state))
 
-    def remember_decentralize(self, flag, state, action, reward, next_state):
+    def remember_decentralize(self, flag, state, action, reward, next_state, probability):
 
         # print(supported_services, "  \n  ",flag  , "  \n  ", state, "  \n  ", action, "  \n  ", reward, "  \n  ", next_state)
-        self.memory.append((flag, state, action, reward, next_state))
+        self.memory.append((flag, state, action, reward, next_state,probability))
 
     def chain_dec(self, model, state, epsilon):
         "A chain with a default first successor"

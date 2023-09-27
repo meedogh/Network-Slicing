@@ -346,6 +346,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                                 outlet.dqn.agents.action.command.action_value_decentralize,
                                 outlet.dqn.environment.reward.reward_value,
                                 outlet.dqn.environment.state.next_state_decentralize,
+                                0.0
 
                             )
 
@@ -435,6 +436,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                                 outlet.dqn.agents.action.command.action_value_decentralize,
                                 outlet.dqn.environment.reward.reward_value,
                                 outlet.dqn.environment.state.next_state_decentralize,
+                                0.0
                             )
 
             for ser in services_timed_out:
@@ -594,6 +596,7 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                         outlet.dqn.agents.action.command.action_value_decentralize,
                                         outlet.dqn.environment.reward.reward_value,
                                         outlet.dqn.environment.state.next_state_decentralize,
+                                        0.0
 
                                     )
 
@@ -689,6 +692,7 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                         outlet.dqn.agents.action.command.action_value_decentralize,
                                         outlet.dqn.environment.reward.reward_value,
                                         outlet.dqn.environment.state.next_state_decentralize,
+                                        0.0
 
                                     )
                                     if served == False:
