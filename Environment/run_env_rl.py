@@ -535,7 +535,7 @@ class Environment:
             step_for_each_episode_change_period += 1
             self.steps += 1
             if step == 50 * 320:
-                save_weigths_buffer(self.gridcells_dqn[0], 60)
+                save_weigths_buffer(self.gridcells_dqn[0], 50)
             if step == 60 * 320:
                 save_weigths_buffer(self.gridcells_dqn[0], 60)
             if step == 70 * 320:
