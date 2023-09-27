@@ -106,9 +106,9 @@ class Agent(AbstractAgent):
     def replay_buffer_decentralize(self, batch_size, model):
         # print("self memory before filtering : ",self.memory )
         # print("len before : ", len(self.memory))
-        filtered_samples_indices = self.filter_buffer(model)
-        updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
-        self.memory = updated_deque
+        # filtered_samples_indices = self.filter_buffer(model)
+        # updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
+        # self.memory = updated_deque
         # print("self memory after filtering : ", self.memory)
         # print("len after : ", len(self.memory))
         minibatch = random.sample(self.memory, batch_size)
