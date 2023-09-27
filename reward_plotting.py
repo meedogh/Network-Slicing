@@ -3,8 +3,8 @@ import pickle
 import sys
 
 outlet_num = 0
-results_dir = os.path.join(sys.path[0],f"action_each_single_request_reward_method4_add_init_10_11_12_no_protrization_less_failure_less_reward//reward_accumilated_decentralize//accu_reward{outlet_num}.pkl")
-results_dir2 = os.path.join(sys.path[0],f"action_each_single_request_reward_method4_add_init_10_11_12_no_protrization_less_failure_less_reward_2//reward_accumilated_decentralize//accu_reward{outlet_num}.pkl")
+results_dir = os.path.join(sys.path[0],f"action_each_single_request_reward_method4_add_init_10_11_12_no_protrization_less_failure_less_reward_memory_filtering//reward_accumilated_decentralize//accu_reward{outlet_num}.pkl")
+# results_dir2 = os.path.join(sys.path[0],f"action_each_single_request_reward_method4_add_init_10_11_12_no_protrization_less_failure_less_reward_2//reward_accumilated_decentralize//accu_reward{outlet_num}.pkl")
 
 
 # filename  = f"C://Users//Windows dunya//Downloads//action_each_single_request_reward2_method2_repeat_periods_each_episode_retrain_buffer_percentage_small_time_out_add_flag_small_state_my_reward_failure//reward_accumilated_decentralize//accu_reward{outlet_num}.pkl"
@@ -18,13 +18,13 @@ with open(results_dir, 'rb') as file:
     except EOFError:
         pass
 
-with open(results_dir2, 'rb') as file:
-    try:
-        while True:
-            loaded_value = pickle.load(file)
-            deque.append(loaded_value)
-    except EOFError:
-        pass
+# with open(results_dir2, 'rb') as file:
+#     try:
+#         while True:
+#             loaded_value = pickle.load(file)
+#             deque.append(loaded_value)
+#     except EOFError:
+#         pass
 
 
 
@@ -52,7 +52,7 @@ def rolling_average(data, window_size):
     return rolling_avg
 
 # Example usage:
-window_size = 16
+window_size = 1
 result = rolling_average(deque, window_size)
 print(len(deque))
 x_values = [i for i in range(len(result))]  # Adjust x-axis values

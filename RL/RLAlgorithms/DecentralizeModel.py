@@ -1,11 +1,8 @@
 from keras import Sequential
 from keras.layers import Dense, Reshape
-import  tensorflow as tf
 from keras.optimizers import Adam
 from keras.models import load_model
-from itertools import product
-from keras.layers import Input, Dense, Lambda
-from keras.models import Model
+from keras.layers import Dense
 class DecentralizeModel():
     def __init__(self, state_size = 4, action_size =2, activation_function = "relu", loss_function = "mse", optimization_algorithm = Adam,
                  learning_rate = 0.0001, output_activation = "sigmoid", **kwargs):

@@ -528,19 +528,19 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
 
                             outlet.dqn.environment.state.time_out_flag = 0
 
-                            # if len(performance_logger.queue_waiting_requests_in_buffer) > 0:
-                            #     outlet.dqn.environment.state.time_out_flag,copy_of_capacity = check_timed_out(performance_logger,
-                            #                                                              outlet,
-                            #                                                              service.time_out,
-                            #                                                              start_time,
-                            #                                                              service.service_power_allocate,
-                            #                                                              outlet.current_capacity)
+                            if len(performance_logger.queue_waiting_requests_in_buffer) > 0:
+                                outlet.dqn.environment.state.time_out_flag,copy_of_capacity = check_timed_out(performance_logger,
+                                                                                         outlet,
+                                                                                         service.time_out,
+                                                                                         start_time,
+                                                                                         service.service_power_allocate,
+                                                                                         outlet.current_capacity)
                             #
                             # print("flag  : " , outlet.dqn.environment.state.time_out_flag,"   ",copy_of_capacity ,"  ",outlet._max_capacity)
                             # service.tower_capacity_before_time_out_step = copy_of_capacity
                             # print("copy_of_capacity : >>>>  " , service.tower_capacity_before_time_out_step)
-                            # else:
-                            #     outlet.dqn.environment.state.time_out_flag = 0
+                            else:
+                                outlet.dqn.environment.state.time_out_flag = 0
 
                             if outlet.dqn.environment.state.time_out_flag == 1:
                                 outlet.dqn.environment.state.number_of_timed_out_requests_from_algorithm += 1

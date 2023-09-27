@@ -3,6 +3,7 @@ from typing import List
 from Communications.IComs import Communications
 from Outlet.Cellular.ICellular import Cellular
 from Outlet.Sat.sat import Satellite
+from RL.RLAlgorithms.DecentralizeModel import DecentralizeModel
 from Utils.PerformanceLoggerFifo import PerformanceLoggerFifo
 from .utils.imports import *
 from .utils.period import Period
@@ -414,19 +415,21 @@ class Environment:
             if self.steps - self.prev == self.snapshot_time:
                 self.prev = self.steps
                 take_snapshot_figures()
-
             else:
                 close_figures()
-            #
             if self.steps - self.previous_steps >= env_variables.decentralized_replay_buffer:
                 self.previous_steps = self.steps
                 for i, outlet in enumerate(self.temp_outlets):
-                        if len(outlet.dqn.agents.memory) > 32:
-                            outlet.dqn.agents.qvalue = (
-                                outlet.dqn.agents.replay_buffer_decentralize(
-                                    32, outlet.dqn.model,
-                                )
+                    if len(outlet.dqn.agents.memory) > 32:
+                        # file_path = "decentralize_weights.hdf5"
+                        # if os.path.exists(file_path):
+                        #     outlet.dqn.model = DecentralizeModel().build_model()
+                        #     outlet.dqn.model.load_weights(file_path)
+                        outlet.dqn.agents.qvalue = (
+                            outlet.dqn.agents.replay_buffer_decentralize(
+                                32, outlet.dqn.model,
                             )
+                        )
             # if self.steps - self.previous_steps_of_update_target_model >= env_variables.decentralized_target_model_update:
             #     self.previous_steps_of_update_target_model = self.steps
             #     for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
@@ -531,20 +534,28 @@ class Environment:
             step += 1
             step_for_each_episode_change_period += 1
             self.steps += 1
-            if step == 90:
+            if step == 50 * 320:
+                save_weigths_buffer(self.gridcells_dqn[0], 60)
+            if step == 60 * 320:
+                save_weigths_buffer(self.gridcells_dqn[0], 60)
+            if step == 70 * 320:
+                save_weigths_buffer(self.gridcells_dqn[0], 70)
+            if step == 80 * 320:
+                save_weigths_buffer(self.gridcells_dqn[0], 80)
+            if step == 90 * 320:
                 save_weigths_buffer(self.gridcells_dqn[0], 90)
-            if step == 100:
-                save_weigths_buffer(self.gridcells_dqn[0], 100)
-            if step == 110:
-                save_weigths_buffer(self.gridcells_dqn[0], 110)
-            if step == 120:
-                save_weigths_buffer(self.gridcells_dqn[0], 120)
-            if step == 130:
-                save_weigths_buffer(self.gridcells_dqn[0], 130)
-            if step == 140:
-                save_weigths_buffer(self.gridcells_dqn[0], 140)
             if step == env_variables.TIME:
-                save_weigths_buffer(self.gridcells_dqn[0], 150)
+                save_weigths_buffer(self.gridcells_dqn[0], 100)
+            # if step == 110 * 320:
+            #     save_weigths_buffer(self.gridcells_dqn[0], 110)
+            # if step == 120 * 320:
+            #     save_weigths_buffer(self.gridcells_dqn[0], 120)
+            # if step == 130 * 320:
+            #     save_weigths_buffer(self.gridcells_dqn[0], 130)
+            # if step == 140 * 320:
+            #     save_weigths_buffer(self.gridcells_dqn[0], 140)
+            # if step == env_variables.TIME:
+            #     save_weigths_buffer(self.gridcells_dqn[0], 150)
 
         self.close()
 

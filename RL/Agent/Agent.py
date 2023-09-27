@@ -3,6 +3,7 @@ import os
 
 from collections import deque
 import random
+from keras import backend as K
 from RL.Agent.IAgent import AbstractAgent
 from RL.RLEnvironment.Action.ActionChain import Exploit, Explore, FallbackHandler
 import pickle
@@ -45,7 +46,6 @@ class Agent(AbstractAgent):
 
     @grid_outlets.setter
     def grid_outlets(self, list_):
-        # print("here : ", list_)
         self._grid_outlets = list_
 
     @property
@@ -68,8 +68,6 @@ class Agent(AbstractAgent):
         def remove_below_threshold(dictionary, threshold):
             return {key: value for key, value in dictionary.items() if value < threshold}
         def find_median_first_half(data):
-            # sorted_data = sorted(data)
-            # print(sorted_data)
             n = len(data)
             half_length = n // 2 if n % 2 == 0 else (n - 1) // 2
             # first_half_length = half_length // 2 if half_length % 2 == 0 else (half_length - 1) // 2
@@ -89,17 +87,16 @@ class Agent(AbstractAgent):
                 target = reward + self.gamma * np.amax(logit_value)
                 loss = math.pow((target - qvalue_for_state_max),2)
                 dictionary_sample_loss[index] = loss
+
         sorted_dict = dict(sorted(dictionary_sample_loss.items(), key=lambda item: item[1]))
         median = find_median_first_half(list(sorted_dict.values()))
         samples_to_remove = remove_below_threshold(sorted_dict,median)
         return list(samples_to_remove.keys())
 
     def replay_buffer_decentralize(self, batch_size, model):
-        filtered_samples_indices = self.filter_buffer(model)
-
-        updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
-        self.memory = updated_deque
-
+        # filtered_samples_indices = self.filter_buffer(model)
+        # updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
+        # self.memory = updated_deque
         minibatch = random.sample(self.memory, batch_size)
         for exploitation, state, action, reward, next_state in minibatch:
             target = reward
@@ -112,6 +109,9 @@ class Agent(AbstractAgent):
             target_f = model.predict(state, verbose=0)
             target_f[0][action] = target
             model.fit(state, target_f, epochs=1, verbose=0)
+        # model.save_weights(f"decentralize_weights.hdf5")
+        # del model
+        # K.clear_session()
         if self.epsilon > self.min_epsilon:
             self.epsilon -= self.epsilon * self.epsilon_decay
         return target
