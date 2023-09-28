@@ -307,6 +307,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                                 45)
                             # add_value_to_pickle('C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//time_out_state.pkl',
                             #                     outlet.dqn.environment.state.state_value_decentralize)
+                            # print("state time out  : ", outlet.dqn.environment.state.state_value_decentralize)
 
                             services_timed_out.append(service)
                             performancelogger.queue_time_out_from_simulation[outlet].appendleft([service, True])
@@ -330,8 +331,8 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(
                                 45)
 
-                            outlet.dqn.environment.reward.reward_value = -10
-                            outlet.dqn.environment.reward.time_out_reward += -10
+                            outlet.dqn.environment.reward.reward_value = 0
+                            outlet.dqn.environment.reward.time_out_reward += 0
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                             # print("outlet.dqn.environment.reward.reward_value_accumilated  : ",
@@ -531,19 +532,19 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
 
                             outlet.dqn.environment.state.time_out_flag = 0
 
-                            if len(performance_logger.queue_waiting_requests_in_buffer) > 0:
-                                outlet.dqn.environment.state.time_out_flag,copy_of_capacity = check_timed_out(performance_logger,
-                                                                                         outlet,
-                                                                                         service.time_out,
-                                                                                         start_time,
-                                                                                         service.service_power_allocate,
-                                                                                         outlet.current_capacity)
-                            #
-                            # print("flag  : " , outlet.dqn.environment.state.time_out_flag,"   ",copy_of_capacity ,"  ",outlet._max_capacity)
+                            # if len(performance_logger.queue_waiting_requests_in_buffer) > 0:
+                            #     outlet.dqn.environment.state.time_out_flag,copy_of_capacity = check_timed_out(performance_logger,
+                            #                                                              outlet,
+                            #                                                              service.time_out,
+                            #                                                              start_time,
+                            #                                                              service.service_power_allocate,
+                            #                                                              outlet.current_capacity)
+
+                                # print("flag  : " , outlet.dqn.environment.state.time_out_flag,"   ",copy_of_capacity ,"  ",outlet._max_capacity)
                             # service.tower_capacity_before_time_out_step = copy_of_capacity
                             # print("copy_of_capacity : >>>>  " , service.tower_capacity_before_time_out_step)
-                            else:
-                                outlet.dqn.environment.state.time_out_flag = 0
+                            # else:
+                            #     outlet.dqn.environment.state.time_out_flag = 0
 
                             if outlet.dqn.environment.state.time_out_flag == 1:
                                 outlet.dqn.environment.state.number_of_timed_out_requests_from_algorithm += 1
@@ -562,6 +563,8 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                 )
                                 action = outlet.dqn.agents.action.command.action_value_decentralize
                                 if action == 0:
+                                    # print("rejecting state : ",
+                                    #       outlet.dqn.environment.state.state_value_decentralize)
                                     outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                                     outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
                                     outlet.dqn.environment.state.waiting_buffer_len = len(

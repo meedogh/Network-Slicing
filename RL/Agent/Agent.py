@@ -96,6 +96,10 @@ class Agent(AbstractAgent):
                     dictionary_sample_loss[index] = loss
                     updated_tuple = (exploration, state, action, reward, next_state, loss)
                     self.memory[index] = updated_tuple
+            # if action == 0:
+                # print("prob of rejecting : ", self.memory[index][5])
+                # print("state rejecting : ", state)
+                # print("next state rejecting : ", next_state)
         sorted_dict = dict(sorted(dictionary_sample_loss.items(), key=lambda item: item[1]))
         median = find_median_first_half(list(sorted_dict.values()))
         if median != None :
@@ -105,14 +109,10 @@ class Agent(AbstractAgent):
             return None
 
     def replay_buffer_decentralize(self, batch_size, model):
-        # print("self memory before filtering : ",self.memory )
-        # print("len before : ", len(self.memory))
-        filtered_samples_indices = self.filter_buffer(model)
-        if filtered_samples_indices != None :
-            updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
-            self.memory = updated_deque
-        # print("self memory after filtering : ", self.memory)
-        # print("len after : ", len(self.memory))
+        # filtered_samples_indices = self.filter_buffer(model)
+        # if filtered_samples_indices != None :
+        #     updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
+        #     self.memory = updated_deque
         minibatch = random.sample(self.memory, batch_size)
         target = 0
         for exploitation, state, action, reward, next_state, prob in minibatch:
@@ -122,9 +122,13 @@ class Agent(AbstractAgent):
                 next_state = np.array(next_state).reshape([1, max(sh)])
                 # logit_model2 = keras.Model(inputs=model.input, outputs=model.layers[-2].output)
                 logit_value = model.predict(next_state, verbose=0)[0]
+                # print("next_state  : ", next_state)
+                # print("pred next_state : ", logit_value)
                 target = reward + self.gamma * np.amax(logit_value)
                 state = np.array(state).reshape([1, max(sh)])
+            # print("state : ",state)
             target_f = model.predict(state, verbose=0)
+            # print("pred state : ", target_f)
             target_f[0][action] = target
             model.fit(state, target_f, epochs=1, verbose=0)
         # model.save_weights(f"decentralize_weights.hdf5")
