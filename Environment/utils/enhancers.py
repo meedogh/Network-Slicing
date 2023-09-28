@@ -224,6 +224,7 @@ def provisioning_time_services(outlets, performance_logger, time_step_simulation
     for i, outlet in enumerate(outlets):
         if outlet.__class__.__name__ == 'Wifi':
             count = 0
+
             terminated_services = []
             for service, time in performance_logger.queue_requests_with_execution_time_buffer[outlet].items():
                 start_time = time[0]

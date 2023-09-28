@@ -67,7 +67,7 @@ exploitation_exploration_period = [number_of_episodes_for_each_period * episode_
 last_exploitation_period = [2 * number_of_episodes_for_each_period * episode_steps,
                             number_of_episodes_for_each_period * episode_steps * 3]
 decentralized_target_model_update = 32
-TIME = (100 * episode_steps) + 1
+TIME = (65* episode_steps) + 1
 day_time = 1280
 period1 = 0
 period2 = 10 * 320

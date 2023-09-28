@@ -11,6 +11,6 @@ def load_weigths_buffer(gridcell):
     for i in range(4):
         print()
         # for index, outlet in enumerate(gridcell.agents.grid_outlets):
-            # outlet.dqn.model.load_weights(os.path.join(prev_decentralize_weights_path, f'weights_0_140.hdf5'))
-        #     outlet.dqn.agents.fill_memory(outlet.dqn.agents.memory , os.path.join(prev_decentralize_memory_path, f'decentralize_buffer0_140.pkl'))
+        #     outlet.dqn.model.load_weights(os.path.join(prev_decentralize_weights_path, f'weights_0_100.hdf5'))
+            # outlet.dqn.agents.fill_memory(outlet.dqn.agents.memory , os.path.join(prev_decentralize_memory_path, f'decentralize_buffer0_140.pkl'))
 

@@ -70,7 +70,7 @@ class Agent(AbstractAgent):
 
         def find_median_first_half(data):
             n = len(data)
-            if n > 1 :
+            if n > 2 :
                 half_length = n // 2 if n % 2 == 0 else (n - 1) // 2
                 # first_half_length = half_length // 2 if half_length % 2 == 0 else (half_length - 1) // 2
 
@@ -79,9 +79,7 @@ class Agent(AbstractAgent):
                 else:
                     median_first_half = data[half_length]
                 return median_first_half
-            elif len(data)==1 :
-                return data[0]
-            elif len(data)==0:
+            else :
                 return None
         dictionary_sample_loss = dict()
         for index, (exploration, state, action, reward, next_state, prob) in enumerate(self.memory):
@@ -113,7 +111,6 @@ class Agent(AbstractAgent):
         if filtered_samples_indices != None :
             updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
             self.memory = updated_deque
-
         # print("self memory after filtering : ", self.memory)
         # print("len after : ", len(self.memory))
         minibatch = random.sample(self.memory, batch_size)
