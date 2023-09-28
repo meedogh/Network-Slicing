@@ -3,7 +3,7 @@ import os
 
 from collections import deque
 import random
-from keras import backend as K
+# from keras import backend as K
 from RL.Agent.IAgent import AbstractAgent
 from RL.RLEnvironment.Action.ActionChain import Exploit, Explore, FallbackHandler
 import pickle
@@ -68,40 +68,37 @@ class Agent(AbstractAgent):
         def remove_below_threshold(dictionary, threshold):
             return {key: value for key, value in dictionary.items() if value < threshold}
 
-        def find_median_first_half(data):
-            n = len(data)
-            if n > 2 :
-                half_length = n // 2 if n % 2 == 0 else (n - 1) // 2
-                # first_half_length = half_length // 2 if half_length % 2 == 0 else (half_length - 1) // 2
-
-                if n % 2 == 0:
-                    median_first_half = (data[half_length] + data[half_length - 1]) / 2
-                else:
-                    median_first_half = data[half_length]
-                return median_first_half
-            else :
+        def find_median_second_half(data):
+            sorted_data = sorted(data)
+            n = len(sorted_data)
+            if n >= 2:
+                second_half = sorted_data[n // 2:]
+                return np.median(second_half)
+            else:
                 return None
         dictionary_sample_loss = dict()
+        # print(" len(self.memory) : " , len(self.memory) )
+        counter =  0
         for index, (exploration, state, action, reward, next_state, prob) in enumerate(self.memory):
             if next_state is not None:
                 if prob == 0.0:
-                    sh = np.array(next_state).shape
-                    next_state = np.array(next_state).reshape([1, max(sh)])
+                    counter+=1
+                    sh = np.array(state).shape
                     state = np.array(state).reshape([1, max(sh)])
-                    logit_value = model.predict(next_state, verbose=0)[0]
-                    qvalue_for_state = model.predict(state, verbose=0)[0]
-                    qvalue_for_state_max = np.amax(qvalue_for_state)
-                    target = reward + self.gamma * np.amax(logit_value)
-                    loss = math.pow((target - qvalue_for_state_max), 2)
+                    qvalue_for_state = model.predict(state, verbose=0)
+                    model.fit(state,qvalue_for_state,epochs=1, verbose=0)
+                    qvalue_for_state_after_fit = model.predict(state, verbose=0)
+                    loss = math.pow((qvalue_for_state_after_fit[0][action] - qvalue_for_state[0][action]), 2)
+                    # assert loss == 0, f'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  {loss}...{state}'
                     dictionary_sample_loss[index] = loss
                     updated_tuple = (exploration, state, action, reward, next_state, loss)
                     self.memory[index] = updated_tuple
-            # if action == 0:
-                # print("prob of rejecting : ", self.memory[index][5])
-                # print("state rejecting : ", state)
-                # print("next state rejecting : ", next_state)
+        # print("number of samples edit loss for them : ",counter )
+
         sorted_dict = dict(sorted(dictionary_sample_loss.items(), key=lambda item: item[1]))
-        median = find_median_first_half(list(sorted_dict.values()))
+        median = find_median_second_half(list(sorted_dict.values()))
+        # print("dec of losses : " , sorted_dict )
+        # print("median : ", median)
         if median != None :
             samples_to_remove = remove_below_threshold(sorted_dict, median)
             return list(samples_to_remove.keys())
@@ -109,10 +106,10 @@ class Agent(AbstractAgent):
             return None
 
     def replay_buffer_decentralize(self, batch_size, model):
-        # filtered_samples_indices = self.filter_buffer(model)
-        # if filtered_samples_indices != None :
-        #     updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
-        #     self.memory = updated_deque
+        filtered_samples_indices = self.filter_buffer(model)
+        if filtered_samples_indices != None :
+            updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
+            self.memory = deque(updated_deque, maxlen=1000)
         minibatch = random.sample(self.memory, batch_size)
         target = 0
         for exploitation, state, action, reward, next_state, prob in minibatch:

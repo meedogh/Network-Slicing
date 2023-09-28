@@ -1,14 +1,13 @@
 from typing import List
 
-from Communications.IComs import Communications
 from Outlet.Cellular.ICellular import Cellular
 from Outlet.Sat.sat import Satellite
 from RL.RLAlgorithms.DecentralizeModel import DecentralizeModel
-from Utils.PerformanceLoggerFifo import PerformanceLoggerFifo
 from .utils.imports import *
 from .utils.period import Period
 from .utils.savingWeights import *
 from .utils.loadingWeights import *
+from keras import backend as K
 
 
 class Environment:
@@ -34,6 +33,7 @@ class Environment:
     reset_decentralize = False
     previouse_steps_reward32 = 0
     previous_steps_of_update_target_model = 0
+    episodes_numbers = 0
 
     def __init__(self, period: str):
         # Period(period)
@@ -445,6 +445,7 @@ class Environment:
             #                                                                                           gridcell_dqn.model))
 
             if self.steps - self.previouse_steps_reseting >= env_variables.episode_steps:
+                self.episodes_numbers+=1
                 self.previouse_steps_reseting = self.steps
                 # print(" performance_logger.user_requests : ", performance_logger.user_requests)
                 for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
@@ -522,8 +523,23 @@ class Environment:
                         satellite.sum_of_costs_of_all_requests = 0
                         out.abort_request = 0
 
+                        for index , (exploitation, state, action, reward, next_state, prob) in enumerate(out.dqn.agents.memory) :
+                            updated_tuple = (exploitation, state, action, reward, next_state, 0.0)
+                            out.dqn.agents.memory[index] = updated_tuple
+
                         # print(" out : ", out.current_capacity)
                         # out.dqn.environment.state.state_value_decentralize = out.dqn.environment.state.calculate_state()
+                        # out.dqn.agents.model.save_weights(f"decentralize_weights.hdf5")
+                        file_path = f"decentralize_weights{self.episodes_numbers}.hdf5"
+                        out.dqn.agents.model.save_weights(f"decentralize_weights{self.episodes_numbers}.hdf5")
+                        del out.dqn.agents.model
+                        K.clear_session()
+
+                        if os.path.exists(file_path):
+                            out.dqn.model = DecentralizeModel().build_model()
+                            out.dqn.model.load_weights(file_path)
+
+
 
                     gridcell_dqn.environment.reward.resetreward()
                     gridcell_dqn.environment.state.resetsate(self.temp_outlets)
@@ -533,10 +549,10 @@ class Environment:
             step += 1
             step_for_each_episode_change_period += 1
             self.steps += 1
-            if step == 50 * 320:
-                save_weigths_buffer(self.gridcells_dqn[0], 50)
-            if step == 60 * 320:
-                save_weigths_buffer(self.gridcells_dqn[0], 60)
+            if step == 10 * 320:
+                save_weigths_buffer(self.gridcells_dqn[0], 10)
+            if step == 20 * 320:
+                save_weigths_buffer(self.gridcells_dqn[0], 20)
             if step == 70 * 320:
                 save_weigths_buffer(self.gridcells_dqn[0], 70)
             if step == 80 * 320:
