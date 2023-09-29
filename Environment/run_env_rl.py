@@ -532,11 +532,11 @@ class Environment:
                         # out.dqn.agents.model.save_weights(f"decentralize_weights.hdf5")
                         file_path = f"decentralize_weights{self.episodes_numbers}.hdf5"
                         out.dqn.agents.model.save_weights(f"decentralize_weights{self.episodes_numbers}.hdf5")
-                        del out.dqn.agents.model
-                        K.clear_session()
+                        # del out.dqn.agents.model
+                        # K.clear_session()
 
                         if os.path.exists(file_path):
-                            out.dqn.model = DecentralizeModel().build_model()
+                            # out.dqn.model = DecentralizeModel().build_model()
                             out.dqn.model.load_weights(file_path)
 
 
