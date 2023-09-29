@@ -106,10 +106,10 @@ class Agent(AbstractAgent):
             return None
 
     def replay_buffer_decentralize(self, batch_size, model):
-        filtered_samples_indices = self.filter_buffer(model)
-        if filtered_samples_indices != None :
-            updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
-            self.memory = deque(updated_deque, maxlen=1000)
+        # filtered_samples_indices = self.filter_buffer(model)
+        # if filtered_samples_indices != None :
+        #     updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
+        #     self.memory = deque(updated_deque, maxlen=1000)
         minibatch = random.sample(self.memory, batch_size)
         target = 0
         for exploitation, state, action, reward, next_state, prob in minibatch:

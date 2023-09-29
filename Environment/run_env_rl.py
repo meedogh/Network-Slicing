@@ -523,21 +523,21 @@ class Environment:
                         satellite.sum_of_costs_of_all_requests = 0
                         out.abort_request = 0
 
-                        for index , (exploitation, state, action, reward, next_state, prob) in enumerate(out.dqn.agents.memory) :
-                            updated_tuple = (exploitation, state, action, reward, next_state, 0.0)
-                            out.dqn.agents.memory[index] = updated_tuple
+                        # for index , (exploitation, state, action, reward, next_state, prob) in enumerate(out.dqn.agents.memory) :
+                        #     updated_tuple = (exploitation, state, action, reward, next_state, 0.0)
+                        #     out.dqn.agents.memory[index] = updated_tuple
 
                         # print(" out : ", out.current_capacity)
                         # out.dqn.environment.state.state_value_decentralize = out.dqn.environment.state.calculate_state()
                         # out.dqn.agents.model.save_weights(f"decentralize_weights.hdf5")
-                        file_path = f"decentralize_weights{self.episodes_numbers}.hdf5"
-                        out.dqn.agents.model.save_weights(f"decentralize_weights{self.episodes_numbers}.hdf5")
+                        # file_path = f"decentralize_weights{self.episodes_numbers}.hdf5"
+                        # out.dqn.agents.model.save_weights(f"decentralize_weights{self.episodes_numbers}.hdf5")
                         # del out.dqn.agents.model
                         # K.clear_session()
 
                         # if os.path.exists(file_path):
-                            # out.dqn.model = DecentralizeModel().build_model()
-                            # out.dqn.model.load_weights(file_path)
+                        #     out.dqn.model = DecentralizeModel().build_model()
+                        #     out.dqn.model.load_weights(file_path)
 
 
 
