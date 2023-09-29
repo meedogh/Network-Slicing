@@ -535,9 +535,9 @@ class Environment:
                         # del out.dqn.agents.model
                         # K.clear_session()
 
-                        if os.path.exists(file_path):
+                        # if os.path.exists(file_path):
                             # out.dqn.model = DecentralizeModel().build_model()
-                            out.dqn.model.load_weights(file_path)
+                            # out.dqn.model.load_weights(file_path)
 
 
 
