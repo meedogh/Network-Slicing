@@ -393,6 +393,7 @@ class Environment:
 
             number_of_cars_will_send_requests = round(
                 len(list(env_variables.vehicles.values())) * 0.5
+
             )
             vehicles = ra.sample(
                 list(env_variables.vehicles.values()), number_of_cars_will_send_requests
