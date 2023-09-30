@@ -20,7 +20,7 @@ class FactoryEntertainment(Service):
         return np.random.choice(np.arange(8,12))
 
     def calculate_time_out(self):
-        return np.random.choice(np.arange(2,90))
+        return np.random.choice(np.arange(2,60))
 
     def calculate_arrival_rate(self):
         # TODO: add doc string

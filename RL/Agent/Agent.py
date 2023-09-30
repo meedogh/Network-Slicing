@@ -106,10 +106,10 @@ class Agent(AbstractAgent):
             return None
 
     def replay_buffer_decentralize(self, batch_size, model):
-        # filtered_samples_indices = self.filter_buffer(model)
-        # if filtered_samples_indices != None :
-        #     updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
-        #     self.memory = deque(updated_deque, maxlen=1000)
+        filtered_samples_indices = self.filter_buffer(model)
+        if filtered_samples_indices != None :
+            updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
+            self.memory = deque(updated_deque, maxlen=750)
         minibatch = random.sample(self.memory, batch_size)
         target = 0
         for exploitation, state, action, reward, next_state, prob in minibatch:
@@ -119,7 +119,8 @@ class Agent(AbstractAgent):
                 next_state = np.array(next_state).reshape([1, max(sh)])
                 # logit_model2 = keras.Model(inputs=model.input, outputs=model.layers[-2].output)
                 logit_value = model.predict(next_state, verbose=0)[0]
-                # print("next_state  : ", next_state)
+                # print("choosen states >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  : ", state)
+                # print("the action of choosen states >>>>>>>>>>>>>>>>>>>>>>>  : ",action)
                 # print("pred next_state : ", logit_value)
                 target = reward + self.gamma * np.amax(logit_value)
                 state = np.array(state).reshape([1, max(sh)])

@@ -258,7 +258,7 @@ class DeCentralizedState(State):
         final_state.append(round(((self._tower_capacity / self.max_tower_capacity) * 100), 2))
         final_state.append(round(((self.power_of_requests / self.max_tower_capacity) * 100), 2))
         final_state.append(round(((self.waiting_buffer_len / outlet_max_len) * 100), 2))
-        # final_state.append(round(((self._tower_capacity_before_time_out_step_service / self.max_tower_capacity)*100),2))
+        # final_state.append(self._tower_capacity_before_time_out_step_service )
 
         # final_state.append(self._time_out_flag)
 

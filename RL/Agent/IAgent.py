@@ -14,7 +14,7 @@ class AgentProtocol(Protocol):
 
 class AbstractAgent():
     #epsilon=0.95, gamma=0.95, epsilon_decay=0.000025, min_epsilon=0.70,
-    def __init__(self, epsilon=0.95, gamma=0.95, epsilon_decay=0.000014, min_epsilon=0.01,
+    def __init__(self, epsilon=0.95, gamma=0.95, epsilon_decay=0.000025, min_epsilon=0.70,
                  episodes=7,
                  cumulative_reward=0,
                  step=60):
@@ -27,7 +27,7 @@ class AbstractAgent():
         self.episodes = episodes
         self.cumulative_reward = cumulative_reward
         self.step = step
-        self.memory = deque(maxlen=1000)
+        self.memory = deque(maxlen=750)
         self.batch_size = 32
         self.epsilon_max = 0.95
         # model state action reward
