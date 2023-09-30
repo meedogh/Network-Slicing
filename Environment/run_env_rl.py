@@ -524,9 +524,9 @@ class Environment:
                         satellite.sum_of_costs_of_all_requests = 0
                         out.abort_request = 0
 
-                        # for index , (exploitation, state, action, reward, next_state, prob) in enumerate(out.dqn.agents.memory) :
-                        #     updated_tuple = (exploitation, state, action, reward, next_state, 0.0)
-                        #     out.dqn.agents.memory[index] = updated_tuple
+                        for index , (exploitation, state, action, reward, next_state, prob) in enumerate(out.dqn.agents.memory) :
+                            updated_tuple = (exploitation, state, action, reward, next_state, 0.0)
+                            out.dqn.agents.memory[index] = updated_tuple
 
                         # print(" out : ", out.current_capacity)
                         # out.dqn.environment.state.state_value_decentralize = out.dqn.environment.state.calculate_state()
