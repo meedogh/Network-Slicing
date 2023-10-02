@@ -308,7 +308,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                                 45)
                             # add_value_to_pickle('C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//time_out_state.pkl',
                             #                     outlet.dqn.environment.state.state_value_decentralize)
-                            print("state time out  : ", outlet.dqn.environment.state.state_value_decentralize)
+                            # print("state time out  : ", outlet.dqn.environment.state.state_value_decentralize)
 
                             services_timed_out.append(service)
                             performancelogger.queue_time_out_from_simulation[outlet].appendleft([service, True])
@@ -391,7 +391,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state(
                                 45)
                             # print("action ", outlet.dqn.agents.action.command.action_value_decentralize)
-                            print("state wait to serve  : ", outlet.dqn.environment.state.state_value_decentralize)
+                            # print("state wait to serve  : ", outlet.dqn.environment.state.state_value_decentralize)
                             # add_value_to_pickle(
                             #     'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//wait_to_serve_state.pkl',
                             #     outlet.dqn.environment.state.state_value_decentralize)
@@ -570,10 +570,10 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                         performance_logger.queue_waiting_requests_in_buffer[outlet]))
 
                                 action = outlet.dqn.agents.action.command.action_value_decentralize
-                                print("action is .................... : ", action )
+                                # print("action is .................... : ", action )
                                 if action == 0:
-                                    print("rejecting state : ",
-                                          outlet.dqn.environment.state.state_value_decentralize)
+                                    # print("rejecting state : ",
+                                    #       outlet.dqn.environment.state.state_value_decentralize)
                                     outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                                     outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
                                     outlet.dqn.environment.state.waiting_buffer_len = len(
@@ -652,7 +652,7 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                     served = serving_requests(performance_logger, outlet, start_time, service)
 
                                     if served == True:
-                                        print("state serve : ", outlet.dqn.environment.state.state_value_decentralize)
+                                        # print("state serve : ", outlet.dqn.environment.state.state_value_decentralize)
                                         outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                                         outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
 
