@@ -12,19 +12,17 @@ class Car(Vehicle):
         self.services = []
         car_services = []
         types = [*SERVICES_TYPES.keys()]
-        type_=random.choices(types,weights=(env_variables.ENTERTAINMENT_RATIO,env_variables.SAFETY_RATIO,env_variables.AUTONOMOUS_RATIO), k=1)
+        type_ = random.choices(types, weights=(
+        env_variables.ENTERTAINMENT_RATIO, env_variables.SAFETY_RATIO, env_variables.AUTONOMOUS_RATIO), k=1)
         realtime_ = random.choice(SERVICES_TYPES[type_[0]]["REALTIME"])
         bandwidth_ = random.choice(SERVICES_TYPES[type_[0]]["BANDWIDTH"])
         criticality_ = random.choice(SERVICES_TYPES[type_[0]]["CRITICAL"])
-
         factory = FactoryService(realtime_, bandwidth_, criticality_)
         service_ = factory.produce_services(type_[0])
         service_.realtime = realtime_
-
         self.services.append(service_)
         car_services = list(map(lambda x: [self.get_id(), self, x], self.services))
         del self.services
-
         return car_services
         # return None
 
@@ -69,7 +67,7 @@ class Car(Vehicle):
                 return [self.outlets_serve[indices[0]]], car_request_tuple
             if len(distance) > 1:
                 # print("choice 2 : " , self.outlets_serve[indices[0]] )
-                return [self.outlets_serve[indices[0]],self.outlets_serve[indices[1]]], car_request_tuple
+                return [self.outlets_serve[indices[0]], self.outlets_serve[indices[1]]], car_request_tuple
 
     def check_outlet_types(self, outlet, type):
         if outlet.__class__.__name__ == type:
@@ -83,7 +81,7 @@ class Car(Vehicle):
 
     def send_request(self):
         outlet, request = self.greedy()
-        if outlet != None :
+        if outlet != None:
             return [outlet, request]
-        else :
+        else:
             return None

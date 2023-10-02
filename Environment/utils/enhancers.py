@@ -308,7 +308,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                                 45)
                             # add_value_to_pickle('C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//time_out_state.pkl',
                             #                     outlet.dqn.environment.state.state_value_decentralize)
-                            # print("state time out  : ", outlet.dqn.environment.state.state_value_decentralize)
+                            print("state time out  : ", outlet.dqn.environment.state.state_value_decentralize)
 
                             services_timed_out.append(service)
                             performancelogger.queue_time_out_from_simulation[outlet].appendleft([service, True])
@@ -333,8 +333,8 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                                 45)
                             # print("next state time out  : ", outlet.dqn.environment.state.next_state_decentralize)
 
-                            outlet.dqn.environment.reward.reward_value = -2
-                            outlet.dqn.environment.reward.time_out_reward += -2
+                            outlet.dqn.environment.reward.reward_value = -1
+                            outlet.dqn.environment.reward.time_out_reward += -1
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                             # print("outlet.dqn.environment.reward.reward_value_accumilated  : ",
@@ -391,7 +391,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state(
                                 45)
                             # print("action ", outlet.dqn.agents.action.command.action_value_decentralize)
-                            # print("state wait to serve  : ", outlet.dqn.environment.state.state_value_decentralize)
+                            print("state wait to serve  : ", outlet.dqn.environment.state.state_value_decentralize)
                             # add_value_to_pickle(
                             #     'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//wait_to_serve_state.pkl',
                             #     outlet.dqn.environment.state.state_value_decentralize)
@@ -426,8 +426,8 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                                 45)
                             # print("next state wait to serve  : ", outlet.dqn.environment.state.next_state_decentralize)
                             # print("from wait to serve next state : ",outlet.dqn.environment.state.next_state_decentralize)
-                            outlet.dqn.environment.reward.reward_value = 2
-                            outlet.dqn.environment.reward.wait_to_serve_reward += 2
+                            outlet.dqn.environment.reward.reward_value = 1
+                            outlet.dqn.environment.reward.wait_to_serve_reward += 1
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                             # print("outlet.dqn.environment.reward.reward_value_accumilated  : ",
@@ -560,16 +560,20 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                     45)
                                 lr = -1
 
-                                outlet.dqn.agents.action.command.action_object, outlet.dqn.agents.action.command.action_value_decentralize, flag = outlet.dqn.agents.chain_dec(
-                                    outlet.dqn.model,
-                                    outlet.dqn.environment.state.state_value_decentralize,
-                                    outlet.dqn.agents.epsilon,
-                                )
+                                # outlet.dqn.agents.action.command.action_object, outlet.dqn.agents.action.command.action_value_decentralize, flag = outlet.dqn.agents.chain_dec(
+                                #     outlet.dqn.model,
+                                #     outlet.dqn.environment.state.state_value_decentralize,
+                                #     outlet.dqn.agents.epsilon,
+                                # )
+                                outlet.dqn.agents.action.command.action_value_decentralize = outlet.dqn.agents.advisor_for_decentralize(
+                                    outlet.current_capacity, service.service_power_allocate, service.time_out, len(
+                                        performance_logger.queue_waiting_requests_in_buffer[outlet]))
+
                                 action = outlet.dqn.agents.action.command.action_value_decentralize
-                                # print("action is .................... : ", action )
+                                print("action is .................... : ", action )
                                 if action == 0:
-                                    # print("rejecting state : ",
-                                    #       outlet.dqn.environment.state.state_value_decentralize)
+                                    print("rejecting state : ",
+                                          outlet.dqn.environment.state.state_value_decentralize)
                                     outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                                     outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
                                     outlet.dqn.environment.state.waiting_buffer_len = len(
@@ -579,14 +583,16 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                     service.remaining_time_out = outlet.dqn.environment.state.remaining_time_out
                                     outlet.dqn.environment.state.tower_capacity_before_time_out_step_service = service.tower_capacity_before_time_out_step
 
-                                    outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.agents.action.command.action_object.execute(
-                                        outlet.dqn.environment.state,
-                                        outlet.dqn.agents.action.command.action_value_decentralize,
-                                    )
+                                    outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(
+                                45)
+                                    # outlet.dqn.agents.action.command.action_object.execute(
+                                    #     outlet.dqn.environment.state,
+                                    #     outlet.dqn.agents.action.command.action_value_decentralize,
+                                    # )
 
                                     # print("rejecting next state : ", outlet.dqn.environment.state.next_state_decentralize)
-                                    outlet.dqn.environment.reward.reward_value = lr
-                                    outlet.dqn.environment.reward.rejected_reward += -1
+                                    outlet.dqn.environment.reward.reward_value = 10
+                                    outlet.dqn.environment.reward.rejected_reward += 10
                                     # print("outlet.dqn.environment.reward.reward_value_accumilated  : ", outlet.dqn.environment.reward.reward_value_accumilated)
                                     outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                                     outlet.dqn.environment.state.timed_out_length = 0
@@ -598,7 +604,7 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                     outlet.dqn.environment.state.delay_time = 0
 
                                     logging_important_info_for_testing(performance_logger, j, outlet, satellite)
-
+                                    flag = 1
                                     outlet.dqn.agents.remember_decentralize(
                                         flag,
                                         outlet.dqn.environment.state.state_value_decentralize,
@@ -646,7 +652,7 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                     served = serving_requests(performance_logger, outlet, start_time, service)
 
                                     if served == True:
-                                        # print("state serve : ", outlet.dqn.environment.state.state_value_decentralize)
+                                        print("state serve : ", outlet.dqn.environment.state.state_value_decentralize)
                                         outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                                         outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
 
@@ -671,10 +677,12 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                         outlet.dqn.environment.state.time_out_flag = 0
 
                                         # outlet.dqn.environment.state.tower_capacity_before_time_out_step_service = service.tower_capacity_before_time_out_step - round(((service.service_power_allocate/3500)*100),2)
-                                        outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.agents.action.command.action_object.execute(
-                                            outlet.dqn.environment.state,
-                                            outlet.dqn.agents.action.command.action_value_decentralize,
-                                        )
+                                        outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(
+                                45)
+                                        #     outlet.dqn.agents.action.command.action_object.execute(
+                                        #     outlet.dqn.environment.state,
+                                        #     outlet.dqn.agents.action.command.action_value_decentralize,
+                                        # )
                                         # print("serving next state : ",
                                         #       outlet.dqn.environment.state.next_state_decentralize)
                                         outlet.dqn.environment.reward.services_requested = len(
@@ -682,8 +690,8 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                         outlet.dqn.environment.reward.services_ensured = len(
                                             performance_logger.queue_ensured_buffer[outlet])
 
-                                        outlet.dqn.environment.reward.reward_value = 2
-                                        outlet.dqn.environment.reward.serving_reward += 2
+                                        outlet.dqn.environment.reward.reward_value = 1
+                                        outlet.dqn.environment.reward.serving_reward += 1
 
                                         outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                                         # print("outlet.dqn.environment.reward.reward_value_accumilated  : ", outlet.dqn.environment.reward.reward_value_accumilated)
@@ -695,7 +703,7 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                     outlet.dqn.environment.state.delay_time = 0
 
                                     logging_important_info_for_testing(performance_logger, j, outlet, satellite)
-
+                                    flag = 1
                                     outlet.dqn.agents.remember_decentralize(
                                         flag,
                                         outlet.dqn.environment.state.state_value_decentralize,

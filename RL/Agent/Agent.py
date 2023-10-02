@@ -76,17 +76,18 @@ class Agent(AbstractAgent):
                 return np.median(second_half)
             else:
                 return None
+
         dictionary_sample_loss = dict()
         # print(" len(self.memory) : " , len(self.memory) )
-        counter =  0
+        counter = 0
         for index, (exploration, state, action, reward, next_state, prob) in enumerate(self.memory):
             if next_state is not None:
                 if prob == 0.0:
-                    counter+=1
+                    counter += 1
                     sh = np.array(state).shape
                     state = np.array(state).reshape([1, max(sh)])
                     qvalue_for_state = model.predict(state, verbose=0)
-                    model.fit(state,qvalue_for_state,epochs=1, verbose=0)
+                    model.fit(state, qvalue_for_state, epochs=1, verbose=0)
                     qvalue_for_state_after_fit = model.predict(state, verbose=0)
                     loss = math.pow((qvalue_for_state_after_fit[0][action] - qvalue_for_state[0][action]), 2)
                     # assert loss == 0, f'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  {loss}...{state}'
@@ -99,17 +100,17 @@ class Agent(AbstractAgent):
         median = find_median_second_half(list(sorted_dict.values()))
         # print("dec of losses : " , sorted_dict )
         # print("median : ", median)
-        if median != None :
+        if median != None:
             samples_to_remove = remove_below_threshold(sorted_dict, median)
             return list(samples_to_remove.keys())
-        else :
+        else:
             return None
 
     def replay_buffer_decentralize(self, batch_size, model):
-        filtered_samples_indices = self.filter_buffer(model)
-        if filtered_samples_indices != None :
-            updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
-            self.memory = deque(updated_deque, maxlen=750)
+        # filtered_samples_indices = self.filter_buffer(model)
+        # if filtered_samples_indices != None:
+        #     updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
+        #     self.memory = deque(updated_deque, maxlen=750)
         minibatch = random.sample(self.memory, batch_size)
         target = 0
         for exploitation, state, action, reward, next_state, prob in minibatch:
@@ -135,50 +136,6 @@ class Agent(AbstractAgent):
         if self.epsilon > self.min_epsilon:
             self.epsilon -= self.epsilon * self.epsilon_decay
         return target
-
-    # def replay_buffer_decentralize(self,batchsize,model,target_model):
-    #     if len(self.memory) < batchsize:
-    #         minibatch = self.memory
-    #     else:
-    #         minibatch = random.sample(self.memory, batchsize)
-    #
-    #     # instantiate
-    #     states = []
-    #     Q_wants = []
-
-    # Find updates
-    # for event in minibatch:
-    #     exploitation, state, action, reward, next_state = event
-    #     states.append(state)
-    #
-    #     # Find Q_target
-    #     state_tensor = np.reshape(state, (1, len(state)))  # keras takes 2d arrays
-    #     Q_want = model.predict(state_tensor)[0]  # all elements of this, except the action chosen, stay
-    #     # the same
-    #
-    #
-    #     next_state_tensor = np.reshape(next_state, (1, len(next_state)))
-    #     Q_next_state_vec = model.predict(next_state_tensor)
-    #     action_max = np.argmax(Q_next_state_vec)
-    #     print("action_max : ", action_max)
-    #
-    #     Q_target_next_state_vec = target_model.predict(next_state_tensor)[0]
-    #     print("Q_target_next_state_vec : ",Q_target_next_state_vec)
-    #     Q_target_next_state_max = Q_target_next_state_vec[action_max]
-    #     print("Q_target_next_state_max : ", Q_target_next_state_max)
-    #
-    #     Q_want[action] = reward + self.gamma * Q_target_next_state_max
-    #     Q_want_tensor = np.reshape(Q_want, (1, len(Q_want)))
-    #         # self.model.fit(state_tensor,Q_want_tensor,verbose=False,epochs=1)
-    #     print("Q_want[action] : ", Q_want[action])
-    #
-    #     Q_wants.append(Q_want)
-    #
-    # # Here I fit on the whole batch. Others seem to fit line-by-line
-    # # Dont' think (hope) it makes much difference
-    # states = np.array(states)
-    # Q_wants = np.array(Q_wants)
-    # model.fit(states, Q_wants, verbose=False, epochs=1)
 
     def hard_update_target_network(self, step, model, target_model):
         """ Here the target network is updated every K timesteps
@@ -235,7 +192,7 @@ class Agent(AbstractAgent):
     def remember_decentralize(self, flag, state, action, reward, next_state, probability):
 
         # print(supported_services, "  \n  ",flag  , "  \n  ", state, "  \n  ", action, "  \n  ", reward, "  \n  ", next_state)
-        self.memory.append((flag, state, action, reward, next_state,probability))
+        self.memory.append((flag, state, action, reward, next_state, probability))
 
     def chain_dec(self, model, state, epsilon):
         "A chain with a default first successor"
@@ -262,6 +219,24 @@ class Agent(AbstractAgent):
         action_value = self.action.exploit(model, state)
         flag = 1
         return action, np.where(action_value > 0.5, 1, 0), flag
+
+    def advisor_for_decentralize(self, current_capacity, power_allocation, time_out, buffer_length):
+        action = 0
+        if current_capacity >= power_allocation and buffer_length == 0 :
+            action = 1
+        elif current_capacity >= power_allocation and buffer_length <= 20 and time_out >= 12 :
+            action = 1
+        elif current_capacity < power_allocation and buffer_length >= 85 and time_out < 12:
+            action = 0
+        elif current_capacity < power_allocation and buffer_length <= 20 and time_out >= 12:
+            action = 1
+        else:
+            random_number = np.random.rand()
+            if random_number >= 0.5:
+                action = 1
+            else:
+                action = 0
+        return action
 
     def heuristic_action(self, gridcell, current_services_power_allocation, current_services_requested,
                          number_of_periods_until_now):
