@@ -36,6 +36,16 @@ number_cars_mean_std = {
     'std': 5
 }
 
+capacity_mean_std = {
+    'mean': 0,
+    'std': 0.1
+}
+
+buffer_length_mean_std = {
+    'mean': 0,
+    'std': 0.1
+}
+
 threashold_number_veh = 20
 
 default_types_vehicles = [
@@ -52,28 +62,29 @@ Threshold_of_utility = 0.2
 Threshold_of_utility_acc = 0.5
 
 requests = []
-episode_steps = 320
-
+episode_steps = 18*64
+sub_episode_length = 64
 ENTERTAINMENT_RATIO = 0
 SAFETY_RATIO = 0
 AUTONOMOUS_RATIO = 0
+
+max_capacity = 0
+buffer_length = 0
 
 number_of_days = 3
 episodes = 5 * number_of_days
 number_of_episodes_for_each_period = 155
 advisor_period = [2, number_of_episodes_for_each_period * episode_steps]
+
 exploitation_exploration_period = [number_of_episodes_for_each_period * episode_steps,
                                    number_of_episodes_for_each_period * episode_steps * 2]
+
 last_exploitation_period = [2 * number_of_episodes_for_each_period * episode_steps,
                             number_of_episodes_for_each_period * episode_steps * 3]
+
 decentralized_target_model_update = 32
-TIME = (50 * episode_steps) + 1
+TIME = (40 * episode_steps) + 1
 day_time = 1280
-period1 = 0
-period2 = 10 * 320
-period3 = 20 * 320
-period4 = 30 * 320
-period5 = 40 * 320
 
 period1_episode = 64
 period2_episode = 64 * 2
@@ -81,8 +92,10 @@ period3_episode = 64 * 3
 period4_episode = 64 * 4
 period5_episode = 64 * 5
 
+
+
 length_each_period = 320 / 5
-decentralized_replay_buffer = 32
+decentralized_replay_buffer = 30
 centralized_replay_buffer = 32
 
 

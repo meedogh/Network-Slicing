@@ -22,7 +22,7 @@ class Cellular(Outlet):
     _current_capacity: float
 
     def __init__(
-        self, tower, agent, coms: Communications, supported_services, *args, **kwargs
+            self, tower, agent, coms: Communications, supported_services, *args, **kwargs
     ):
         """
         Parameters
@@ -64,6 +64,7 @@ class Cellular(Outlet):
         self._max_capacity = self.set_max_capacity(self.__class__.__name__)
         self.abort_requests = 0
         self.sum_of_costs_of_all_requests = 0
+        self._waited_buffer_max_length = self.set_outlet_max_waiting_buffer_length(self.__class__.__name__)
 
         # self._max_buffer_size = int(self._max_capacity / 30)
         # self._buffer_request = deque(maxlen=self._max_buffer_size)
@@ -72,25 +73,25 @@ class Cellular(Outlet):
 
     class BuildMaxCapacity:
         def calculate_max_capacity(
-            self,
-            num_antennas,
-            channel_bandwidth,
-            coding_rate,
-            modulation_order,
-            average_symbol_per_slot,
-            num_slots_per_frame,
-            num_frames_per_second,
+                self,
+                num_antennas,
+                channel_bandwidth,
+                coding_rate,
+                modulation_order,
+                average_symbol_per_slot,
+                num_slots_per_frame,
+                num_frames_per_second,
         ):
             spectral_efficiency = modulation_order * coding_rate  # bits/symbol
 
             capacity_per_antenna = (
-                channel_bandwidth
-                * 1e6
-                * spectral_efficiency
-                * average_symbol_per_slot
-                * num_slots_per_frame
-                * num_frames_per_second
-            ) / 1e6  # Mbps
+                                           channel_bandwidth
+                                           * 1e6
+                                           * spectral_efficiency
+                                           * average_symbol_per_slot
+                                           * num_slots_per_frame
+                                           * num_frames_per_second
+                                   ) / 1e6  # Mbps
             total_capacity = capacity_per_antenna * num_antennas
             real_total_capacity = total_capacity // 8 / 10
             # print(f"capacity is: {real_total_capacity} MBps")
@@ -143,8 +144,30 @@ class Cellular(Outlet):
             return 25000
         elif type == "Wifi":
             return 3500
-        else:
+        elif type == "FourG":
             return 50000
+        elif type == "FiveG":
+            return 75000
+        else:
+            return 100000000
+
+    def set_outlet_max_waiting_buffer_length(self,type):
+        if type == 'Wifi':
+            return 45
+        if type == 'ThreeG':
+            return 125
+        if type == 'FourG':
+            return 250
+        if type == 'FiveG':
+            return 500
+
+    @property
+    def waited_buffer_max_length(self):
+        return self._waited_buffer_max_length
+
+    @waited_buffer_max_length.setter
+    def waited_buffer_max_length(self, value):
+        self._waited_buffer_max_length = value
 
     @property
     def current_capacity(self):
@@ -169,3 +192,17 @@ class Cellular(Outlet):
     @max_buffer_size.setter
     def max_buffer_size(self, value):
         self._max_buffer_size = value
+
+    def mapping_percentage_to_capacity_value(self, value):
+        if value == 1:
+            return self.max_capacity * 1
+        if value == 0:
+            return self.max_capacity * 0
+        if value == 0.8:
+            return self.max_capacity * 0.8
+        if value == 0.6:
+            return self.max_capacity * 0.6
+        if value == 0.4:
+            return self.max_capacity * 0.4
+        if value == 0.2:
+            return self.max_capacity * 0.2

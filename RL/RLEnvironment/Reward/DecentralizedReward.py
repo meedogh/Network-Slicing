@@ -47,11 +47,19 @@ class DeCentralizedReward(Reward):
         self.rejected_reward = 0
         self.wait_to_serve_reward = 0
         self.time_out_reward = 0
+        self._throughput = 0
 
 
     @staticmethod
     def state_shape(num_services, grid_cell):
         return [num_services, grid_cell]
+
+    @property
+    def throughput(self):
+        return self._throughput
+    @throughput.setter
+    def throughput(self,value):
+        self._throughput = value
 
     @property
     def prev_utility(self):

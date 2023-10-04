@@ -23,6 +23,7 @@ class Agent(AbstractAgent):
         self._qvalue = 0.0
         self.mask = []
         self.C = 1000
+        self.remember = False
 
     @property
     def outlets_id(self):

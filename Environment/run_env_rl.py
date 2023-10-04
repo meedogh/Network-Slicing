@@ -2,12 +2,12 @@ from typing import List
 
 from Outlet.Cellular.ICellular import Cellular
 from Outlet.Sat.sat import Satellite
-from RL.RLAlgorithms.DecentralizeModel import DecentralizeModel
+from Service.FactoryService import FactoryService
+from Utils.config import SERVICES_TYPES
+from .utils.episodes import Episodes
 from .utils.imports import *
-from .utils.period import Period
 from .utils.savingWeights import *
 from .utils.loadingWeights import *
-from keras import backend as K
 
 
 class Environment:
@@ -34,6 +34,10 @@ class Environment:
     previouse_steps_reward32 = 0
     previous_steps_of_update_target_model = 0
     episodes_numbers = 0
+    sub_episode_index = 0
+    start = env_variables.sub_episode_length * sub_episode_index
+    end = (env_variables.episode_steps * sub_episode_index+1)
+
 
     def __init__(self, period: str):
         # Period(period)
@@ -372,20 +376,102 @@ class Environment:
                 step_for_each_episode_change_period = 0
             #     print("each refresh episode : ", step_for_each_episode_change_period)
             # print("step_for_each_episode_change_period : ", step_for_each_episode_change_period)
+            if step == self.start and step!=0 :
+                for outlet in self.temp_outlets:
+                    if outlet.__class__.__name__ == 'Wifi':
+                        throughput = len(performance_logger.queue_ensured_buffer[outlet]) /len(performance_logger.queue_requested_buffer[outlet])
+                        outlet.dqn.environment.reward.throughput = throughput
+                        l = list(outlet.dqn.agents.memory[-1])
+                        v = outlet.dqn.agents.memory[-1]
+                        outlet.dqn.agents.memory.remove(v)
+                        l[3] = l[3] + outlet.dqn.environment.reward.throughput
+                        outlet.dqn.agents.memory.append(tuple(l))
+                        if len(outlet.dqn.agents.memory) > 30:
+                            outlet.dqn.agents.qvalue = (
+                                outlet.dqn.agents.replay_buffer_decentralize(
+                                    30, outlet.dqn.model,
+                                )
+                            )
+            if self.start <= step <= self.end:
+                Episodes(f'episode{self.sub_episode_index + 1}')
+                print("episode index : ", f'episode{self.sub_episode_index + 1}')
+                self.sub_episode_index += 1
+                self.start = env_variables.sub_episode_length * self.sub_episode_index
+                self.end = env_variables.sub_episode_length * (self.sub_episode_index + 1)
 
-            if 0 <= step_for_each_episode_change_period <= env_variables.period1_episode:
-                Period('period1')
-            if env_variables.period1_episode < step_for_each_episode_change_period <= env_variables.period2_episode:
-                Period('period2')
-            if env_variables.period2_episode < step_for_each_episode_change_period <= env_variables.period3_episode:
-                Period('period3')
-            if env_variables.period3_episode < step_for_each_episode_change_period <= env_variables.period4_episode:
-                Period('period4')
-            if env_variables.period4_episode < step_for_each_episode_change_period <= env_variables.period5_episode:
-                Period('period5')
+                for outlet in self.temp_outlets:
+                    if outlet.__class__.__name__ == 'Wifi':
+                        outlet.dqn.environment.reward.throughput = 0
+                        outlet.dqn.agents.memory = deque(maxlen=750)
+                        performance_logger.set_queue_waiting_requests_in_buffer(outlet, deque([]))
+                        performance_logger.set_queue_power_for_requested_in_buffer(outlet, deque([]))
+                        performance_logger.set_queue_requested_buffer(outlet, deque([]))
+                        performance_logger.set_queue_ensured_buffer(outlet, deque([]))
+                        performance_logger.set_queue_time_out_from_simulation(outlet, deque([]))
+                        performance_logger.set_queue_from_wait_to_serve_over_simulation(outlet, deque([]))
+                        performance_logger.set_queue_request_failure_flags(outlet, deque([]))
+                        performance_logger.set_outlet_services_requested_number_all_periods(outlet, [0, 0, 0])
+                        performance_logger.set_outlet_services_requested_number(outlet, [0, 0, 0])
+                        performance_logger.set_outlet_services_ensured_number(outlet, [0, 0, 0])
+                        if outlet in performance_logger.queue_requests_with_execution_time_buffer:
+                            performance_logger.queue_requests_with_execution_time_buffer[outlet] = dict()
 
-            # if self.steps - previous_steps_sending == frame_rate_for_sending_requests:
-            #     previous_steps_sending = self.steps
+                        if outlet in performance_logger.queue_requests_with_time_out_buffer:
+                            performance_logger.queue_requests_with_time_out_buffer[outlet] = dict()
+
+                        waited_buffer_max_length = round(nump_rand.normal(
+                            loc=env_variables.buffer_length_mean_std["mean"],
+                            scale=env_variables.buffer_length_mean_std["std"],
+                        ), 2)
+
+                        if waited_buffer_max_length < 0:
+                            waited_buffer_max_length = max(0, waited_buffer_max_length)
+                        if waited_buffer_max_length > 1:
+                            waited_buffer_max_length = min(1, waited_buffer_max_length)
+
+                        number_of_requests_should_generation = int(waited_buffer_max_length * outlet.waited_buffer_max_length)
+                        if len(performance_logger.queue_waiting_requests_in_buffer[outlet])<=outlet.waited_buffer_max_length:
+                            for i in range(number_of_requests_should_generation):
+                                types = [*SERVICES_TYPES.keys()]
+                                type_ = random.choices(types, weights=(
+                                    env_variables.ENTERTAINMENT_RATIO, env_variables.SAFETY_RATIO,
+                                    env_variables.AUTONOMOUS_RATIO), k=1)
+                                realtime_ = random.choice(SERVICES_TYPES[type_[0]]["REALTIME"])
+                                bandwidth_ = random.choice(SERVICES_TYPES[type_[0]]["BANDWIDTH"])
+                                criticality_ = random.choice(SERVICES_TYPES[type_[0]]["CRITICAL"])
+                                factory = FactoryService(realtime_, bandwidth_, criticality_)
+                                service = factory.produce_services(type_[0])
+                                service.realtime = realtime_
+                                request_bandwidth = Bandwidth(service.bandwidth, service.criticality)
+                                request_cost = RequestCost(request_bandwidth, service.realtime)
+                                service.cost_in_bit_rate = request_cost.cost_setter(outlet)
+                                service.service_power_allocate = request_bandwidth.allocated
+                                service.total_cost_in_dolar = service.calculate_service_cost_in_Dolar_per_bit()
+                                service.time_out = service.calculate_time_out()
+                                service.time_execution = service.calculate_processing_time()
+                                performance_logger.queue_requested_buffer[outlet].appendleft(1)
+
+                                performance_logger.queue_power_for_requested_in_buffer[outlet].append(
+                                    [service, False])
+
+                                performance_logger.queue_power_for_requested_in_buffer[outlet][0][1] = False
+
+                                performance_logger.queue_waiting_requests_in_buffer[outlet].appendleft(
+                                    [service, True])
+                                performance_logger.queue_requests_with_time_out_buffer[outlet][service] = [
+                                    step,
+                                    service.time_out]
+
+                        tower_available_capacity = round(nump_rand.normal(
+                            loc=env_variables.capacity_mean_std["mean"],
+                            scale=env_variables.capacity_mean_std["std"], ), 2)
+
+                        if tower_available_capacity < 0:
+                            tower_available_capacity = max(0, tower_available_capacity)
+                        if tower_available_capacity > 1:
+                            tower_available_capacity = min(1, tower_available_capacity)
+                        outlet.current_capacity = tower_available_capacity * outlet._max_capacity
+
 
             seed_value = 1
             # Seed the random number generator
@@ -420,23 +506,14 @@ class Environment:
             if self.steps - self.previous_steps >= env_variables.decentralized_replay_buffer:
                 self.previous_steps = self.steps
                 for i, outlet in enumerate(self.temp_outlets):
-                    if len(outlet.dqn.agents.memory) > 32:
-                        # file_path = "decentralize_weights.hdf5"
-                        # if os.path.exists(file_path):
-                        #     outlet.dqn.model = DecentralizeModel().build_model()
-                        #     outlet.dqn.model.load_weights(file_path)
+                    if len(outlet.dqn.agents.memory) > 30:
+                        # print(" outlet.dqn.agents.memory : ", len(outlet.dqn.agents.memory))
                         outlet.dqn.agents.qvalue = (
                             outlet.dqn.agents.replay_buffer_decentralize(
-                                32, outlet.dqn.model,
+                                30, outlet.dqn.model,
                             )
                         )
-            # if self.steps - self.previous_steps_of_update_target_model >= env_variables.decentralized_target_model_update:
-            #     self.previous_steps_of_update_target_model = self.steps
-            #     for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
-            #         for i, outlet in enumerate(gridcell_dqn.agents.grid_outlets):
-            #             outlet.dqn.agents.hard_update_target_network(outlet.dqn.model,outlet.dqn.model_target)
 
-            # if self.steps - self.previ
             # if self.steps - self.previous_steps_centralize >= env_variables.centralized_replay_buffer:
             #     self.previous_steps_centralize = self.steps
             #     for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
@@ -446,17 +523,17 @@ class Environment:
             #                                                                                           gridcell_dqn.model))
 
             if self.steps - self.previouse_steps_reseting >= env_variables.episode_steps:
-                self.episodes_numbers+=1
+                self.episodes_numbers += 1
                 self.previouse_steps_reseting = self.steps
                 # print(" performance_logger.user_requests : ", performance_logger.user_requests)
                 for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
                     for i, out in enumerate(gridcell_dqn.agents.grid_outlets):
                         add_value_to_pickle(
                             os.path.join(reward_info_path, f"reward_info.pkl"),
-                            (out.__class__.__name__,out.dqn.environment.reward.serving_reward,
-                            out.dqn.environment.reward.rejected_reward ,
-                            out.dqn.environment.reward.wait_to_serve_reward ,
-                            out.dqn.environment.reward.time_out_reward)
+                            (out.__class__.__name__, out.dqn.environment.reward.serving_reward,
+                             out.dqn.environment.reward.rejected_reward,
+                             out.dqn.environment.reward.wait_to_serve_reward,
+                             out.dqn.environment.reward.time_out_reward)
                         )
                 # for key, value in performance_logger.user_requests.items():
                 #     for outlet_name, val in value.items():
@@ -494,7 +571,7 @@ class Environment:
                 )
                 for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
                     for i, out in enumerate(gridcell_dqn.agents.grid_outlets):
-                        states=[]
+                        states = []
                         for st in out.dqn.agents.memory:
                             states.append(st[1])
 
@@ -528,19 +605,6 @@ class Environment:
                         #     updated_tuple = (exploitation, state, action, reward, next_state, 0.0)
                         #     out.dqn.agents.memory[index] = updated_tuple
 
-                        # print(" out : ", out.current_capacity)
-                        # out.dqn.environment.state.state_value_decentralize = out.dqn.environment.state.calculate_state()
-                        # out.dqn.agents.model.save_weights(f"decentralize_weights.hdf5")
-                        # file_path = f"decentralize_weights{self.episodes_numbers}.hdf5"
-                        # out.dqn.agents.model.save_weights(f"decentralize_weights{self.episodes_numbers}.hdf5")
-                        # del out.dqn.agents.model
-                        # K.clear_session()
-
-                        # if os.path.exists(file_path):
-                        #     out.dqn.model = DecentralizeModel().build_model()
-                        #     out.dqn.model.load_weights(file_path)
-
-
 
                     gridcell_dqn.environment.reward.resetreward()
                     gridcell_dqn.environment.state.resetsate(self.temp_outlets)
@@ -562,16 +626,7 @@ class Environment:
                 save_weigths_buffer(self.gridcells_dqn[0], 90)
             if step == env_variables.TIME:
                 save_weigths_buffer(self.gridcells_dqn[0], 100)
-            # if step == 110 * 320:
-            #     save_weigths_buffer(self.gridcells_dqn[0], 110)
-            # if step == 120 * 320:
-            #     save_weigths_buffer(self.gridcells_dqn[0], 120)
-            # if step == 130 * 320:
-            #     save_weigths_buffer(self.gridcells_dqn[0], 130)
-            # if step == 140 * 320:
-            #     save_weigths_buffer(self.gridcells_dqn[0], 140)
-            # if step == env_variables.TIME:
-            #     save_weigths_buffer(self.gridcells_dqn[0], 150)
+
 
         self.close()
 
