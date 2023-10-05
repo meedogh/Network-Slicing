@@ -36,8 +36,7 @@ class Environment:
     episodes_numbers = 0
     sub_episode_index = 0
     start = env_variables.sub_episode_length * sub_episode_index
-    end = (env_variables.episode_steps * sub_episode_index+1)
-
+    end = (env_variables.episode_steps * sub_episode_index + 1)
 
     def __init__(self, period: str):
         # Period(period)
@@ -376,10 +375,11 @@ class Environment:
                 step_for_each_episode_change_period = 0
             #     print("each refresh episode : ", step_for_each_episode_change_period)
             # print("step_for_each_episode_change_period : ", step_for_each_episode_change_period)
-            if step == self.start and step!=0 :
+            if step == self.start and step != 0:
                 for outlet in self.temp_outlets:
                     if outlet.__class__.__name__ == 'Wifi':
-                        throughput = len(performance_logger.queue_ensured_buffer[outlet]) /len(performance_logger.queue_requested_buffer[outlet])
+                        throughput = len(performance_logger.queue_ensured_buffer[outlet]) / len(
+                            performance_logger.queue_requested_buffer[outlet])
                         outlet.dqn.environment.reward.throughput = throughput
                         l = list(outlet.dqn.agents.memory[-1])
                         v = outlet.dqn.agents.memory[-1]
@@ -392,6 +392,9 @@ class Environment:
                                     30, outlet.dqn.model,
                                 )
                             )
+
+            if self.sub_episode_index >= 18:
+                self.sub_episode_index = 0
             if self.start <= step <= self.end:
                 Episodes(f'episode{self.sub_episode_index + 1}')
                 print("episode index : ", f'episode{self.sub_episode_index + 1}')
@@ -429,8 +432,10 @@ class Environment:
                         if waited_buffer_max_length > 1:
                             waited_buffer_max_length = min(1, waited_buffer_max_length)
 
-                        number_of_requests_should_generation = int(waited_buffer_max_length * outlet.waited_buffer_max_length)
-                        if len(performance_logger.queue_waiting_requests_in_buffer[outlet])<=outlet.waited_buffer_max_length:
+                        number_of_requests_should_generation = int(
+                            waited_buffer_max_length * outlet.waited_buffer_max_length)
+                        if len(performance_logger.queue_waiting_requests_in_buffer[
+                                   outlet]) <= outlet.waited_buffer_max_length:
                             for i in range(number_of_requests_should_generation):
                                 types = [*SERVICES_TYPES.keys()]
                                 type_ = random.choices(types, weights=(
@@ -471,7 +476,6 @@ class Environment:
                         if tower_available_capacity > 1:
                             tower_available_capacity = min(1, tower_available_capacity)
                         outlet.current_capacity = tower_available_capacity * outlet._max_capacity
-
 
             seed_value = 1
             # Seed the random number generator
@@ -605,7 +609,6 @@ class Environment:
                         #     updated_tuple = (exploitation, state, action, reward, next_state, 0.0)
                         #     out.dqn.agents.memory[index] = updated_tuple
 
-
                     gridcell_dqn.environment.reward.resetreward()
                     gridcell_dqn.environment.state.resetsate(self.temp_outlets)
 
@@ -626,7 +629,6 @@ class Environment:
                 save_weigths_buffer(self.gridcells_dqn[0], 90)
             if step == env_variables.TIME:
                 save_weigths_buffer(self.gridcells_dqn[0], 100)
-
 
         self.close()
 

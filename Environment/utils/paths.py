@@ -2,7 +2,7 @@ import os
 import sys
 
 results_dir = os.path.join(sys.path[0],
-                           'sub_episodes_reward_2_m2_m1')
+                           'sub_episodes_reward_2_m2_m1_2')
 centralized_weights = os.path.join(results_dir, 'centralized_weights')
 decentralized_weights = os.path.join(results_dir, 'decentralized_weights')
 path_memory_centralize = os.path.join(results_dir, 'centralize_memory')
@@ -26,7 +26,7 @@ from_waiting_to_serv_length_path = os.path.join(results_dir, "from_waiting_to_se
 wasting_req_length_path = os.path.join(results_dir, "wasting_req_length")
 # centralize_qvalue_path = os.path.join(prev_results_dir, 'qvalue_centralized_for_plotting')
 # decentralize_qvalue_path = os.path.join(prev_results_dir, 'qvalue_decentralized_for_plotting')
-prev_results_3tanh_dir =f"/content/drive/MyDrive/results3_tanh/results3_tanh"
+prev_results_3tanh_dir =f"/content/drive/MyDrive/network_slicing/results3_tanh"
     #"/content/drive/MyDrive/results3_tanh/results3_tanh"
     #f"{os.path.join(sys.path[0])}//results3_tanh//results3_tanh//"
 #
