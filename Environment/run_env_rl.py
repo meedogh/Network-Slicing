@@ -379,8 +379,13 @@ class Environment:
             if step == self.start and step != 0:
                 for outlet in self.temp_outlets:
                     if outlet.__class__.__name__ == 'Wifi':
-                        throughput = len(performance_logger.queue_ensured_buffer[outlet]) / len(
-                            performance_logger.queue_requested_buffer[outlet])
+                        throughput = 0
+                        if len(performance_logger.queue_ensured_buffer[outlet]) == 0 or len(performance_logger.queue_requested_buffer[outlet]) == 0 :
+                            throughput = 0
+                        else:
+                            throughput = len(performance_logger.queue_ensured_buffer[outlet]) / len(
+                                performance_logger.queue_requested_buffer[outlet])
+
                         outlet.dqn.environment.reward.throughput = throughput
                         l = list(outlet.dqn.agents.memory[-1])
                         v = outlet.dqn.agents.memory[-1]
