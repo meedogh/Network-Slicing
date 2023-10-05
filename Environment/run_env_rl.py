@@ -35,6 +35,7 @@ class Environment:
     previous_steps_of_update_target_model = 0
     episodes_numbers = 0
     sub_episode_index = 0
+    start_end_index = 0
     start = env_variables.sub_episode_length * sub_episode_index
     end = (env_variables.episode_steps * sub_episode_index + 1)
 
@@ -393,14 +394,19 @@ class Environment:
                                 )
                             )
 
-            if self.sub_episode_index >= 18:
+            if self.sub_episode_index % 18 == 0:
                 self.sub_episode_index = 0
+
+            # print("start : ",self.start)
+            # print("end : ",self.end)
+
             if self.start <= step <= self.end:
                 Episodes(f'episode{self.sub_episode_index + 1}')
                 print("episode index : ", f'episode{self.sub_episode_index + 1}')
                 self.sub_episode_index += 1
-                self.start = env_variables.sub_episode_length * self.sub_episode_index
-                self.end = env_variables.sub_episode_length * (self.sub_episode_index + 1)
+                self.start_end_index+=1
+                self.start = env_variables.sub_episode_length * self.start_end_index
+                self.end = env_variables.sub_episode_length * (self.start_end_index + 1)
 
                 for outlet in self.temp_outlets:
                     if outlet.__class__.__name__ == 'Wifi':
@@ -622,13 +628,9 @@ class Environment:
             if step == 20 * 1152:
                 save_weigths_buffer(self.gridcells_dqn[0], 20)
             if step == 30 * 1152:
-                save_weigths_buffer(self.gridcells_dqn[0], 70)
-            if step == 80 * 320:
-                save_weigths_buffer(self.gridcells_dqn[0], 80)
-            if step == 90 * 320:
-                save_weigths_buffer(self.gridcells_dqn[0], 90)
+                save_weigths_buffer(self.gridcells_dqn[0], 30)
             if step == env_variables.TIME:
-                save_weigths_buffer(self.gridcells_dqn[0], 40)
+                save_weigths_buffer(self.gridcells_dqn[0], 35)
 
         self.close()
 

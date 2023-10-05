@@ -7,9 +7,9 @@ import pandas as pd
 # outlet outlet_number [0,1,2,3]
 outlet_name = ['wifi', '3G', '4G', '5G']
 method_name = ['rl', 'fifo', 'heuristic']
-outlet_num = 0
+outlet_num = 2
 
-results_dir_train_results = f"{os.path.join(sys.path[0])}/inverse_reward_for_test2"
+results_dir_train_results = f"{os.path.join(sys.path[0])}/sub_episodes_reward_2_m2_m1_2_test_all_outlets"
 results_dir_test_results = f"{os.path.join(sys.path[0])}/action_each_single_request_reward_method4_testalloutlets"
 
 reward = os.path.join(results_dir_train_results, f"reward_decentralized/reward{outlet_num}.pkl")
@@ -240,5 +240,5 @@ data = list(
 
 df = pd.DataFrame(data=data, columns=list(columns.keys()))
 
-df.to_csv(f"{outlet_name[outlet_num]}inverse_reward_for_test2{method_name[outlet_num]}.csv",
+df.to_csv(f"{outlet_name[outlet_num]}sub_episodes_reward_2_m2_m1_2_test_with_all_outlets{method_name[outlet_num]}.csv",
           index=False)

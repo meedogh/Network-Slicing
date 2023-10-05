@@ -5,6 +5,7 @@ import random as ra
 from scipy.stats import beta
 from Utils.Bandwidth import Bandwidth
 from Utils.Cost import RequestCost
+from .helpers import add_value_to_pickle
 from .logging_rl import logging_important_info_for_testing
 from .mask_generation import *
 from .. import env_variables
@@ -266,9 +267,9 @@ def check_timed_out(performance_logger, outlet, request_time_out_period, demandi
 
     if current_capacity >= request_power_allocation:
         #round(((self._tower_capacity / self.max_tower_capacity) * 100), 2)
-        return 0, round(((current_capacity/3500)*100),2 ) , round(((request_power_allocation/3500)*100),2 )
+        return 0, round(((current_capacity/3500)*100),2),round(((request_power_allocation/3500)*100),2)
     else:
-        return 1, round(((current_capacity/3500)*100),2 ) , round(((request_power_allocation/3500)*100),2 )
+        return 1, round(((current_capacity/3500)*100),2),round(((request_power_allocation/3500)*100),2)
 
 
 def buffering_not_served_requests(outlets, performancelogger, time_step_simulation, satellite):
@@ -306,8 +307,8 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
 
                             outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state(
                                 outlet.waited_buffer_max_length)
-                            # add_value_to_pickle('C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//time_out_state.pkl',
-                            #                     outlet.dqn.environment.state.state_value_decentralize)
+                            add_value_to_pickle('C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//time_out_state.pkl',
+                                                outlet.dqn.environment.state.state_value_decentralize)
                             # print("state time out  : ", outlet.dqn.environment.state.state_value_decentralize)
 
                             services_timed_out.append(service)
@@ -483,7 +484,7 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                     # outlet.__class__.__name__ == 'Wifi'  and
 
                     if outlet.supported_services[service_index] == 1:
-                        if outlet.__class__.__name__ == 'Wifi' and len(performance_logger.queue_waiting_requests_in_buffer[
+                        if outlet.__class__.__name__ == 'Wifi'  and len(performance_logger.queue_waiting_requests_in_buffer[
                                    outlet]) < outlet.waited_buffer_max_length:
                             # print("outlet.capacity    >>>>>>    : ", outlet.current_capacity)
                             # print("len of waited buffer : ",len(performance_logger.queue_waiting_requests_in_buffer[outlet]))
@@ -506,6 +507,7 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                             service.time_out = service.calculate_time_out()
                             service.time_execution = service.calculate_processing_time()
 
+                            # request_info = "C:/Users/Windows dunya/PycharmProjects/pythonProject/Network-Slicing/"
                             # path = f"{request_info}outlet_{outlet.__class__.__name__}.pkl"
                             # main_string = service.__class__.__name__
                             #
@@ -518,6 +520,7 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                             #         value = (value1, service.service_power_allocate, service.time_out,
                             #                  service.time_execution, start_time)
                             #         add_value_to_pickle(path, value)
+
                             service.remaining_time_out = outlet.dqn.environment.state.remaining_time_out
                             outlet.dqn.environment.state.remaining_time_out = service.time_out
                             service.remaining_time_out = outlet.dqn.environment.state.remaining_time_out
@@ -553,6 +556,10 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                 if action == 0:
                                     # print("rejecting state : ",
                                     #       outlet.dqn.environment.state.state_value_decentralize)
+                                    # add_value_to_pickle(
+                                    #     'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//reject_state.pkl',
+                                    #     outlet.dqn.environment.state.state_value_decentralize)
+
                                     outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                                     outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
                                     outlet.dqn.environment.state.waiting_buffer_len = len(
@@ -630,6 +637,9 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
 
                                         # print("served state : ",
                                         #       outlet.dqn.environment.state.state_value_decentralize)
+                                        # add_value_to_pickle(
+                                        #     'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//served_state.pkl',
+                                        #     outlet.dqn.environment.state.state_value_decentralize)
                                         outlet.sum_of_costs_of_all_requests += service.total_cost_in_dolar
 
                                         for car, outlet_inner_dect in performance_logger.user_requests.items():

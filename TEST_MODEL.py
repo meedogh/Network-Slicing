@@ -23,7 +23,7 @@ def build_model() -> Sequential:
 
 model = build_model()
 model.load_weights(
-    f'{os.path.join(sys.path[0])}//action_each_single_request_reward_method4_add_init_10_11_12_less_failure_0_10_m1_100//decentralized_weights/weights_0_100.hdf5')
+    f'{os.path.join(sys.path[0])}//sub_episodes_reward_2_m2_m1_2//decentralized_weights/weights_0_20.hdf5')
 
 # Calculate Q-values for each (x1, x2) pair (replace this with your actual Q-values)
 # x1_time_out = np.arange(2,11, 1)
@@ -49,10 +49,10 @@ model.load_weights(
 
 
 #
-x2_buffer_length = np.arange(95, 100, 0.5)
-y2_current_capacity = np.arange(0.05, 2.55, 0.5)
-tout = 2
-pa2 = 10
+x2_buffer_length = np.arange(98, 100, 0.05)
+y2_current_capacity = np.arange(0.05, 1.55, 0.05)
+tout = 12
+pa2 = 2.48
 
 (x2_buffer_length_, y2_current_capacity_) = np.meshgrid(x2_buffer_length, y2_current_capacity)
 x2_flattened = x2_buffer_length_.flatten()
