@@ -378,7 +378,7 @@ class Environment:
             # print("step_for_each_episode_change_period : ", step_for_each_episode_change_period)
             if step == self.start and step != 0:
                 for outlet in self.temp_outlets:
-                    if outlet.__class__.__name__ == 'Wifi':
+                    if outlet.__class__.__name__ == 'Wifi' and len(outlet.dqn.agents.memory) > 30:
                         throughput = 0
                         if len(performance_logger.queue_ensured_buffer[outlet]) == 0 or len(performance_logger.queue_requested_buffer[outlet]) == 0 :
                             throughput = 0
