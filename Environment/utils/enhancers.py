@@ -307,8 +307,8 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
 
                             outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state(
                                 outlet.waited_buffer_max_length)
-                            add_value_to_pickle('C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//time_out_state.pkl',
-                                                outlet.dqn.environment.state.state_value_decentralize)
+                            # add_value_to_pickle('C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//time_out_state.pkl',
+                            #                     outlet.dqn.environment.state.state_value_decentralize)
                             # print("state time out  : ", outlet.dqn.environment.state.state_value_decentralize)
 
                             services_timed_out.append(service)
