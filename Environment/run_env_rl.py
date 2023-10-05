@@ -617,18 +617,18 @@ class Environment:
             step += 1
             step_for_each_episode_change_period += 1
             self.steps += 1
-            if step == 10 * 320:
+            if step == 10 * 1152:
                 save_weigths_buffer(self.gridcells_dqn[0], 10)
-            if step == 20 * 320:
+            if step == 20 * 1152:
                 save_weigths_buffer(self.gridcells_dqn[0], 20)
-            if step == 70 * 320:
+            if step == 30 * 1152:
                 save_weigths_buffer(self.gridcells_dqn[0], 70)
             if step == 80 * 320:
                 save_weigths_buffer(self.gridcells_dqn[0], 80)
             if step == 90 * 320:
                 save_weigths_buffer(self.gridcells_dqn[0], 90)
             if step == env_variables.TIME:
-                save_weigths_buffer(self.gridcells_dqn[0], 100)
+                save_weigths_buffer(self.gridcells_dqn[0], 40)
 
         self.close()
 
