@@ -423,8 +423,8 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(
                                 outlet.waited_buffer_max_length)
                             # print("from wait to serve next state : ",outlet.dqn.environment.state.next_state_decentralize)
-                            outlet.dqn.environment.reward.reward_value = -1
-                            outlet.dqn.environment.reward.wait_to_serve_reward += -1
+                            outlet.dqn.environment.reward.reward_value = 1
+                            outlet.dqn.environment.reward.wait_to_serve_reward += 1
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
 
@@ -571,8 +571,8 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                     outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(
                                 outlet.waited_buffer_max_length)
 
-                                    outlet.dqn.environment.reward.reward_value = 2
-                                    outlet.dqn.environment.reward.rejected_reward += 2
+                                    outlet.dqn.environment.reward.reward_value = -1
+                                    outlet.dqn.environment.reward.rejected_reward += -1
                                     # print("outlet.dqn.environment.reward.reward_value_accumilated  : ", outlet.dqn.environment.reward.reward_value_accumilated)
                                     outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                                     outlet.dqn.environment.state.timed_out_length = 0
@@ -664,8 +664,8 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                         outlet.dqn.environment.reward.services_ensured = len(
                                             performance_logger.queue_ensured_buffer[outlet])
 
-                                        outlet.dqn.environment.reward.reward_value = -1
-                                        outlet.dqn.environment.reward.serving_reward += -1
+                                        outlet.dqn.environment.reward.reward_value = 1
+                                        outlet.dqn.environment.reward.serving_reward += 1
 
                                         outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                                         # print("outlet.dqn.environment.reward.reward_value_accumilated  : ", outlet.dqn.environment.reward.reward_value_accumilated)
