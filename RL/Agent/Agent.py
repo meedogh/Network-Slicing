@@ -129,6 +129,7 @@ class Agent(AbstractAgent):
             # print("state : ",state)
             target_f = model.predict(state, verbose=0)
             # print("pred state : ", target_f)
+            # print("belman target : ",target)
             target_f[0][action] = target
             # print("target_f : ",target_f)
             model.fit(state, target_f, epochs=1, verbose=0)

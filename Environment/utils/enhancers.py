@@ -334,8 +334,8 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                                 outlet.waited_buffer_max_length)
                             # print("next state time out  : ", outlet.dqn.environment.state.next_state_decentralize)
 
-                            outlet.dqn.environment.reward.reward_value = 0
-                            outlet.dqn.environment.reward.time_out_reward += 0
+                            outlet.dqn.environment.reward.reward_value = -2
+                            outlet.dqn.environment.reward.time_out_reward += -2
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
 
