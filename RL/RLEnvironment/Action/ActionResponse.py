@@ -37,16 +37,17 @@ class ActionResponse:
     def explore(self):
         ac = np.random.choice([0,1])
         # print("explore ")
+        # print("....................................................................ac  : ",ac)
         return ac
 
     def exploit(self, model, state):
         # print(" mask exploit : ", mask)
         state = np.array(state).reshape([1, np.array(state).shape[0]])
-        c=np.array(model.predict(state, verbose=0))
+        c=np.array(model.predict(state,verbose = 0))
         c = np.array(c).reshape(1,2)
         # print("exploit ")
         # print("...............................................................   ", (c[0]))
-        # print("...............................................................   ",np.argmax(c[0]))
+        # print("...../..........................................................   ",np.argmax(c[0]))
         return np.argmax(c[0])
 
     def execute(self, state, action):

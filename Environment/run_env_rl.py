@@ -631,11 +631,11 @@ class Environment:
             if step == 10 * 1152:
                 save_weigths_buffer(self.gridcells_dqn[0], 10)
             if step == 20 * 1152:
-                save_weigths_buffer(self.gridcells_dqn[0], 20)
+                save_weigths_buffer(self.gridcells_dqn[0], 15)
             if step == 30 * 1152:
                 save_weigths_buffer(self.gridcells_dqn[0], 30)
             if step == env_variables.TIME:
-                save_weigths_buffer(self.gridcells_dqn[0], 35)
+                save_weigths_buffer(self.gridcells_dqn[0], 20)
 
         self.close()
 

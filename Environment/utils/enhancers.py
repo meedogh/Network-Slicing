@@ -334,8 +334,8 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                                 outlet.waited_buffer_max_length)
                             # print("next state time out  : ", outlet.dqn.environment.state.next_state_decentralize)
 
-                            outlet.dqn.environment.reward.reward_value = -2
-                            outlet.dqn.environment.reward.time_out_reward += -2
+                            outlet.dqn.environment.reward.reward_value = 0
+                            outlet.dqn.environment.reward.time_out_reward += 0
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
 
@@ -423,8 +423,8 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(
                                 outlet.waited_buffer_max_length)
                             # print("from wait to serve next state : ",outlet.dqn.environment.state.next_state_decentralize)
-                            outlet.dqn.environment.reward.reward_value = 2
-                            outlet.dqn.environment.reward.wait_to_serve_reward += 2
+                            outlet.dqn.environment.reward.reward_value = -1
+                            outlet.dqn.environment.reward.wait_to_serve_reward += -1
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
 
@@ -547,12 +547,11 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                     outlet.waited_buffer_max_length)
                                 lr = -1
 
-                                outlet.dqn.agents.action.command.action_value_decentralize = outlet.dqn.agents.advisor_for_decentralize(
-                                    outlet.current_capacity, service.service_power_allocate, service.time_out, len(
-                                        performance_logger.queue_waiting_requests_in_buffer[outlet]))
+                                outlet.dqn.agents.action.command.action_value_decentralize = outlet.dqn.agents.chain_dec(
+                                    outlet.dqn.model, outlet.dqn.environment.state.state_value_decentralize,outlet.dqn.agents.epsilon )
 
                                 action = outlet.dqn.agents.action.command.action_value_decentralize
-                                # print("action is .................... : ", action )
+                                # print("action is .................... : ", outlet.dqn.agents.action.command.action_value_decentralize )
                                 if action == 0:
                                     # print("rejecting state : ",
                                     #       outlet.dqn.environment.state.state_value_decentralize)
@@ -572,8 +571,8 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                     outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(
                                 outlet.waited_buffer_max_length)
 
-                                    outlet.dqn.environment.reward.reward_value = -1
-                                    outlet.dqn.environment.reward.rejected_reward += -1
+                                    outlet.dqn.environment.reward.reward_value = 2
+                                    outlet.dqn.environment.reward.rejected_reward += 2
                                     # print("outlet.dqn.environment.reward.reward_value_accumilated  : ", outlet.dqn.environment.reward.reward_value_accumilated)
                                     outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                                     outlet.dqn.environment.state.timed_out_length = 0
@@ -665,8 +664,8 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                         outlet.dqn.environment.reward.services_ensured = len(
                                             performance_logger.queue_ensured_buffer[outlet])
 
-                                        outlet.dqn.environment.reward.reward_value = 2
-                                        outlet.dqn.environment.reward.serving_reward += 2
+                                        outlet.dqn.environment.reward.reward_value = -1
+                                        outlet.dqn.environment.reward.serving_reward += -1
 
                                         outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                                         # print("outlet.dqn.environment.reward.reward_value_accumilated  : ", outlet.dqn.environment.reward.reward_value_accumilated)
@@ -724,7 +723,7 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                         [service, True])
                                     outlet.dqn.environment.state.wasting_buffer_length = len(
                                         performance_logger.queue_wasted_req_buffer[outlet])
-                        if outlet.__class__.__name__ == 'Wifi' and len(
+                        if outlet.__class__.__name__ == 'Wifi'  and len(
                                 performance_logger.queue_waiting_requests_in_buffer[outlet]) != 0 \
                                 and len(performance_logger.queue_waiting_requests_in_buffer[
                                             outlet]) >= outlet.waited_buffer_max_length:

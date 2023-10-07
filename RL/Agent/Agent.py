@@ -130,6 +130,7 @@ class Agent(AbstractAgent):
             target_f = model.predict(state, verbose=0)
             # print("pred state : ", target_f)
             target_f[0][action] = target
+            # print("target_f : ",target_f)
             model.fit(state, target_f, epochs=1, verbose=0)
         # model.save_weights(f"decentralize_weights.hdf5")
         # del model
@@ -204,7 +205,7 @@ class Agent(AbstractAgent):
                           Explore(action, FallbackHandler(action)))
         action_Value, flag = handler.handle(test, epsilon)
         # print("action value inside chain : ",action_Value )
-        return action, action_Value, flag
+        return  action_Value
 
     def chain(self, model, state, epsilon):
         "A chain with a default first successor"
