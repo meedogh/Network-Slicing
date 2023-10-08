@@ -79,7 +79,6 @@ class Agent(AbstractAgent):
                 return None
 
         dictionary_sample_loss = dict()
-        # print(" len(self.memory) : " , len(self.memory) )
         counter = 0
         for index, (exploration, state, action, reward, next_state, prob) in enumerate(self.memory):
             if next_state is not None:
@@ -128,16 +127,13 @@ class Agent(AbstractAgent):
                 state = np.array(state).reshape([1, max(sh)])
             # print("state : ",state)
             target_f = model.predict(state, verbose=0)
-            # print("pred state : ", target_f)
+            # print("predict   : ", target_f)
             # print("belman target : ",target)
             target_f[0][action] = target
             # print("target_f : ",target_f)
             model.fit(state, target_f, epochs=1, verbose=0)
-        # model.save_weights(f"decentralize_weights.hdf5")
-        # del model
-        # K.clear_session()
-        if self.epsilon > self.min_epsilon:
-            self.epsilon -= self.epsilon * self.epsilon_decay
+        # if self.epsilon > self.min_epsilon:
+        #     self.epsilon -= self.epsilon * self.epsilon_decay
         return target
 
     def hard_update_target_network(self, step, model, target_model):

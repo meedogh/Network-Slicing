@@ -73,7 +73,7 @@ buffer_length = 0
 
 number_of_days = 3
 episodes = 5 * number_of_days
-number_of_episodes_for_each_period = 155
+number_of_episodes_for_each_period = 400
 advisor_period = [2, number_of_episodes_for_each_period * episode_steps]
 
 exploitation_exploration_period = [number_of_episodes_for_each_period * episode_steps,
@@ -83,7 +83,7 @@ last_exploitation_period = [2 * number_of_episodes_for_each_period * episode_ste
                             number_of_episodes_for_each_period * episode_steps * 3]
 
 decentralized_target_model_update = 32
-TIME = (20 * episode_steps) + 1
+TIME = (300 * episode_steps) + 1
 day_time = 1280
 
 period1_episode = 64

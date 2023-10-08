@@ -374,8 +374,6 @@ class Environment:
             print("step is ....................................... ", step)
             if step % 320 == 0:
                 step_for_each_episode_change_period = 0
-            #     print("each refresh episode : ", step_for_each_episode_change_period)
-            # print("step_for_each_episode_change_period : ", step_for_each_episode_change_period)
             if step == self.start and step != 0:
                 for outlet in self.temp_outlets:
                     if outlet.__class__.__name__ == 'Wifi' and len(outlet.dqn.agents.memory) > 30:
@@ -401,9 +399,6 @@ class Environment:
 
             if self.sub_episode_index % 18 == 0:
                 self.sub_episode_index = 0
-
-            # print("start : ",self.start)
-            # print("end : ",self.end)
 
             if self.start <= step <= self.end:
                 Episodes(f'episode{self.sub_episode_index + 1}')
@@ -550,30 +545,7 @@ class Environment:
                              out.dqn.environment.reward.wait_to_serve_reward,
                              out.dqn.environment.reward.time_out_reward)
                         )
-                # for key, value in performance_logger.user_requests.items():
-                #     for outlet_name, val in value.items():
-                #         services_costs = 0
-                #         number_of_served_req = 0
-                #         number_of_timed_out_requests = 0
-                #         number_of_accepted_req = 0
-                #         if val:
-                #             for (ser, flag, cost) in val:
-                #                 number_of_accepted_req += 1
-                #                 if flag == True:
-                #                     services_costs += cost
-                #                     number_of_served_req += 1
-                #                 if flag == False:
-                #                     number_of_timed_out_requests += 1
-                #         throughput = number_of_served_req / number_of_accepted_req
-                #
-                #         print("user : ", key, "  ", outlet_name, "total cost : ", services_costs, "served num : ",
-                #               number_of_served_req, "accepted num : ", number_of_accepted_req, "throughput : ",
-                #               throughput, "number_of_timed_out_requests : ", number_of_timed_out_requests)
-                #         add_value_to_pickle(
-                #             os.path.join(users_logging_info_path, f"users_logging_info.pkl"),
-                #             (key.__class__.__name__, outlet_name.__class__.__name__, services_costs, number_of_served_req, number_of_accepted_req, throughput,
-                #              number_of_timed_out_requests)
-                #         )
+
 
                 add_value_to_pickle(
                     os.path.join(requests_with_execution_time_path, f"requests_with_execution_time.pkl"),
@@ -628,14 +600,18 @@ class Environment:
             step += 1
             step_for_each_episode_change_period += 1
             self.steps += 1
-            if step == 10 * 1152:
-                save_weigths_buffer(self.gridcells_dqn[0], 10)
-            if step == 20 * 1152:
-                save_weigths_buffer(self.gridcells_dqn[0], 15)
-            if step == 30 * 1152:
-                save_weigths_buffer(self.gridcells_dqn[0], 30)
+            if step == 50 * 1152:
+                save_weigths_buffer(self.gridcells_dqn[0], 50)
+            if step == 100 * 1152:
+                save_weigths_buffer(self.gridcells_dqn[0], 100)
+            if step == 150 * 1152:
+                save_weigths_buffer(self.gridcells_dqn[0], 150)
+            if step == 200 * 1152:
+                save_weigths_buffer(self.gridcells_dqn[0], 200)
+            if step == 250 * 1152:
+                save_weigths_buffer(self.gridcells_dqn[0], 250)
             if step == env_variables.TIME:
-                save_weigths_buffer(self.gridcells_dqn[0], 20)
+                save_weigths_buffer(self.gridcells_dqn[0], 300)
 
         self.close()
 

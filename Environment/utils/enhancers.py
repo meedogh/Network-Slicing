@@ -227,7 +227,6 @@ def provisioning_time_services(outlets, performance_logger, time_step_simulation
     for i, outlet in enumerate(outlets):
         if outlet.__class__.__name__ == 'Wifi':
             count = 0
-
             terminated_services = []
             for service, time in performance_logger.queue_requests_with_execution_time_buffer[outlet].items():
                 start_time = time[0]
@@ -307,9 +306,6 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
 
                             outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state(
                                 outlet.waited_buffer_max_length)
-                            # add_value_to_pickle('C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//time_out_state.pkl',
-                            #                     outlet.dqn.environment.state.state_value_decentralize)
-                            # print("state time out  : ", outlet.dqn.environment.state.state_value_decentralize)
 
                             services_timed_out.append(service)
                             performancelogger.queue_time_out_from_simulation[outlet].appendleft([service, True])
@@ -332,10 +328,9 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             outlet.dqn.environment.state.time_out_flag = 1
                             outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(
                                 outlet.waited_buffer_max_length)
-                            # print("next state time out  : ", outlet.dqn.environment.state.next_state_decentralize)
 
-                            outlet.dqn.environment.reward.reward_value = -2
-                            outlet.dqn.environment.reward.time_out_reward += -2
+                            outlet.dqn.environment.reward.reward_value = -1
+                            outlet.dqn.environment.reward.time_out_reward += -1
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
 
@@ -389,10 +384,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
 
                             outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state(
                                 outlet.waited_buffer_max_length)
-                            # print("state wait to serve  : ", outlet.dqn.environment.state.state_value_decentralize)
-                            # add_value_to_pickle(
-                            #     'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//wait_to_serve_state.pkl',
-                            #     outlet.dqn.environment.state.state_value_decentralize)
+
                             outlet.current_capacity = outlet.current_capacity - service.service_power_allocate
                             outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                             outlet.dqn.environment.state.waiting_buffer_len = len(
@@ -412,8 +404,6 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                                     time_step_simulation - start_time) - 1
 
                             service.remaining_time_out = outlet.dqn.environment.state.remaining_time_out
-                            # print("here service.remaining_time_out  : ", service.remaining_time_out)
-
                             outlet.dqn.environment.state.delay_time = time_out - outlet.dqn.environment.state.remaining_time_out
                             outlet.dqn.environment.state.time_out_flag = 0
 
@@ -422,9 +412,8 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
 
                             outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(
                                 outlet.waited_buffer_max_length)
-                            # print("from wait to serve next state : ",outlet.dqn.environment.state.next_state_decentralize)
-                            outlet.dqn.environment.reward.reward_value = 1
-                            outlet.dqn.environment.reward.wait_to_serve_reward += 1
+                            outlet.dqn.environment.reward.reward_value = 0.5
+                            outlet.dqn.environment.reward.wait_to_serve_reward += 0.5
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
 
@@ -483,11 +472,9 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                     service_index = service._dec_services_types_mapping[service.__class__.__name__]
                     # outlet.__class__.__name__ == 'Wifi'  and
 
-                    if outlet.supported_services[service_index] == 1:
-                        if outlet.__class__.__name__ == 'Wifi'  and len(performance_logger.queue_waiting_requests_in_buffer[
+                    if outlet.__class__.__name__ == 'Wifi'  and outlet.supported_services[service_index] == 1:
+                        if len(performance_logger.queue_waiting_requests_in_buffer[
                                    outlet]) < outlet.waited_buffer_max_length:
-                            # print("outlet.capacity    >>>>>>    : ", outlet.current_capacity)
-                            # print("len of waited buffer : ",len(performance_logger.queue_waiting_requests_in_buffer[outlet]))
                             request_bandwidth = Bandwidth(service.bandwidth, service.criticality)
                             request_cost = RequestCost(request_bandwidth, service.realtime)
                             service.cost_in_bit_rate = request_cost.cost_setter(outlet)
@@ -495,7 +482,6 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                             service.total_cost_in_dolar = service.calculate_service_cost_in_Dolar_per_bit()
                             outlet._max_capacity = outlet.set_max_capacity(outlet.__class__.__name__)
 
-                            #outlet.set_max_capacity(outlet.__class__.__name__)
                             gridcell.environment.state._max_capacity_each_outlet[j] = outlet._max_capacity
                             gridcell.environment.state._capacity_each_tower[j] = outlet.current_capacity
                             outlet.dqn.environment.state.max_tower_capacity = outlet._max_capacity
@@ -551,14 +537,7 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                     outlet.dqn.model, outlet.dqn.environment.state.state_value_decentralize,outlet.dqn.agents.epsilon )
 
                                 action = outlet.dqn.agents.action.command.action_value_decentralize
-                                # print("action is .................... : ", outlet.dqn.agents.action.command.action_value_decentralize )
                                 if action == 0:
-                                    # print("rejecting state : ",
-                                    #       outlet.dqn.environment.state.state_value_decentralize)
-                                    # add_value_to_pickle(
-                                    #     'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//reject_state.pkl',
-                                    #     outlet.dqn.environment.state.state_value_decentralize)
-
                                     outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                                     outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
                                     outlet.dqn.environment.state.waiting_buffer_len = len(
@@ -571,9 +550,8 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                     outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(
                                 outlet.waited_buffer_max_length)
 
-                                    outlet.dqn.environment.reward.reward_value = -1
-                                    outlet.dqn.environment.reward.rejected_reward += -1
-                                    # print("outlet.dqn.environment.reward.reward_value_accumilated  : ", outlet.dqn.environment.reward.reward_value_accumilated)
+                                    outlet.dqn.environment.reward.reward_value = -0.5
+                                    outlet.dqn.environment.reward.rejected_reward += -0.5
                                     outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                                     outlet.dqn.environment.state.timed_out_length = 0
                                     outlet.dqn.environment.state.waiting_buffer_len = len(
@@ -634,11 +612,6 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                         outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                                         outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
 
-                                        # print("served state : ",
-                                        #       outlet.dqn.environment.state.state_value_decentralize)
-                                        # add_value_to_pickle(
-                                        #     'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//served_state.pkl',
-                                        #     outlet.dqn.environment.state.state_value_decentralize)
                                         outlet.sum_of_costs_of_all_requests += service.total_cost_in_dolar
 
                                         for car, outlet_inner_dect in performance_logger.user_requests.items():
@@ -664,11 +637,10 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                         outlet.dqn.environment.reward.services_ensured = len(
                                             performance_logger.queue_ensured_buffer[outlet])
 
-                                        outlet.dqn.environment.reward.reward_value = 1
-                                        outlet.dqn.environment.reward.serving_reward += 1
+                                        outlet.dqn.environment.reward.reward_value = 0.5
+                                        outlet.dqn.environment.reward.serving_reward += 0.5
 
                                         outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
-                                        # print("outlet.dqn.environment.reward.reward_value_accumilated  : ", outlet.dqn.environment.reward.reward_value_accumilated)
 
                                     outlet.dqn.environment.state.timed_out_length = 0
                                     outlet.dqn.environment.state.from_waiting_to_serv_length = 0
@@ -745,11 +717,3 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
         performance_logger.set_user_requests(outlet, car, service, False)
         performance_logger.generated_requests_over_simulation.appendleft(1)
         request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, service, start_time, satellite, info)
-        # if outlet.__class__.__name__ == "Wifi":
-        #     print("len of waited buffer : ", len(performance_logger.queue_waiting_requests_in_buffer[outlet]))
-        #     print("len of memory buffer : ", len(outlet.dqn.agents.memory))
-        #     print("len of executed buffer : ", len(performance_logger.queue_requests_with_execution_time_buffer[outlet]))
-        #     print("len of requested : ",len(performance_logger.queue_requested_buffer[outlet]))
-        #     print("len of performancelogger.queue_power_for_requested_in_buffer[outlet]  : ", len(performance_logger.queue_power_for_requested_in_buffer[outlet]))
-        #     print("len of ensured : ",len(performance_logger.queue_ensured_buffer[outlet]))
-        #     print("len of time out buffer : ",len(performance_logger.queue_requests_with_time_out_buffer[outlet]))
