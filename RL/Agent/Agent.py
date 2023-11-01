@@ -24,6 +24,11 @@ class Agent(AbstractAgent):
         self.mask = []
         self.C = 1000
         self.remember = False
+        self.action1_negative_reward = deque([], maxlen=250)
+        self.action1_positive_reward = deque([], maxlen=250)
+        self.action0_negative_reward = deque([], maxlen=250)
+        self.minibatch = []
+        self.data_for_grid_search = []
 
     @property
     def outlets_id(self):
@@ -98,39 +103,65 @@ class Agent(AbstractAgent):
 
         sorted_dict = dict(sorted(dictionary_sample_loss.items(), key=lambda item: item[1]))
         median = find_median_second_half(list(sorted_dict.values()))
-        # print("dec of losses : " , sorted_dict )
-        # print("median : ", median)
         if median != None:
             samples_to_remove = remove_below_threshold(sorted_dict, median)
             return list(samples_to_remove.keys())
         else:
             return None
 
+    def fair_selection_from_memory(self):
+        # if len(self.action1_positive_reward)>250:
+        #     self.action1_positive_reward = []
+        # if len(self.action1_negative_reward)>250:
+        #     self.action1_negative_reward = []
+        # if len(self.action0_negative_reward)>250:
+        #     self.action0_negative_reward = []
+
+        # print("len of memory : ", len(self.memory))
+        for index, (exploitation, state, action, reward, next_state, prob) in enumerate(self.memory):
+            if action == 1 and reward > 0:
+                if self.memory[index] not in self.action1_positive_reward:
+                    self.action1_positive_reward.append(self.memory[index])
+            if action == 1 and reward < 0:
+                if self.memory[index] not in self.action1_negative_reward:
+                    self.action1_negative_reward.append(self.memory[index])
+            if action == 0:
+                if self.memory[index] not in self.action0_negative_reward:
+                    self.action0_negative_reward.append(self.memory[index])
+
     def replay_buffer_decentralize(self, batch_size, model):
         # filtered_samples_indices = self.filter_buffer(model)
         # if filtered_samples_indices != None:
         #     updated_deque = deque(item for i, item in enumerate(self.memory) if i not in filtered_samples_indices)
         #     self.memory = deque(updated_deque, maxlen=750)
-        minibatch = random.sample(self.memory, batch_size)
+        self.minibatch = []
+        self.fair_selection_from_memory()
+        # print(len(self.action1_positive_reward),len(self.action1_negative_reward),
+        #                  len(self.action0_negative_reward))
+        batch_size = min(len(self.action1_positive_reward),len(self.action1_negative_reward),
+                             len(self.action0_negative_reward))
+        if batch_size > 25 :
+            batch_size =  25
+        minibatch_action1_positive_reward = random.sample(self.action1_positive_reward, batch_size)
+        minibatch_action1_negative_reward = random.sample(self.action1_negative_reward, batch_size)
+        minibatch_action0_negative_reward = random.sample(self.action0_negative_reward, batch_size)
+        self.minibatch.extend(minibatch_action1_positive_reward)
+        self.minibatch.extend(minibatch_action0_negative_reward)
+        self.minibatch.extend(minibatch_action1_negative_reward)
+        # self.minibatch = random.sample(self.memory, batch_size)
         target = 0
-        for exploitation, state, action, reward, next_state, prob in minibatch:
+        for exploitation, state, action, reward, next_state, prob in self.minibatch:
             target = reward
             if next_state is not None:
                 sh = np.array(next_state).shape
                 next_state = np.array(next_state).reshape([1, max(sh)])
                 # logit_model2 = keras.Model(inputs=model.input, outputs=model.layers[-2].output)
                 logit_value = model.predict(next_state, verbose=0)[0]
-                # print("choosen states >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  : ", state)
-                # print("the action of choosen states >>>>>>>>>>>>>>>>>>>>>>>  : ",action)
-                # print("pred next_state : ", logit_value)
                 target = reward + self.gamma * np.amax(logit_value)
                 state = np.array(state).reshape([1, max(sh)])
-            # print("state : ",state)
             target_f = model.predict(state, verbose=0)
-            # print("predict   : ", target_f)
-            # print("belman target : ",target)
             target_f[0][action] = target
-            # print("target_f : ",target_f)
+            self.data_for_grid_search.append([state,target_f])
             model.fit(state, target_f, epochs=1, verbose=0)
         # if self.epsilon > self.min_epsilon:
         #     self.epsilon -= self.epsilon * self.epsilon_decay
@@ -165,8 +196,8 @@ class Agent(AbstractAgent):
             ########################################### note for rounding
             target_f[0][action] = target
             model.fit(state, target_f, epochs=1, verbose=0)
-        if self.epsilon > self.min_epsilon:
-            self.epsilon -= self.epsilon * self.epsilon_decay
+        # if self.epsilon > self.min_epsilon:
+        #     self.epsilon -= self.epsilon * self.epsilon_decay
         return target
 
     def free_up_memory(self, deque, filename):
@@ -202,7 +233,7 @@ class Agent(AbstractAgent):
                           Explore(action, FallbackHandler(action)))
         action_Value, flag = handler.handle(test, epsilon)
         # print("action value inside chain : ",action_Value )
-        return  action_Value
+        return action_Value
 
     def chain(self, model, state, epsilon):
         "A chain with a default first successor"
@@ -221,9 +252,9 @@ class Agent(AbstractAgent):
 
     def advisor_for_decentralize(self, current_capacity, power_allocation, time_out, buffer_length):
         action = 0
-        if current_capacity >= power_allocation and buffer_length == 0 :
+        if current_capacity >= power_allocation and buffer_length == 0:
             action = 1
-        elif current_capacity >= power_allocation and buffer_length <= 20 and time_out >= 12 :
+        elif current_capacity >= power_allocation and buffer_length <= 20 and time_out >= 12:
             action = 1
         elif current_capacity < power_allocation and buffer_length >= 85 and time_out < 12:
             action = 0

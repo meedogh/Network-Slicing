@@ -33,8 +33,13 @@ class PerformanceLogger(metaclass=SingletonMeta):
 
     _user_requests: Dict[Vehicle, Dict[str, deque[Service, bool:False,float]]] = field(default_factory=dict)
 
-    _queue_requested_buffer: Dict[Outlet, deque[int]] = field(default_factory=dict)
+    _queue_requested_buffer: Dict[Outlet, int] = field(default_factory=dict)
 
+    _number_of_requested_requests_buffer: Dict[Outlet, int] = field(default_factory=dict)
+
+    # _accepted : int = 0
+    # _served : int = 0
+    # _time_out : int = 0
     _queue_power_for_requested_in_buffer: Dict[Outlet, deque[Service, bool:False]] = field(default_factory=dict)
 
     _queue_waiting_requests_in_buffer: Dict[Outlet, deque[Service, bool:False]] = field(default_factory=dict)
@@ -47,13 +52,13 @@ class PerformanceLogger(metaclass=SingletonMeta):
 
     _queue_wasted_req_buffer: Dict[Outlet, deque[Service, bool:False]] = field(default_factory=dict)
 
-    _queue_ensured_buffer: Dict[Outlet, deque[int]] = field(default_factory=dict)
+    _queue_ensured_buffer: Dict[Outlet, int] = field(default_factory=dict)
 
     _queue_requests_with_execution_time_buffer: Dict[Outlet, Dict[Service, List[int]]] = field(default_factory=dict)
 
     _outlet_services_power_allocation: Dict[Outlet, List[float]] = field(default_factory=dict)
 
-    _generated_requests_over_simulation: deque[int] = field(default_factory=deque)
+    _generated_requests_over_simulation: int = field(default_factory=int)
 
     _queue_request_failure_flags:Dict[Outlet, deque[Service, bool:False]] = field(default_factory=dict)
 
@@ -67,6 +72,48 @@ class PerformanceLogger(metaclass=SingletonMeta):
 
     _power_costs: List[float] = field(default_factory=list)
 
+
+    def initial_setting(self,outlet):
+        self.set_outlet_services_power_allocation(outlet, [0, 0, 0])
+        self.set_queue_requested_buffer(outlet, 0)
+        self.set_queue_wasted_req_buffer(outlet, deque([]))
+        self.set_queue_ensured_buffer(outlet, 0)
+        self.set_queue_power_for_requested_in_buffer(outlet, deque([]))
+        self.set_queue_waiting_requests_in_buffer(outlet, deque([]))
+        self.set_queue_time_out_from_simulation(outlet, deque([]))
+        self.set_queue_from_wait_to_serve_over_simulation(outlet, deque([]))
+        self.set_queue_request_failure_flags(outlet, deque([]))
+        self.set_outlet_services_requested_number_all_periods(outlet, [0, 0, 0])
+        self.set_outlet_services_requested_number(outlet, [0, 0, 0])
+        self.set_outlet_services_ensured_number(outlet, [0, 0, 0])
+        self.set_number_of_requested_requests_buffer(outlet, 0)
+
+        if outlet not in self.queue_requests_with_execution_time_buffer:
+            self.queue_requests_with_execution_time_buffer[outlet] = dict()
+
+        if outlet not in self.queue_requests_with_time_out_buffer:
+            self.queue_requests_with_time_out_buffer[outlet] = dict()
+    @property
+    def accepted(self):
+        return self._accepted
+
+    @accepted.setter
+    def accepted(self,value):
+        self._accepted =  value
+
+    @property
+    def served(self):
+        return self._served
+    @served.setter
+    def served(self,value ):
+        self._served =  value
+
+    @property
+    def time_out(self):
+        return self._time_out
+    @time_out.setter
+    def time_out(self,value ):
+        self._time_out = value
     @property
     def queue_requested_buffer(self):
         return self._queue_requested_buffer
@@ -75,6 +122,15 @@ class PerformanceLogger(metaclass=SingletonMeta):
         if outlet not in self._queue_requested_buffer:
             self._queue_requested_buffer[outlet] = {}
         self._queue_requested_buffer[outlet] = value
+
+
+    @property
+    def number_of_requested_requests_buffer(self):
+        return self._number_of_requested_requests_buffer
+    def set_number_of_requested_requests_buffer(self,outlet,value):
+        if outlet not in self._number_of_requested_requests_buffer :
+            self._number_of_requested_requests_buffer[outlet] = {}
+        self._number_of_requested_requests_buffer[outlet] = value
 
     @property
     def queue_request_failure_flags(self):
@@ -89,6 +145,9 @@ class PerformanceLogger(metaclass=SingletonMeta):
     def generated_requests_over_simulation(self):
         return self._generated_requests_over_simulation
 
+    @generated_requests_over_simulation.setter
+    def generated_requests_over_simulation(self,value):
+        self._generated_requests_over_simulation = value
     @property
     def queue_wasted_req_buffer(self):
         return self._queue_wasted_req_buffer
@@ -267,9 +326,9 @@ class PerformanceLogger(metaclass=SingletonMeta):
 
     def reset_state_decentralize_requirement(self):
         for key in self._queue_requested_buffer:
-            self._queue_requested_buffer[key] = deque([])
+            self._queue_requested_buffer[key] = 0
         for key in self._queue_ensured_buffer:
-            self._queue_ensured_buffer[key] = deque([])
+            self._queue_ensured_buffer[key] = 0
         for key in self._queue_power_for_requested_in_buffer:
             self._queue_power_for_requested_in_buffer[key] = deque([])
         for key in self._queue_waiting_requests_in_buffer:
@@ -286,4 +345,6 @@ class PerformanceLogger(metaclass=SingletonMeta):
             self._queue_from_wait_to_serve_over_simulation[key] = deque([])
         for key in self._queue_time_out_from_simulation:
             self._queue_time_out_from_simulation[key] = deque([])
-        self._generated_requests_over_simulation = deque()
+        self._generated_requests_over_simulation = 0
+        for key in self._number_of_requested_requests_buffer:
+            self._number_of_requested_requests_buffer[key]=0

@@ -128,25 +128,8 @@ class Environment:
                 outlet = factory.produce_cellular_outlet(str(type_poi))
                 outlet.outlet_id = id_
                 outlet.radius = val
-                performancelogger.set_outlet_services_power_allocation(outlet, [0, 0, 0])
-                performancelogger.set_queue_requested_buffer(outlet, deque([]))
-                performancelogger.set_queue_wasted_req_buffer(outlet, deque([]))
-                performancelogger.set_queue_ensured_buffer(outlet, deque([]))
-                performancelogger.set_queue_power_for_requested_in_buffer(outlet, deque([]))
-                performancelogger.set_queue_waiting_requests_in_buffer(outlet, deque([]))
-                performancelogger.set_queue_time_out_from_simulation(outlet, deque([]))
-                performancelogger.set_queue_from_wait_to_serve_over_simulation(outlet, deque([]))
-                performancelogger.set_queue_request_failure_flags(outlet, deque([]))
-                performancelogger.set_outlet_services_requested_number_all_periods(outlet, [0, 0, 0])
-                performancelogger.set_outlet_services_requested_number(outlet, [0, 0, 0])
-                performancelogger.set_outlet_services_ensured_number(outlet, [0, 0, 0])
 
-                # performancelogger.set_outlet_services_power_allocation_10_TimeStep(outlet, [0, 0, 0])
-                if outlet not in performancelogger.queue_requests_with_execution_time_buffer:
-                    performancelogger.queue_requests_with_execution_time_buffer[outlet] = dict()
-
-                if outlet not in performancelogger.queue_requests_with_time_out_buffer:
-                    performancelogger.queue_requests_with_time_out_buffer[outlet] = dict()
+                performancelogger.initial_setting(outlet)
 
                 outlets.append(outlet)
 
@@ -376,26 +359,29 @@ class Environment:
                 step_for_each_episode_change_period = 0
             if step == self.start and step != 0:
                 for outlet in self.temp_outlets:
-                    if outlet.__class__.__name__ == 'Wifi' and len(outlet.dqn.agents.memory) > 30:
-                        throughput = 0
-                        if len(performance_logger.queue_ensured_buffer[outlet]) == 0 or len(performance_logger.queue_requested_buffer[outlet]) == 0 :
+                    if outlet.__class__.__name__ == 'Wifi' and len(outlet.dqn.agents.memory) > 75:
+                        if performance_logger.queue_ensured_buffer[outlet]== 0 or performance_logger.number_of_requested_requests_buffer[outlet] == 0 :
                             throughput = 0
                         else:
-                            throughput = len(performance_logger.queue_ensured_buffer[outlet]) / len(
-                                performance_logger.queue_requested_buffer[outlet])
-
+                            throughput = performance_logger.queue_ensured_buffer[outlet] / performance_logger.number_of_requested_requests_buffer[outlet]
+                            # print(" throughput >>>>  : ",  throughput )
                         outlet.dqn.environment.reward.throughput = throughput
                         l = list(outlet.dqn.agents.memory[-1])
                         v = outlet.dqn.agents.memory[-1]
                         outlet.dqn.agents.memory.remove(v)
                         l[3] = l[3] + outlet.dqn.environment.reward.throughput
+                        # print("the new sampl e :   " , l )
                         outlet.dqn.agents.memory.append(tuple(l))
-                        if len(outlet.dqn.agents.memory) > 30:
+                        if len(outlet.dqn.agents.memory) > 75:
                             outlet.dqn.agents.qvalue = (
                                 outlet.dqn.agents.replay_buffer_decentralize(
-                                    30, outlet.dqn.model,
+                                    75, outlet.dqn.model,
                                 )
                             )
+                        outlet.dqn.agents.memory = deque([],maxlen= 750)
+                        outlet.dqn.agents.action1_positive_reward = deque([],maxlen= 250)
+                        outlet.dqn.agents.action1_negative_reward = deque([],maxlen= 250)
+                        outlet.dqn.agents.action0_negative_reward = deque([],maxlen= 250)
 
             if self.sub_episode_index % 18 == 0:
                 self.sub_episode_index = 0
@@ -404,29 +390,19 @@ class Environment:
                 Episodes(f'episode{self.sub_episode_index + 1}')
                 print("episode index : ", f'episode{self.sub_episode_index + 1}')
                 self.sub_episode_index += 1
-                self.start_end_index+=1
+                self.start_end_index += 1
+                # self.sub_episode_index = 0
+                # self.start_end_index += 1
                 self.start = env_variables.sub_episode_length * self.start_end_index
                 self.end = env_variables.sub_episode_length * (self.start_end_index + 1)
 
                 for outlet in self.temp_outlets:
                     if outlet.__class__.__name__ == 'Wifi':
-                        outlet.dqn.environment.reward.throughput = 0
-                        outlet.dqn.agents.memory = deque(maxlen=750)
-                        performance_logger.set_queue_waiting_requests_in_buffer(outlet, deque([]))
-                        performance_logger.set_queue_power_for_requested_in_buffer(outlet, deque([]))
-                        performance_logger.set_queue_requested_buffer(outlet, deque([]))
-                        performance_logger.set_queue_ensured_buffer(outlet, deque([]))
-                        performance_logger.set_queue_time_out_from_simulation(outlet, deque([]))
-                        performance_logger.set_queue_from_wait_to_serve_over_simulation(outlet, deque([]))
-                        performance_logger.set_queue_request_failure_flags(outlet, deque([]))
-                        performance_logger.set_outlet_services_requested_number_all_periods(outlet, [0, 0, 0])
-                        performance_logger.set_outlet_services_requested_number(outlet, [0, 0, 0])
-                        performance_logger.set_outlet_services_ensured_number(outlet, [0, 0, 0])
-                        if outlet in performance_logger.queue_requests_with_execution_time_buffer:
-                            performance_logger.queue_requests_with_execution_time_buffer[outlet] = dict()
+            #             add_value_to_pickle("C:/Users/Windows dunya/PycharmProjects/pythonProject/Network-Slicing/throughputdata_for_grid_search(0.5,-1,-0.5)",(len(
+            # performance_logger.queue_requested_buffer[outlet]),len(
+            # performance_logger.queue_ensured_buffer[outlet])))
+                        performance_logger.initial_setting(outlet)
 
-                        if outlet in performance_logger.queue_requests_with_time_out_buffer:
-                            performance_logger.queue_requests_with_time_out_buffer[outlet] = dict()
 
                         waited_buffer_max_length = round(nump_rand.normal(
                             loc=env_variables.buffer_length_mean_std["mean"],
@@ -442,7 +418,11 @@ class Environment:
                             waited_buffer_max_length * outlet.waited_buffer_max_length)
                         if len(performance_logger.queue_waiting_requests_in_buffer[
                                    outlet]) <= outlet.waited_buffer_max_length:
+
+                            # number_of_requests_should_generation  = 0
+                            # print("number_of_requests_should_generation  : ",number_of_requests_should_generation)
                             for i in range(number_of_requests_should_generation):
+                                # print("req  : ",i)
                                 types = [*SERVICES_TYPES.keys()]
                                 type_ = random.choices(types, weights=(
                                     env_variables.ENTERTAINMENT_RATIO, env_variables.SAFETY_RATIO,
@@ -460,7 +440,8 @@ class Environment:
                                 service.total_cost_in_dolar = service.calculate_service_cost_in_Dolar_per_bit()
                                 service.time_out = service.calculate_time_out()
                                 service.time_execution = service.calculate_processing_time()
-                                performance_logger.queue_requested_buffer[outlet].appendleft(1)
+                                performance_logger.queue_requested_buffer[outlet] += 1
+                                # print("performance_logger.queue_requested_buffer[outlet] inside ...  : ", performance_logger.queue_requested_buffer[outlet])
 
                                 performance_logger.queue_power_for_requested_in_buffer[outlet].append(
                                     [service, False])
@@ -472,6 +453,7 @@ class Environment:
                                 performance_logger.queue_requests_with_time_out_buffer[outlet][service] = [
                                     step,
                                     service.time_out]
+                                logging_important_info_for_testing(performance_logger, 0, outlet, satellite)
 
                         tower_available_capacity = round(nump_rand.normal(
                             loc=env_variables.capacity_mean_std["mean"],
@@ -514,15 +496,19 @@ class Environment:
             else:
                 close_figures()
             if self.steps - self.previous_steps >= env_variables.decentralized_replay_buffer:
+                # print("here : .... ")
                 self.previous_steps = self.steps
                 for i, outlet in enumerate(self.temp_outlets):
-                    if len(outlet.dqn.agents.memory) > 30:
+                    if len(outlet.dqn.agents.memory) > 75:
                         # print(" outlet.dqn.agents.memory : ", len(outlet.dqn.agents.memory))
                         outlet.dqn.agents.qvalue = (
                             outlet.dqn.agents.replay_buffer_decentralize(
-                                30, outlet.dqn.model,
+                                75, outlet.dqn.model,
                             )
                         )
+            # for i, outlet in enumerate(self.temp_outlets):
+            #     if outlet.__class__.__name__=="Wifi":
+            #         print(outlet.dqn.agents.memory)
 
             # if self.steps - self.previous_steps_centralize >= env_variables.centralized_replay_buffer:
             #     self.previous_steps_centralize = self.steps
@@ -545,7 +531,6 @@ class Environment:
                              out.dqn.environment.reward.wait_to_serve_reward,
                              out.dqn.environment.reward.time_out_reward)
                         )
-
 
                 add_value_to_pickle(
                     os.path.join(requests_with_execution_time_path, f"requests_with_execution_time.pkl"),
@@ -600,18 +585,20 @@ class Environment:
             step += 1
             step_for_each_episode_change_period += 1
             self.steps += 1
+
+            if step == 25 * 1152:
+                save_weigths_buffer(self.gridcells_dqn[0], 25)
+            if step == 35 * 1152:
+                save_weigths_buffer(self.gridcells_dqn[0], 35)
+            if step == 40 * 1152:
+                save_weigths_buffer(self.gridcells_dqn[0], 40)
+            if step == 45 * 1152:
+                save_weigths_buffer(self.gridcells_dqn[0], 45)
             if step == 50 * 1152:
                 save_weigths_buffer(self.gridcells_dqn[0], 50)
-            if step == 100 * 1152:
-                save_weigths_buffer(self.gridcells_dqn[0], 100)
-            if step == 150 * 1152:
-                save_weigths_buffer(self.gridcells_dqn[0], 150)
-            if step == 200 * 1152:
-                save_weigths_buffer(self.gridcells_dqn[0], 200)
-            if step == 250 * 1152:
-                save_weigths_buffer(self.gridcells_dqn[0], 250)
             if step == env_variables.TIME:
-                save_weigths_buffer(self.gridcells_dqn[0], 300)
+                save_weigths_buffer(self.gridcells_dqn[0], 70)
+
 
         self.close()
 

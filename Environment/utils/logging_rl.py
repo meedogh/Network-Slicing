@@ -13,7 +13,8 @@ def logging_important_info_for_testing(performance_logger,
 
     add_value_to_pickle(
         os.path.join(requested_decentralized_path, f"requested{outlet_index}.pkl"),
-        outlet.dqn.environment.reward.services_requested,
+
+            performance_logger.queue_requested_buffer[outlet],
     )
 
     add_value_to_pickle(
@@ -23,7 +24,8 @@ def logging_important_info_for_testing(performance_logger,
 
     add_value_to_pickle(
         os.path.join(ensured_decentralized_path, f"ensured{outlet_index}.pkl"),
-        outlet.dqn.environment.reward.services_ensured,
+
+            performance_logger.queue_ensured_buffer[outlet],
     )
 
     add_value_to_pickle(
@@ -66,7 +68,7 @@ def logging_important_info_for_testing(performance_logger,
     )
     add_value_to_pickle(
         os.path.join(generated_requests_over_simulation_path, f"generated_requests_over_simulation{outlet_index}.pkl"),
-        len(performance_logger.generated_requests_over_simulation),
+        performance_logger.generated_requests_over_simulation,
     )
 
     add_value_to_pickle(

@@ -15,15 +15,6 @@ class DecentralizeModel():
         self.output_activation = output_activation
 
 
-    # def build_model(self) -> Sequential:
-    #     model_ = Sequential()
-    #     model_.add(Dense(24, input_dim=self.state_size, activation=self.activation_function))
-    #     model_.add(Dense(24, activation=self.activation_function))
-    #     model_.add(Dense(2 , activation=self.output_activation))
-    #     # model_.add(Reshape((2,1)))
-    #     model_.compile(loss=self.loss_function,
-    #                    optimizer=self.optimization_algorithm(learning_rate=self.learning_rate))
-    #     return model_
     def build_model(self) -> Sequential:
         model_ = Sequential()
         model_.add(Dense(24, input_dim=self.state_size, activation=self.activation_function))

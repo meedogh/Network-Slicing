@@ -27,7 +27,6 @@ outlets = {
     '4G': [],
     '5G': [],
     'wifi': []
-
 }
 all_routes = []
 
@@ -83,7 +82,8 @@ last_exploitation_period = [2 * number_of_episodes_for_each_period * episode_ste
                             number_of_episodes_for_each_period * episode_steps * 3]
 
 decentralized_target_model_update = 32
-TIME = (300 * episode_steps) + 1
+
+TIME = (70 * episode_steps) + 1
 day_time = 1280
 
 period1_episode = 64
@@ -92,13 +92,9 @@ period3_episode = 64 * 3
 period4_episode = 64 * 4
 period5_episode = 64 * 5
 
-
-
 length_each_period = 320 / 5
 decentralized_replay_buffer = 30
 centralized_replay_buffer = 32
-
-
 def get_position_vehicle(id_):
     try:
         p = round(traci.vehicle.getPosition(id_), 4)
