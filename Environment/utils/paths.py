@@ -2,7 +2,7 @@ import os
 import sys
 
 results_dir = os.path.join(sys.path[0],
-                           'fair_memory_selection_0.5_m0.5_m1_2')
+                           'fair_memory_selection_0.5_m0.5_m1_2_retrain')
 centralized_weights = os.path.join(results_dir, 'centralized_weights')
 decentralized_weights = os.path.join(results_dir, 'decentralized_weights')
 path_memory_centralize = os.path.join(results_dir, 'centralize_memory')
