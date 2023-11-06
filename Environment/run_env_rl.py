@@ -34,6 +34,7 @@ class Environment:
     previouse_steps_reward32 = 0
     previous_steps_of_update_target_model = 0
     episodes_numbers = 0
+    external_episode  = 0
     sub_episode_index = 0
     start_end_index = 0
     start = env_variables.sub_episode_length * sub_episode_index
@@ -522,25 +523,25 @@ class Environment:
                 self.episodes_numbers += 1
                 self.previouse_steps_reseting = self.steps
                 # print(" performance_logger.user_requests : ", performance_logger.user_requests)
-                for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
-                    for i, out in enumerate(gridcell_dqn.agents.grid_outlets):
-                        add_value_to_pickle(
-                            os.path.join(reward_info_path, f"reward_info.pkl"),
-                            (out.__class__.__name__, out.dqn.environment.reward.serving_reward,
-                             out.dqn.environment.reward.rejected_reward,
-                             out.dqn.environment.reward.wait_to_serve_reward,
-                             out.dqn.environment.reward.time_out_reward)
-                        )
+                # for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
+                #     for i, out in enumerate(gridcell_dqn.agents.grid_outlets):
+                #         add_value_to_pickle(
+                #             os.path.join(reward_info_path, f"reward_info.pkl"),
+                #             (out.__class__.__name__, out.dqn.environment.reward.serving_reward,
+                #              out.dqn.environment.reward.rejected_reward,
+                #              out.dqn.environment.reward.wait_to_serve_reward,
+                #              out.dqn.environment.reward.time_out_reward)
+                #         )
 
-                add_value_to_pickle(
-                    os.path.join(requests_with_execution_time_path, f"requests_with_execution_time.pkl"),
-                    performance_logger.queue_requests_with_execution_time_buffer,
-                )
-
-                add_value_to_pickle(
-                    os.path.join(requests_with_out_time_path, f"requests_with_out_time.pkl"),
-                    performance_logger.queue_requests_with_time_out_buffer,
-                )
+                # add_value_to_pickle(
+                #     os.path.join(requests_with_execution_time_path, f"requests_with_execution_time.pkl"),
+                #     performance_logger.queue_requests_with_execution_time_buffer,
+                # )
+                #
+                # add_value_to_pickle(
+                #     os.path.join(requests_with_out_time_path, f"requests_with_out_time.pkl"),
+                #     performance_logger.queue_requests_with_time_out_buffer,
+                # )
                 for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
                     for i, out in enumerate(gridcell_dqn.agents.grid_outlets):
                         states = []
@@ -555,10 +556,10 @@ class Environment:
                 list_ = []
                 for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
                     for i, out in enumerate(gridcell_dqn.agents.grid_outlets):
-                        add_value_to_pickle(
-                            os.path.join(decentralize_qvalue_path, f"qvalue{i}.pkl"),
-                            out.dqn.agents.qvalue,
-                        )
+                        # add_value_to_pickle(
+                        #     os.path.join(decentralize_qvalue_path, f"qvalue{i}.pkl"),
+                        #     out.dqn.agents.qvalue,
+                        # )
 
                         add_value_to_pickle(
                             os.path.join(reward_accumilated_decentralize_path, f"accu_reward{i}.pkl"),
@@ -586,17 +587,10 @@ class Environment:
             step_for_each_episode_change_period += 1
             self.steps += 1
 
-
-            if step == 7 * 1152:
-                save_weigths_buffer(self.gridcells_dqn[0], 7)
-            if step == 35 * 1152:
-                save_weigths_buffer(self.gridcells_dqn[0], 35)
-            if step == 40 * 1152:
-                save_weigths_buffer(self.gridcells_dqn[0], 40)
-            if step == 45 * 1152:
-                save_weigths_buffer(self.gridcells_dqn[0], 45)
-            if step == 50 * 1152:
-                save_weigths_buffer(self.gridcells_dqn[0], 50)
+            if step % 1152 == 0:
+                self.external_episode+=1
+                save_weigths_buffer(self.gridcells_dqn[0], self.external_episode)
+                print("time step of saving weights >>>>>>>>>>>>>>>>>>    : ", self.external_episode )
             if step == env_variables.TIME:
                 save_weigths_buffer(self.gridcells_dqn[0], 10)
 

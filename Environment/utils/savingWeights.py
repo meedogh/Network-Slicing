@@ -3,7 +3,10 @@ from .paths import path_memory_decentralize,path_memory_centralize ,centralized_
 
 def save_weigths_buffer(gridcell,num):
     for index, outlet in enumerate(gridcell.agents.grid_outlets):
-        outlet.dqn.model.save_weights(os.path.join(decentralized_weights, f"weights_{index}_{num}.hdf5"))
+        directory_path = "content/drive/MyDrive/network_slicing/fair_memory_selection_0.5_m0.5_m1_4/decentralize_weights/"
+        if not os.path.exists(directory_path):
+            os.makedirs(directory_path)
+        outlet.dqn.model.save_weights(os.path.join(directory_path,f"weights_{index}_{num}.hdf5"))
         outlet.dqn.agents.free_up_memory(
             outlet.dqn.agents.memory,
             os.path.join(
