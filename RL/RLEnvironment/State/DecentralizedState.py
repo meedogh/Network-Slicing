@@ -26,9 +26,6 @@ class DeCentralizedState(State):
         self._tower_capacity = 0.0
         self._index_service = 0
         self._power_of_requests = 0
-        self._action_value = 0
-        self._number_requested_in_period = np.zeros(self.num_services)
-        self._number_ensured_in_period = np.zeros(self.num_services)
         self._ratio_of_occupancy = 0
         self._waiting_buffer_len = 0
         self._remaining_time_out = 0
@@ -141,21 +138,7 @@ class DeCentralizedState(State):
     def power_of_requests(self, value):
         self._power_of_requests = value
 
-    @property
-    def number_requested_in_period(self):
-        return self._number_requested_in_period
 
-    @number_requested_in_period.setter
-    def number_requested_in_period(self, value):
-        self._number_requested_in_period = value
-
-    @property
-    def number_ensured_in_period(self):
-        return self._number_ensured_in_period
-
-    @number_ensured_in_period.setter
-    def number_ensured_in_period(self, value):
-        self._number_ensured_in_period = value
 
     @property
     def index_service(self):
@@ -165,13 +148,6 @@ class DeCentralizedState(State):
     def index_service(self, value):
         self._index_service = value
 
-    @property
-    def action_value(self):
-        return self._action_value
-
-    @action_value.setter
-    def action_value(self, value):
-        self._action_value = value
 
     @property
     def state_value_decentralize(self):
