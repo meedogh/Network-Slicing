@@ -110,14 +110,6 @@ class Agent(AbstractAgent):
             return None
 
     def fair_selection_from_memory(self):
-        # if len(self.action1_positive_reward)>250:
-        #     self.action1_positive_reward = []
-        # if len(self.action1_negative_reward)>250:
-        #     self.action1_negative_reward = []
-        # if len(self.action0_negative_reward)>250:
-        #     self.action0_negative_reward = []
-
-        # print("len of memory : ", len(self.memory))
         for index, (exploitation, state, action, reward, next_state, prob) in enumerate(self.memory):
             if action == 1 and reward > 0:
                 if self.memory[index] not in self.action1_positive_reward:
@@ -163,8 +155,8 @@ class Agent(AbstractAgent):
             target_f[0][action] = target
             self.data_for_grid_search.append([state,target_f])
             model.fit(state, target_f, epochs=1, verbose=0)
-        # if self.epsilon > self.min_epsilon:
-        #     self.epsilon -= self.epsilon * self.epsilon_decay
+        if self.epsilon > self.min_epsilon:
+            self.epsilon -= self.epsilon * self.epsilon_decay
         return target
 
     def hard_update_target_network(self, step, model, target_model):
