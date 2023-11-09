@@ -10,6 +10,7 @@ results_dir4 = os.path.join(sys.path[0],f"fair_memory_selection_0.5_m0.5_m1_5//r
 results_dir5 = os.path.join(sys.path[0],f"fair_memory_selection_0.5_m0.5_m1_6//reward_accumilated_decentralize//accu_reward{outlet_num}.pkl")
 results_dir6 = os.path.join(sys.path[0],f"fair_memory_selection_0.5_m0.5_m1_7//reward_accumilated_decentralize//accu_reward{outlet_num}.pkl")
 results_dir7 = os.path.join(sys.path[0],f"fair_memory_selection_0.5_m0.5_m1_explore_exploit//reward_accumilated_decentralize//accu_reward{outlet_num}.pkl")
+results_dir8 = os.path.join(sys.path[0],f"fair_memory_selection_0.5_m0.5_m1_exploit//reward_accumilated_decentralize//accu_reward{outlet_num}.pkl")
 
 
 # filename  = f"C://Users//Windows dunya//Downloads//action_each_single_request_reward2_method2_repeat_periods_each_episode_retrain_buffer_percentage_small_time_out_add_flag_small_state_my_reward_failure//reward_accumilated_decentralize//accu_reward{outlet_num}.pkl"
@@ -72,6 +73,15 @@ with open(results_dir7, 'rb') as file:
     except EOFError:
         pass
 
+
+with open(results_dir8, 'rb') as file:
+    try:
+        while True:
+            loaded_value = pickle.load(file)
+            deque.append(loaded_value)
+    except EOFError:
+        pass
+
 print(len(deque))
 for i in deque:
     print(i)
@@ -95,7 +105,7 @@ def rolling_average(data, window_size):
     return rolling_avg
 
 # Example usage:
-window_size = 10
+window_size = 1
 result = rolling_average(deque, window_size)
 print(len(deque))
 x_values = [i for i in range(len(result))]  # Adjust x-axis values

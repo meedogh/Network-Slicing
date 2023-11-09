@@ -592,7 +592,7 @@ class Environment:
                 save_weigths_buffer(self.gridcells_dqn[0], self.external_episode)
                 print("time step of saving weights >>>>>>>>>>>>>>>>>>    : ", self.external_episode )
             if step == env_variables.TIME:
-                save_weigths_buffer(self.gridcells_dqn[0], 8)
+                save_weigths_buffer(self.gridcells_dqn[0], 5)
 
 
         self.close()
