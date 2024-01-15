@@ -275,7 +275,7 @@ def check_risky(performance_logger, outlet, delta):
     for service, time in performance_logger.queue_requests_with_execution_time_buffer[outlet].items():
         start_time = time[0]
         period_of_termination = time[1]
-        time_out = service.time_out()
+        time_out = service.time_out
         if start_time + time_out >= period_of_termination + delta:
             return 0
         else:
