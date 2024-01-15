@@ -271,6 +271,17 @@ def check_timed_out(performance_logger, outlet, request_time_out_period, demandi
         return 1, round(((current_capacity / 3500) * 100), 2), round(((request_power_allocation / 3500) * 100), 2)
 
 
+def check_risky(performance_logger, outlet, delta):
+    for service, time in performance_logger.queue_requests_with_execution_time_buffer[outlet].items():
+        start_time = time[0]
+        period_of_termination = time[1]
+        time_out = service.time_out()
+        if start_time + time_out >= period_of_termination + delta:
+            return 0
+        else:
+            return 1
+
+
 def buffering_not_served_requests(outlets, performancelogger, time_step_simulation, satellite):
     for outlet_index, outlet in enumerate(outlets):
         if outlet.__class__.__name__ == 'Wifi':
@@ -476,11 +487,19 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
             for j, outlet_ in enumerate(gridcell.agents.grid_outlets):
                 if outlet == outlet_:
                     service_index = service._dec_services_types_mapping[service.__class__.__name__]
+                    outlet.dqn.environment.state.time_out_flag,copy_of_capacity,req_power = check_timed_out(performance_logger,
+                                                                                     outlet,
+                                                                                     service.time_out,
+                                                                                     start_time,
+                                                                                     service.service_power_allocate,
+                                                                                     outlet.current_capacity)
+                    
                     # outlet.__class__.__name__ == 'Wifi'  and
-                    if outlet.supported_services[service_index] == 1:
+                    if outlet.supported_services[service_index] == 1 and outlet.dqn.environment.state.time_out_flag==0:
                         if outlet.__class__.__name__ == 'Wifi' and len(
                                 performance_logger.queue_waiting_requests_in_buffer[
                                     outlet]) < outlet.waited_buffer_max_length:
+                            
                             performance_logger.number_of_requested_requests_buffer[outlet] += 1
                             # print("performance_logger.number_of_requested_requests_buffer[outlet] : ",
                             #       performance_logger.number_of_requested_requests_buffer[outlet])
@@ -551,6 +570,9 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                 outlet.dqn.agents.action.command.action_value_decentralize = outlet.dqn.agents.chain_dec(
                                     outlet.dqn.model, outlet.dqn.environment.state.state_value_decentralize,
                                     outlet.dqn.agents.epsilon)
+                                
+                                if check_risky(performance_logger, outlet, 2):
+                                    service.risk_flag(True)
 
                                 action = outlet.dqn.agents.action.command.action_value_decentralize
                                 if action == 0:
@@ -725,6 +747,8 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                             outlet.dqn.environment.state.wasting_buffer_length = len(
                                 performance_logger.queue_wasted_req_buffer[outlet])
 
+                    else:
+                        print(f'this service could not be served {service_index} and the return of function check_timed_out is {outlet.dqn.environment.state.time_out_flag}')
 
 def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, start_time, satellite):
     car.attach(observer)
