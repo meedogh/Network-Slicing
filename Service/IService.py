@@ -21,7 +21,7 @@ class Service(ABC):
             transition_delay : float
                 The transition delay of the service
             communications : list[Communication]
-                The communications that supported the service if not initialized set to empty array to be appended at runtime
+                The communications that supported the service if not initiali`zed set to empty array to be appended at runtime
 
             """
         self.bandwidth = bandwidth
@@ -37,6 +37,7 @@ class Service(ABC):
         self.total_cost_in_dolars = 0
         self.remaining_time_out = 0
         self._tower_capacity_before_time_out_step = 0
+        self._risk_flag = False
 
 
     # def __str__(self):
@@ -123,6 +124,14 @@ class Service(ABC):
     @realtime.setter
     def realtime(self, r):
         self._realtime = r
+
+    @property
+    def risk_flag(self):
+        return self._risk_flag
+    
+    @risk_flag.setter
+    def risk_flag(self, risk_flag):
+        self._risk_flag = risk_flag
 
     @property
     def _id(self):
