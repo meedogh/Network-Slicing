@@ -30,6 +30,7 @@ class Service(ABC):
         self._service_power_allocate = 0
         self._dec_services_types_mapping = {"FactorySafety": 0, "FactoryEntertainment": 1, "FactoryAutonomous": 2}
         self.__id = +1
+        self._slice_id = 0
         self._time_out = 0
         self._time_execution = 0
         self.request_failure = False
@@ -103,6 +104,14 @@ class Service(ABC):
     @time_out.setter
     def time_out(self, value):
         self._time_out = value
+
+    @property
+    def slice_id(self):
+        return self._slice_id
+
+    @slice_id.setter
+    def slice_id(self, value):
+        self._slice_id = value
 
     @property
     def service_power_allocate(self):

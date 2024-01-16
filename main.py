@@ -1,5 +1,5 @@
 from Environment import run_env_rl
-from memory_profiler import profile
+# from memory_profiler import profile
 # from Environment import run_fifo
 # from  Environment import run_heuristic
 # from Greedy import run_env_greedy

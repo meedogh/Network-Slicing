@@ -5,6 +5,7 @@ from Environment import env_variables
 from Service.FactoryService import FactoryService
 from vehicle.IVehicle import Vehicle
 from Utils.config import SERVICES_TYPES
+from Environment.utils.deterministicSlicingProcess import request_slicer
 
 
 class Car(Vehicle):
@@ -55,8 +56,10 @@ class Car(Vehicle):
             sorted_indices = sorted(range(len(arr)), key=lambda i: arr[i])
             return sorted_indices[:2]
 
+        
         car_request_tuple = self.car_requests()[0]
         distance = list(map(lambda x: euclidian_distance(x), self.outlets_serve))
+
         if len(distance) == 0:
             return None, None
         else:
@@ -65,9 +68,13 @@ class Car(Vehicle):
             if len(distance) == 1:
                 # print("choice 1 :  " , self.outlets_serve[indices[0]] )
                 return [self.outlets_serve[indices[0]]], car_request_tuple
-            if len(distance) > 1:
+            if len(distance) == 2:
                 # print("choice 2 : " , self.outlets_serve[indices[0]] )
                 return [self.outlets_serve[indices[0]], self.outlets_serve[indices[1]]], car_request_tuple
+            
+            if len(distance) > 2:
+                # print("choice 2 : " , self.outlets_serve[indices[0]] )
+                return [self.outlets_serve[indices[0]], self.outlets_serve[indices[1]], self.outlets_serve[indices[2]]], car_request_tuple
 
     def check_outlet_types(self, outlet, type):
         if outlet.__class__.__name__ == type:
@@ -81,7 +88,13 @@ class Car(Vehicle):
 
     def send_request(self):
         outlet, request = self.greedy()
-        if outlet != None:
-            return [outlet, request]
+        if len(outlet)==1:
+            if outlet != None:
+                return [outlet, request]
+            else:
+                return None
         else:
-            return None
+            services = request_slicer(request, outlet)
+            return [outlet, services]
+            # for ser in services:
+            #     self.services.append(ser)
