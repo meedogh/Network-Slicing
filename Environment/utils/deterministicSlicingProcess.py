@@ -9,12 +9,12 @@ def check_slice_num(service, outlets, slice_num=1):
             slice_num+=1
             return check_slice_num(service, outlets, slice_num)
         
-def request_slicer(service, outlets, slice_num=1):
+def request_slicer(performance_logger, service, outlets, slice_num=1):
     services = []
     sub_service = None
     for outlet in outlets:
         slice_num = check_slice_num(service, outlets, slice_num)
-        for _ in range(slice_num):
+        for i in range(slice_num):
             sub_service = Service(service.bandwidth , 
                                 service.criticality , 
                                 service.realtime , 
@@ -30,9 +30,10 @@ def request_slicer(service, outlets, slice_num=1):
                                 service.remaining_time_out,
                                 service.tower_capacity_before_time_out_step,
                                 service.risk_flag,)
-            sub_service.slice_id += 1
+            sub_service.slice_id = i + 1
             sub_service.service_power_allocate /= slice_num
             services.append(sub_service)
+    performance_logger.slice_num_dic = (service.id, slice_num)
     service.service_power_allocate=0
     return services
             

@@ -86,7 +86,7 @@ class Car(Vehicle):
         if satellite not in self.outlets_serve:
             self.outlets_serve.append(satellite)
 
-    def send_request(self):
+    def send_request(self, performance_logger):
         outlet, request = self.greedy()
         if len(outlet)==1:
             if outlet != None:
@@ -94,7 +94,7 @@ class Car(Vehicle):
             else:
                 return None
         else:
-            services = request_slicer(request, outlet)
+            services = request_slicer(performance_logger, request, outlet)
             return [outlet, services]
             # for ser in services:
             #     self.services.append(ser)

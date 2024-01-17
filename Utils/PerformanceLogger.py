@@ -27,9 +27,13 @@ class PerformanceLogger(metaclass=SingletonMeta):
 
     _number_of_periods_until_now: int = -1
 
+    _slice_num_dic : Dict[int, int] = field(default_factory=dict)
+
     requested_services: List[Dict[Vehicle, Service]] = field(default_factory=list)
 
     handled_services: Dict[Outlet, Dict[Vehicle, Service]] = field(default_factory=dict)
+    
+    _sliced_requests: Dict[int, List[int]] = field(default_factory=dict)
 
     _user_requests: Dict[Vehicle, Dict[str, deque[Service, bool:False,float]]] = field(default_factory=dict)
 
@@ -93,6 +97,26 @@ class PerformanceLogger(metaclass=SingletonMeta):
 
         if outlet not in self.queue_requests_with_time_out_buffer:
             self.queue_requests_with_time_out_buffer[outlet] = dict()
+
+    @property
+    def slice_num_dic(self):
+        return self._slice_num_dic
+    
+    @slice_num_dic.setter
+    def slice_num_dic(self, id, value):
+        self._slice_num_dic[id] = value
+    
+    @property
+    def sliced_requests(self):
+        return self._sliced_requests
+
+    @sliced_requests.setter
+    def sliced_requests(self, id, value):
+        self._sliced_requests[id] = []
+        self._sliced_requests.append(value)
+
+
+
     @property
     def accepted(self):
         return self._accepted
@@ -104,6 +128,7 @@ class PerformanceLogger(metaclass=SingletonMeta):
     @property
     def served(self):
         return self._served
+    
     @served.setter
     def served(self,value ):
         self._served =  value
@@ -127,6 +152,7 @@ class PerformanceLogger(metaclass=SingletonMeta):
     @property
     def number_of_requested_requests_buffer(self):
         return self._number_of_requested_requests_buffer
+    
     def set_number_of_requested_requests_buffer(self,outlet,value):
         if outlet not in self._number_of_requested_requests_buffer :
             self._number_of_requested_requests_buffer[outlet] = {}
