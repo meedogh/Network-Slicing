@@ -363,7 +363,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             
                             if service.slice_id>0:
 
-                                performancelogger.sliced_requests = (service.id, service.slice_id)
+                                performancelogger.sliced_requests = (service._id, service.slice_id)
 
                             service_moved_to_served.append(service)
                             outlet.sum_of_costs_of_all_requests += service.total_cost_in_dolars
@@ -445,7 +445,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             )
                             if service.slice_id>0:
 
-                                performancelogger.sliced_requests[service.id] = sorted(performancelogger.sliced_requests[service.id])
+                                performancelogger.sliced_requests[service._id] = sorted(performancelogger.sliced_requests[service._id])
 
 
 
@@ -651,7 +651,7 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                     served = serving_requests(performance_logger, outlet, start_time, service)
 
                                     if service.slice_id > 0:
-                                        performance_logger.sliced_requests = (service.id, service.slice_id)
+                                        performance_logger.sliced_requests = (service._id, service.slice_id)
 
                                     if served == True:
                                         outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
@@ -710,7 +710,7 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                             start_time,
                                             service.time_out]
                                     if service.slice_id>0:
-                                        performance_logger.sliced_requests[service.id] = sorted(performance_logger.sliced_requests[service.id])
+                                        performance_logger.sliced_requests[service._id] = sorted(performance_logger.sliced_requests[service._id])
 
 
                                 if action == 1 and len(performance_logger.queue_waiting_requests_in_buffer[outlet]) != 0 \

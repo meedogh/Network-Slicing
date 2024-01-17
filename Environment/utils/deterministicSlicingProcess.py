@@ -1,39 +1,29 @@
-from ...Service.IService import Service
-def check_slice_num(service, outlets, slice_num=1):
+import Service
+def check_slice_num(service_list, outlets, slice_num=1):
     for outlet in outlets:
+        service = service_list[2]
+        # print(service)
         if slice_num>4:
             return -1
-        if outlet.capacity >= service.service_power_allocate:
+        if outlet.current_capacity >= service.service_power_allocate:
             return slice_num
-        if outlet.capacity < (service.service_power_allocate // slice_num) and slice_num<=4:
+        if outlet.current_capacity < (service.service_power_allocate // slice_num) and slice_num<=4:
             slice_num+=1
             return check_slice_num(service, outlets, slice_num)
         
-def request_slicer(performance_logger, service, outlets, slice_num=1):
+def request_slicer(performance_logger, service_list, outlets, slice_num=1):
     services = []
+    
     sub_service = None
     for outlet in outlets:
-        slice_num = check_slice_num(service, outlets, slice_num)
+        slice_num = check_slice_num(service_list, outlets, slice_num)
         for i in range(slice_num):
-            sub_service = Service(service.bandwidth , 
-                                service.criticality , 
-                                service.realtime , 
-                                service.service_power_allocate , 
-                                service.dec_services_types_mapping , 
-                                service.id ,
-                                service.slice_id , 
-                                service.time_out , 
-                                service.time_execution , 
-                                service.request_failure , 
-                                service.cost_in_bit_rate ,
-                                service.total_cost_in_dolars,
-                                service.remaining_time_out,
-                                service.tower_capacity_before_time_out_step,
-                                service.risk_flag,)
+            service = service_list[2]
+            sub_service = service
             sub_service.slice_id = i + 1
             sub_service.service_power_allocate /= slice_num
             services.append(sub_service)
-    performance_logger.slice_num_dic = (service.id, slice_num)
+    performance_logger.slice_num_dic = (service._id, slice_num)
     service.service_power_allocate=0
     return services
             

@@ -54,7 +54,7 @@ class Car(Vehicle):
 
         def get_smallest_indices(arr):
             sorted_indices = sorted(range(len(arr)), key=lambda i: arr[i])
-            return sorted_indices[:2]
+            return sorted_indices[:3]
 
         
         car_request_tuple = self.car_requests()[0]
@@ -64,6 +64,7 @@ class Car(Vehicle):
             return None, None
         else:
             indices = get_smallest_indices(distance)
+            # print(f"INDICEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEES: {indices}")
             # min1 = distance.index(min(distance))
             if len(distance) == 1:
                 # print("choice 1 :  " , self.outlets_serve[indices[0]] )
@@ -88,13 +89,13 @@ class Car(Vehicle):
 
     def send_request(self, performance_logger):
         outlet, request = self.greedy()
-        if len(outlet)==1:
-            if outlet != None:
+        if outlet != None:
+            if len(outlet)==1:
                 return [outlet, request]
             else:
-                return None
+                services = request_slicer(performance_logger, request, outlet)
+                return [outlet, services]
         else:
-            services = request_slicer(performance_logger, request, outlet)
-            return [outlet, services]
+            return None
             # for ser in services:
             #     self.services.append(ser)

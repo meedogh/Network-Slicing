@@ -103,7 +103,8 @@ class PerformanceLogger(metaclass=SingletonMeta):
         return self._slice_num_dic
     
     @slice_num_dic.setter
-    def slice_num_dic(self, id, value):
+    def slice_num_dic(self, data):
+        id, value = data
         self._slice_num_dic[id] = value
     
     @property
@@ -111,9 +112,10 @@ class PerformanceLogger(metaclass=SingletonMeta):
         return self._sliced_requests
 
     @sliced_requests.setter
-    def sliced_requests(self, id, value):
-        self._sliced_requests[id] = []
-        self._sliced_requests.append(value)
+    def sliced_requests(self, data):
+        id, value = data
+        self._sliced_requests.setdefault(id, []).append(value)
+
 
 
 

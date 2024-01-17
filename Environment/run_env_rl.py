@@ -486,10 +486,17 @@ class Environment:
             buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps,
                                           satellite)
             
-            if performance_logger.slice_num_dic[service.id] == len(performance_logger.sliced_requests[service.id]):
-                print(f'all sliced were served of this servide {service.id}')
-            else:
-                print(f' not all sliced were served of this servide {service.id}')
+            # if service is not None:
+            #     if performance_logger.slice_num_dic[service._id] == len(performance_logger.sliced_requests[service._id]):
+            #         print(f'all sliced were served of this servide {service._id}')
+            #     else:
+            #         print(f' not all sliced were served of this servide {service._id}')
+
+            for id in performance_logger.slice_num_dic:
+                if id == len(performance_logger.sliced_requests[id]):
+                    print(f'all sliced were served of this servide {id}')
+                else:
+                    print(f' not all sliced were served of this servide {id}')
 
             if self.steps - self.previous_steps_centralize_action >= 40:
                 self.previous_steps_centralize_action = self.steps
