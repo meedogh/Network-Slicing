@@ -222,18 +222,18 @@ def serving_requests(performancelogger, outlet, start_time, service_):
 
 def provisioning_time_services(outlets, performance_logger, time_step_simulation):
     for i, outlet in enumerate(outlets):
-        if outlet.__class__.__name__ == 'Wifi':
-            count = 0
-            terminated_services = []
-            for service, time in performance_logger.queue_requests_with_execution_time_buffer[outlet].items():
-                start_time = time[0]
-                period_of_termination = time[1]
-                if start_time + period_of_termination == time_step_simulation:
-                    count = count + 1
-                    terminated_services.append(service)
-                    outlet.current_capacity = outlet.current_capacity + service.service_power_allocate
-            for service in terminated_services:
-                performance_logger.queue_requests_with_execution_time_buffer[outlet].pop(service)
+        # if outlet.__class__.__name__ == 'Wifi':
+        count = 0
+        terminated_services = []
+        for service, time in performance_logger.queue_requests_with_execution_time_buffer[outlet].items():
+            start_time = time[0]
+            period_of_termination = time[1]
+            if start_time + period_of_termination == time_step_simulation:
+                count = count + 1
+                terminated_services.append(service)
+                outlet.current_capacity = outlet.current_capacity + service.service_power_allocate
+        for service in terminated_services:
+            performance_logger.queue_requests_with_execution_time_buffer[outlet].pop(service)
 
 def check_timed_out(performance_logger, outlet, request_time_out_period, demanding_time_step, request_power_allocation,
                     current_capacity):
@@ -278,183 +278,183 @@ def check_risky(performance_logger, outlet, delta):
 
 def buffering_not_served_requests(outlets, performancelogger, time_step_simulation, satellite):
     for outlet_index, outlet in enumerate(outlets):
-        if outlet.__class__.__name__ == 'Wifi':
-            services_timed_out = []
-            service_moved_to_served = []
-            # services = list(performancelogger.queue_waiting_requests_in_buffer[outlet])
-            # services.sort(key=lambda ser: (ser[0].service_power_allocate, ser[0].time_out))
-            # performancelogger.queue_waiting_requests_in_buffer[outlet] = deque(services)
-            choosing_abort_requests(performancelogger, outlet)
-            for i, (service, flag) in enumerate(performancelogger.queue_waiting_requests_in_buffer[outlet]):
+        # if outlet.__class__.__name__ == 'Wifi':
+        services_timed_out = []
+        service_moved_to_served = []
+        # services = list(performancelogger.queue_waiting_requests_in_buffer[outlet])
+        # services.sort(key=lambda ser: (ser[0].service_power_allocate, ser[0].time_out))
+        # performancelogger.queue_waiting_requests_in_buffer[outlet] = deque(services)
+        choosing_abort_requests(performancelogger, outlet)
+        for i, (service, flag) in enumerate(performancelogger.queue_waiting_requests_in_buffer[outlet]):
 
-                # print(" inside wait to serve , time out function >>>>>>>>>>>>>  ", len(performancelogger.queue_waiting_requests_in_buffer[outlet]))
-                if flag == True:
-                    failure_rate = 0.75
-                    service.request_failure = np.random.rand() >= failure_rate
-                    if service.request_failure == False:
-                        outlet.dqn.agents.action.command.action_value_decentralize = 1
-                        outlet.dqn.environment.state.max_tower_capacity = outlet._max_capacity
-                        outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
-                        outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
-                        outlet.dqn.environment.state.waiting_buffer_len = len(
-                            performancelogger.queue_waiting_requests_in_buffer[outlet])
+            # print(" inside wait to serve , time out function >>>>>>>>>>>>>  ", len(performancelogger.queue_waiting_requests_in_buffer[outlet]))
+            if flag == True:
+                failure_rate = 0.75
+                service.request_failure = np.random.rand() >= failure_rate
+                if service.request_failure == False:
+                    outlet.dqn.agents.action.command.action_value_decentralize = 1
+                    outlet.dqn.environment.state.max_tower_capacity = outlet._max_capacity
+                    outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
+                    outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
+                    outlet.dqn.environment.state.waiting_buffer_len = len(
+                        performancelogger.queue_waiting_requests_in_buffer[outlet])
 
-                        start_time = performancelogger.queue_requests_with_time_out_buffer[outlet][service][0]
-                        time_out = performancelogger.queue_requests_with_time_out_buffer[outlet][service][1]
-                        outlet.dqn.environment.state.remaining_time_out = time_out
+                    start_time = performancelogger.queue_requests_with_time_out_buffer[outlet][service][0]
+                    time_out = performancelogger.queue_requests_with_time_out_buffer[outlet][service][1]
+                    outlet.dqn.environment.state.remaining_time_out = time_out
+                    service.remaining_time_out = outlet.dqn.environment.state.remaining_time_out
+
+                    lr = -1
+                    if start_time + time_out <= time_step_simulation and len(
+                            performancelogger.queue_waiting_requests_in_buffer[outlet]) > 0:
+    
+                        outlet.dqn.environment.state.time_out_flag = 1
+                        outlet.dqn.environment.state.tower_capacity_before_time_out_step_service = service.tower_capacity_before_time_out_step
+
+                        outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state(
+                            outlet.waited_buffer_max_length)
+
+                        services_timed_out.append(service)
+                        performancelogger.queue_time_out_from_simulation[outlet].appendleft([service, True])
+                        outlet.dqn.environment.state.time_out_requests_over_simulation = len(
+                            performancelogger.queue_time_out_from_simulation[outlet])
+                        outlet.dqn.environment.state.remaining_time_out = 0
                         service.remaining_time_out = outlet.dqn.environment.state.remaining_time_out
 
-                        lr = -1
-                        if start_time + time_out <= time_step_simulation and len(
-                                performancelogger.queue_waiting_requests_in_buffer[outlet]) > 0:
-      
-                            outlet.dqn.environment.state.time_out_flag = 1
-                            outlet.dqn.environment.state.tower_capacity_before_time_out_step_service = service.tower_capacity_before_time_out_step
+                        outlet.dqn.environment.state.waiting_buffer_len = len(
+                            performancelogger.queue_waiting_requests_in_buffer[outlet]) - (
+                                                                                len(services_timed_out)
+                                                                            )
+                        outlet.dqn.environment.state.timed_out_length = len(services_timed_out)
+                        outlet.dqn.environment.state.from_waiting_to_serv_length = 0
+                        outlet.dqn.environment.state.wasting_buffer_length = len(
+                            performancelogger.queue_wasted_req_buffer[outlet])
+                        outlet.dqn.environment.state.from_waiting_to_serv_length = 0
+                        outlet.dqn.environment.state.tower_capacity_before_time_out_step_service = service.tower_capacity_before_time_out_step
+                        # outlet.dqn.environment.reward.services_requested = len(
+                        #     performancelogger.queue_requested_buffer[outlet])
+                        # outlet.dqn.environment.reward.services_ensured = len(
+                        #     performancelogger.queue_ensured_buffer[outlet])
+                        outlet.dqn.environment.state.time_out_flag = 1
+                        outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(
+                            outlet.waited_buffer_max_length)
 
-                            outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state(
-                                outlet.waited_buffer_max_length)
+                        outlet.dqn.environment.reward.reward_value = -1
+                        outlet.dqn.environment.reward.time_out_reward += -1
 
-                            services_timed_out.append(service)
-                            performancelogger.queue_time_out_from_simulation[outlet].appendleft([service, True])
-                            outlet.dqn.environment.state.time_out_requests_over_simulation = len(
-                                performancelogger.queue_time_out_from_simulation[outlet])
-                            outlet.dqn.environment.state.remaining_time_out = 0
-                            service.remaining_time_out = outlet.dqn.environment.state.remaining_time_out
+                        outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
 
-                            outlet.dqn.environment.state.waiting_buffer_len = len(
-                                performancelogger.queue_waiting_requests_in_buffer[outlet]) - (
-                                                                                  len(services_timed_out)
-                                                                              )
-                            outlet.dqn.environment.state.timed_out_length = len(services_timed_out)
-                            outlet.dqn.environment.state.from_waiting_to_serv_length = 0
-                            outlet.dqn.environment.state.wasting_buffer_length = len(
-                                performancelogger.queue_wasted_req_buffer[outlet])
-                            outlet.dqn.environment.state.from_waiting_to_serv_length = 0
-                            outlet.dqn.environment.state.tower_capacity_before_time_out_step_service = service.tower_capacity_before_time_out_step
-                            # outlet.dqn.environment.reward.services_requested = len(
-                            #     performancelogger.queue_requested_buffer[outlet])
-                            # outlet.dqn.environment.reward.services_ensured = len(
-                            #     performancelogger.queue_ensured_buffer[outlet])
-                            outlet.dqn.environment.state.time_out_flag = 1
-                            outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(
-                                outlet.waited_buffer_max_length)
+                        outlet.dqn.environment.state.delay_time = 0
+                        logging_important_info_for_testing(performancelogger, outlet_index, outlet, satellite)
 
-                            outlet.dqn.environment.reward.reward_value = -1
-                            outlet.dqn.environment.reward.time_out_reward += -1
+                        # flag = 1
+                        # outlet.dqn.agents.remember_decentralize(
+                        #     flag,
+                        #     outlet.dqn.environment.state.state_value_decentralize,
+                        #     outlet.dqn.agents.action.command.action_value_decentralize,
+                        #     outlet.dqn.environment.reward.reward_value,
+                        #     outlet.dqn.environment.state.next_state_decentralize,
+                        #     0.0
 
-                            outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
+                        # )
 
-                            outlet.dqn.environment.state.delay_time = 0
-                            logging_important_info_for_testing(performancelogger, outlet_index, outlet, satellite)
+                    elif start_time + time_out > time_step_simulation and outlet.current_capacity >= service.service_power_allocate and len(
+                            performancelogger.queue_waiting_requests_in_buffer[outlet]) > 0:
+                        
+                        if service.slice_id>0:
 
-                            # flag = 1
-                            # outlet.dqn.agents.remember_decentralize(
-                            #     flag,
-                            #     outlet.dqn.environment.state.state_value_decentralize,
-                            #     outlet.dqn.agents.action.command.action_value_decentralize,
-                            #     outlet.dqn.environment.reward.reward_value,
-                            #     outlet.dqn.environment.state.next_state_decentralize,
-                            #     0.0
+                            performancelogger.sliced_requests = (service.parent_service, service)
 
-                            # )
+                        service_moved_to_served.append(service)
+                        outlet.sum_of_costs_of_all_requests += service.total_cost_in_dolars
+                        performancelogger.queue_from_wait_to_serve_over_simulation[outlet].appendleft(
+                            [service, True])
+                        outlet.dqn.environment.state.from_wait_to_serve_over_simulation = len(
+                            performancelogger.queue_from_wait_to_serve_over_simulation[outlet])
 
-                        elif start_time + time_out > time_step_simulation and outlet.current_capacity >= service.service_power_allocate and len(
-                                performancelogger.queue_waiting_requests_in_buffer[outlet]) > 0:
-                            
-                            if service.slice_id>0:
+                        if [service, False] in performancelogger.queue_power_for_requested_in_buffer[outlet]:
+                            index = performancelogger.queue_power_for_requested_in_buffer[outlet].index(
+                                [service, False])
+                            performancelogger.queue_power_for_requested_in_buffer[outlet][index][1] = True
 
-                                performancelogger.sliced_requests = (service._id, service.slice_id)
+                        performancelogger.queue_requests_with_execution_time_buffer[outlet][service] = [start_time,
+                                                                                                        service.time_execution]
 
-                            service_moved_to_served.append(service)
-                            outlet.sum_of_costs_of_all_requests += service.total_cost_in_dolars
-                            performancelogger.queue_from_wait_to_serve_over_simulation[outlet].appendleft(
-                                [service, True])
-                            outlet.dqn.environment.state.from_wait_to_serve_over_simulation = len(
-                                performancelogger.queue_from_wait_to_serve_over_simulation[outlet])
+                        for car, outlet_inner_dect in performancelogger.user_requests.items():
+                            for outlet_name, services in outlet_inner_dect.items():
+                                for i, (ser, flag, cost) in enumerate(services):
+                                    if service == ser and outlet_name == outlet.__class__.__name__:
+                                        performancelogger.user_requests[car][outlet_name][i][0] = True
+                                        performancelogger.user_requests[car][outlet_name][i][
+                                            2] = service.total_cost_in_dolar
 
-                            if [service, False] in performancelogger.queue_power_for_requested_in_buffer[outlet]:
-                                index = performancelogger.queue_power_for_requested_in_buffer[outlet].index(
-                                    [service, False])
-                                performancelogger.queue_power_for_requested_in_buffer[outlet][index][1] = True
+                        performancelogger.queue_ensured_buffer[outlet] += 1
+                        # outlet.dqn.environment.reward.services_requested = len(
+                        #     performancelogger.queue_requested_buffer[outlet])
+                        # outlet.dqn.environment.reward.services_ensured = len(
+                        #     performancelogger.queue_ensured_buffer[outlet])
 
-                            performancelogger.queue_requests_with_execution_time_buffer[outlet][service] = [start_time,
-                                                                                                            service.time_execution]
+                        outlet.dqn.environment.state.time_out_flag = 0
+                        outlet.dqn.environment.state.tower_capacity_before_time_out_step_service = service.tower_capacity_before_time_out_step
 
-                            for car, outlet_inner_dect in performancelogger.user_requests.items():
-                                for outlet_name, services in outlet_inner_dect.items():
-                                    for i, (ser, flag, cost) in enumerate(services):
-                                        if service == ser and outlet_name == outlet.__class__.__name__:
-                                            performancelogger.user_requests[car][outlet_name][i][0] = True
-                                            performancelogger.user_requests[car][outlet_name][i][
-                                                2] = service.total_cost_in_dolar
+                        outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state(
+                            outlet.waited_buffer_max_length)
 
-                            performancelogger.queue_ensured_buffer[outlet] += 1
-                            # outlet.dqn.environment.reward.services_requested = len(
-                            #     performancelogger.queue_requested_buffer[outlet])
-                            # outlet.dqn.environment.reward.services_ensured = len(
-                            #     performancelogger.queue_ensured_buffer[outlet])
+                        outlet.current_capacity = outlet.current_capacity - service.service_power_allocate
+                        outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
+                        outlet.dqn.environment.state.waiting_buffer_len = len(
+                            performancelogger.queue_waiting_requests_in_buffer[outlet]) - len(
+                            service_moved_to_served)
 
-                            outlet.dqn.environment.state.time_out_flag = 0
-                            outlet.dqn.environment.state.tower_capacity_before_time_out_step_service = service.tower_capacity_before_time_out_step
+                        outlet.dqn.environment.state.from_waiting_to_serv_length = len(service_moved_to_served)
+                        outlet.dqn.environment.state.timed_out_length = 0
 
-                            outlet.dqn.environment.state.state_value_decentralize = outlet.dqn.environment.state.calculate_state(
-                                outlet.waited_buffer_max_length)
+                        outlet.dqn.environment.state.wasting_buffer_length = len(
+                            performancelogger.queue_wasted_req_buffer[outlet])
 
-                            outlet.current_capacity = outlet.current_capacity - service.service_power_allocate
-                            outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
-                            outlet.dqn.environment.state.waiting_buffer_len = len(
-                                performancelogger.queue_waiting_requests_in_buffer[outlet]) - len(
-                                service_moved_to_served)
+                        outlet.dqn.environment.state.timed_out_length = 0
+                        outlet.dqn.environment.state.wasting_buffer_length = len(
+                            performancelogger.queue_wasted_req_buffer[outlet])
+                        outlet.dqn.environment.state.remaining_time_out = time_out - (
+                                time_step_simulation - start_time) - 1
 
-                            outlet.dqn.environment.state.from_waiting_to_serv_length = len(service_moved_to_served)
-                            outlet.dqn.environment.state.timed_out_length = 0
+                        service.remaining_time_out = outlet.dqn.environment.state.remaining_time_out
+                        outlet.dqn.environment.state.delay_time = time_out - outlet.dqn.environment.state.remaining_time_out
+                        outlet.dqn.environment.state.time_out_flag = 0
 
-                            outlet.dqn.environment.state.wasting_buffer_length = len(
-                                performancelogger.queue_wasted_req_buffer[outlet])
+                        outlet.dqn.environment.state.tower_capacity_before_time_out_step_service = service.tower_capacity_before_time_out_step - round(
+                            ((service.service_power_allocate / 3500) * 100), 2)
 
-                            outlet.dqn.environment.state.timed_out_length = 0
-                            outlet.dqn.environment.state.wasting_buffer_length = len(
-                                performancelogger.queue_wasted_req_buffer[outlet])
-                            outlet.dqn.environment.state.remaining_time_out = time_out - (
-                                    time_step_simulation - start_time) - 1
+                        outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(
+                            outlet.waited_buffer_max_length)
+                        outlet.dqn.environment.reward.reward_value = 0.5
+                        outlet.dqn.environment.reward.wait_to_serve_reward += 0.5
 
-                            service.remaining_time_out = outlet.dqn.environment.state.remaining_time_out
-                            outlet.dqn.environment.state.delay_time = time_out - outlet.dqn.environment.state.remaining_time_out
-                            outlet.dqn.environment.state.time_out_flag = 0
+                        outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
 
-                            outlet.dqn.environment.state.tower_capacity_before_time_out_step_service = service.tower_capacity_before_time_out_step - round(
-                                ((service.service_power_allocate / 3500) * 100), 2)
+                        logging_important_info_for_testing(performancelogger, outlet_index, outlet, satellite)
 
-                            outlet.dqn.environment.state.next_state_decentralize = outlet.dqn.environment.state.calculate_state(
-                                outlet.waited_buffer_max_length)
-                            outlet.dqn.environment.reward.reward_value = 0.5
-                            outlet.dqn.environment.reward.wait_to_serve_reward += 0.5
+                        # flag = 1
+                        # outlet.dqn.agents.remember_decentralize(
+                        #     flag,
+                        #     outlet.dqn.environment.state.state_value_decentralize,
+                        #     outlet.dqn.agents.action.command.action_value_decentralize,
+                        #     outlet.dqn.environment.reward.reward_value,
+                        #     outlet.dqn.environment.state.next_state_decentralize,
+                        #     0.0
+                        # )
+                        # if service.slice_id>0:
 
-                            outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
-
-                            logging_important_info_for_testing(performancelogger, outlet_index, outlet, satellite)
-
-                            # flag = 1
-                            # outlet.dqn.agents.remember_decentralize(
-                            #     flag,
-                            #     outlet.dqn.environment.state.state_value_decentralize,
-                            #     outlet.dqn.agents.action.command.action_value_decentralize,
-                            #     outlet.dqn.environment.reward.reward_value,
-                            #     outlet.dqn.environment.state.next_state_decentralize,
-                            #     0.0
-                            # )
-                            if service.slice_id>0:
-
-                                performancelogger.sliced_requests[service._id] = sorted(performancelogger.sliced_requests[service._id])
+                        #     performancelogger.sliced_requests[service] = sorted(performancelogger.sliced_requests[service])
 
 
 
-            for ser in services_timed_out:
+        for ser in services_timed_out:
+            performancelogger.queue_waiting_requests_in_buffer[outlet].remove([ser, True])
+
+        for ser in service_moved_to_served:
+            # if ser in performancelogger.queue_waiting_requests_in_buffer[outlet]:
                 performancelogger.queue_waiting_requests_in_buffer[outlet].remove([ser, True])
-
-            for ser in service_moved_to_served:
-                # if ser in performancelogger.queue_waiting_requests_in_buffer[outlet]:
-                    performancelogger.queue_waiting_requests_in_buffer[outlet].remove([ser, True])
 
 def choosing_abort_requests(performance_logger, outlet):
     alpha = 1
@@ -497,7 +497,8 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                     
                     # outlet.__class__.__name__ == 'Wifi'  and
                     if outlet.supported_services[service_index] == 1 and outlet.dqn.environment.state.time_out_flag==0:
-                        if outlet.__class__.__name__ == 'Wifi' and len(
+                        # if outlet.__class__.__name__ == 'Wifi' and 
+                        if len(
                                 performance_logger.queue_waiting_requests_in_buffer[
                                     outlet]) < outlet.waited_buffer_max_length:
                             
@@ -651,7 +652,7 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                     served = serving_requests(performance_logger, outlet, start_time, service)
 
                                     if service.slice_id > 0:
-                                        performance_logger.sliced_requests = (service._id, service.slice_id)
+                                        performance_logger.sliced_requests = (service.parent_service, service)
 
                                     if served == True:
                                         outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
@@ -709,8 +710,8 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                         performance_logger.queue_requests_with_time_out_buffer[outlet][service] = [
                                             start_time,
                                             service.time_out]
-                                    if service.slice_id>0:
-                                        performance_logger.sliced_requests[service._id] = sorted(performance_logger.sliced_requests[service._id])
+                                    # if service.slice_id>0:
+                                    #     performance_logger.sliced_requests[service] = sorted(performance_logger.sliced_requests[service._id])
 
 
                                 if action == 1 and len(performance_logger.queue_waiting_requests_in_buffer[outlet]) != 0 \
@@ -737,7 +738,8 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                     outlet.dqn.environment.state.wasting_buffer_length = len(
                                         performance_logger.queue_wasted_req_buffer[outlet])
 
-                        if outlet.__class__.__name__ == 'Wifi' and len(performance_logger.queue_waiting_requests_in_buffer[outlet]) != 0 \
+                        # if outlet.__class__.__name__ == 'Wifi' and 
+                        if len(performance_logger.queue_waiting_requests_in_buffer[outlet]) != 0 \
                                 and len(performance_logger.queue_waiting_requests_in_buffer[outlet]) >= outlet.waited_buffer_max_length:
                             performance_logger.queue_wasted_req_buffer[outlet].appendleft(
                                 [service, True])
@@ -745,7 +747,7 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                 performance_logger.queue_wasted_req_buffer[outlet])
 
                     else:
-                        print(f'this service could not be served {service_index} and the return of function check_timed_out is {outlet.dqn.environment.state.time_out_flag}')
+                        print(f'This service could not be served {service_index}, and the return of function check_timed_out is {outlet.dqn.environment.state.time_out_flag}', end='\r', flush=True)
 
 def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, start_time, satellite):
     car.attach(observer)
@@ -757,16 +759,19 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
         if len(info[0])==1 and len(info[1])==1: 
             outlet = info[0][0]
             service = info[1][2]
-            
+            print('enhancera', service.__id)
             performance_logger.set_user_requests(outlet, car, service, False)
             performance_logger.generated_requests_over_simulation += 1
             # print(" performance_logger.generated_requests_over_simulation : ", performance_logger.generated_requests_over_simulation)
             request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, service, start_time, satellite, info)
         else:
+            # print("LEN", len(info[0]), len(info[1]))
+            # print("ELSE")
             for outlet in info[0]:
-                for service in info[1]:
-                    performance_logger.set_user_requests(outlet, car, service, False)
-                    performance_logger.generated_requests_over_simulation += 1
-                    # print(" performance_logger.generated_requests_over_simulation : ", performance_logger.generated_requests_over_simulation)
-                    request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, service, start_time, satellite, info)
+                performance_logger.set_user_requests(outlet, car, info[1][2], False)
+                performance_logger.generated_requests_over_simulation += 1
+                # print(" performance_logger.generated_requests_over_simulation : ", performance_logger.generated_requests_over_simulation)
+                request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, info[1][2], start_time, satellite, info)
+    # else:
+    #     print("Failure.")
 

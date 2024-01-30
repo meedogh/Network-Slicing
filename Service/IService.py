@@ -5,6 +5,7 @@ import Utils.config as cf
 
 
 class Service(ABC):
+    cnt = 0    
 
     def __init__(self, criticality, bandwidth, realtime, **kwargs):
         """
@@ -21,7 +22,7 @@ class Service(ABC):
             transition_delay : float
                 The transition delay of the service
             communications : list[Communication]
-                The communications that supported the service if not initiali`zed set to empty array to be appended at runtime
+                The communications that supported the service if not initialized set to empty array to be appended at runtime
 
             """
         self.bandwidth = bandwidth
@@ -33,6 +34,7 @@ class Service(ABC):
         self._slice_id = 0
         self._time_out = 0
         self._time_execution = 0
+        self._parent_service = None
         self.request_failure = False
         self.cost_in_bit_rate = 0
         self.total_cost_in_dolars = 0
@@ -141,6 +143,14 @@ class Service(ABC):
     @risk_flag.setter
     def risk_flag(self, risk_flag):
         self._risk_flag = risk_flag
+
+    @property
+    def parent_service(self):
+        return self._parent_service
+    
+    @parent_service.setter
+    def parent_service(self, parent_service):
+        self._parent_service = parent_service
 
     @property
     def _id(self):

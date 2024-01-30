@@ -27,13 +27,15 @@ class PerformanceLogger(metaclass=SingletonMeta):
 
     _number_of_periods_until_now: int = -1
 
-    _slice_num_dic : Dict[int, int] = field(default_factory=dict)
-
+    _slice_num_dic : Dict[Service, int] = field(default_factory=dict)
+ 
     requested_services: List[Dict[Vehicle, Service]] = field(default_factory=list)
 
     handled_services: Dict[Outlet, Dict[Vehicle, Service]] = field(default_factory=dict)
     
-    _sliced_requests: Dict[int, List[int]] = field(default_factory=dict)
+    _sliced_requests: Dict[Service, List[Service]] = field(default_factory=dict)
+
+    _served_slices: Dict[Service, bool] = field(default_factory=dict)
 
     _user_requests: Dict[Vehicle, Dict[str, deque[Service, bool:False,float]]] = field(default_factory=dict)
 
@@ -116,7 +118,14 @@ class PerformanceLogger(metaclass=SingletonMeta):
         id, value = data
         self._sliced_requests.setdefault(id, []).append(value)
 
+    @property
+    def served_slices(self):
+        return self._served_slices
 
+    @served_slices.setter
+    def served_slices(self, data):
+        id, value = data
+        self._served_slices.setdefault(id, []).append(value)
 
 
     @property

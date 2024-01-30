@@ -355,7 +355,7 @@ class Environment:
             traci.simulationStep()
             self.car_distribution(step)
             self.remove_vehicles_arrived()
-            print("step is ....................................... ", step)
+            print("step is ....................................... ", step, end='\r', flush=True)
             if step % 320 == 0:
                 step_for_each_episode_change_period = 0
             if step == self.start and step != 0:
@@ -491,12 +491,15 @@ class Environment:
             #         print(f'all sliced were served of this servide {service._id}')
             #     else:
             #         print(f' not all sliced were served of this servide {service._id}')
-
-            for id in performance_logger.slice_num_dic:
-                if id == len(performance_logger.sliced_requests[id]):
-                    print(f'all sliced were served of this servide {id}')
+            print("SLICED", performance_logger.sliced_requests)
+            print("NUMBER", performance_logger.slice_num_dic)
+            for id, value in performance_logger.slice_num_dic.items():
+                if value == len(performance_logger.sliced_requests[id]):
+                    print(f'All slices were served for this service: {id}', end='\r', flush=True)
+                    performance_logger.served_slices[id] = True
                 else:
-                    print(f' not all sliced were served of this servide {id}')
+                    print(f'Not all slices were served for this service: {id}', end='\r', flush=True)
+                    performance_logger.served_slices[id] = False
 
             if self.steps - self.previous_steps_centralize_action >= 40:
                 self.previous_steps_centralize_action = self.steps
@@ -566,6 +569,19 @@ class Environment:
                         )
 
                 list_ = []
+
+                add_value_to_pickle(
+                            os.path.join(sliced_requests_path, f"sliced_served.pkl"),
+                            performance_logger.served_slices,
+                        )
+                add_value_to_pickle(
+                            os.path.join(sliced_requests_path, f"sliced_request.pkl"),
+                            performance_logger.sliced_requests,
+                        )
+                add_value_to_pickle(
+                            os.path.join(sliced_requests_path, f"sliced_num.pkl"),
+                            performance_logger.slice_num_dic,
+                        )
                 for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
                     for i, out in enumerate(gridcell_dqn.agents.grid_outlets):
                         # add_value_to_pickle(
