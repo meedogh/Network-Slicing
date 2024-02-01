@@ -494,9 +494,13 @@ class Environment:
             print("SLICED", performance_logger.sliced_requests)
             print("NUMBER", performance_logger.slice_num_dic)
             for id, value in performance_logger.slice_num_dic.items():
-                if value == len(performance_logger.sliced_requests[id]):
-                    print(f'All slices were served for this service: {id}', end='\r', flush=True)
-                    performance_logger.served_slices[id] = True
+                if id in performance_logger.sliced_requests:
+                    if value == len(performance_logger.sliced_requests[id]):
+                        print(f'All slices were served for this service: {id}', end='\r', flush=True)
+                        performance_logger.served_slices[id] = True
+                    else:
+                        print(f'Not all slices were served for this service: {id}', end='\r', flush=True)
+                        performance_logger.served_slices[id] = False
                 else:
                     print(f'Not all slices were served for this service: {id}', end='\r', flush=True)
                     performance_logger.served_slices[id] = False
