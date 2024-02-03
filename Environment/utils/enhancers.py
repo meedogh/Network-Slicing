@@ -746,8 +746,8 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                             outlet.dqn.environment.state.wasting_buffer_length = len(
                                 performance_logger.queue_wasted_req_buffer[outlet])
 
-                    else:
-                        print(f'This service could not be served {service_index}, and the return of function check_timed_out is {outlet.dqn.environment.state.time_out_flag}', end='\r', flush=True)
+                    # else:
+                    #     print(f'This service could not be served {service_index}, and the return of function check_timed_out is {outlet.dqn.environment.state.time_out_flag}', end='\r', flush=True)
 
 def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, start_time, satellite):
     car.attach(observer)

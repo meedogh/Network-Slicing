@@ -491,8 +491,8 @@ class Environment:
             #         print(f'all sliced were served of this servide {service._id}')
             #     else:
             #         print(f' not all sliced were served of this servide {service._id}')
-            print("SLICED", performance_logger.sliced_requests)
-            print("NUMBER", performance_logger.slice_num_dic)
+            # print("SLICED", performance_logger.sliced_requests)
+            # print("NUMBER", performance_logger.slice_num_dic)
             for id, value in performance_logger.slice_num_dic.items():
                 if id in performance_logger.sliced_requests:
                     if value == len(performance_logger.sliced_requests[id]):
@@ -573,6 +573,12 @@ class Environment:
                         )
 
                 list_ = []
+
+
+                print('run env rl sliced served', performance_logger.served_slices)
+                print('run env rl sliced requests', performance_logger.sliced_requests)
+                print('run env rl slice num dic', performance_logger.slice_num_dic)
+
 
                 add_value_to_pickle(
                             os.path.join(sliced_requests_path, f"sliced_served.pkl"),

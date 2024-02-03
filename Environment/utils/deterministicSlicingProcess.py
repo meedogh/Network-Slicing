@@ -28,7 +28,7 @@ def check_slice_num(service_list, outlets, slice_num=1):
             slice_num+=1
             return check_slice_num(service, outlets, slice_num)
         
-        else:
+        if slice_num > 4 or slice_num is None:
             return -1
         
 
@@ -39,21 +39,22 @@ def request_slicer(performance_logger, service_list, outlets, slice_num=1):
     sub_service = None
     for outlet in outlets:
         slice_num = check_slice_num(service_list, outlets, slice_num)
-        print(f"SLICE NUM {slice_num}")
+        # print(f"SLICE NUM {slice_num}")
         if slice_num > 1:
-            print("Service Sliced.")
             for i in range(slice_num):
                 service = service_list[2]
                 sub_service = deepcopy(service)
                 sub_service.slice_id = i + 1
                 sub_service.parent_service = service
-                print("PARENT", sub_service.parent_service)
+                # print("PARENT", sub_service.parent_service)
                 sub_service.service_power_allocate /= slice_num
                 services.append(sub_service)
             performance_logger.slice_num_dic = (service, slice_num)
+            
             service.service_power_allocate=0
         else:
             services = service_list
+    # print("SLICE NUM DIC", performance_logger.slice_num_dic)
     return services
             
         
