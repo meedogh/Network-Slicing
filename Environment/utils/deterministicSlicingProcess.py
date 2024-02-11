@@ -49,11 +49,13 @@ def request_slicer(performance_logger, service_list, outlets, slice_num=1):
                 # print("PARENT", sub_service.parent_service)
                 sub_service.service_power_allocate /= slice_num
                 services.append(sub_service)
+            # print("NUM SLICES", slice_num)
             performance_logger.slice_num_dic = (service, slice_num)
             
             service.service_power_allocate=0
         else:
             services = service_list
+            performance_logger.slice_num_dic = (services[2], slice_num)
     # print("SLICE NUM DIC", performance_logger.slice_num_dic)
     return services
             

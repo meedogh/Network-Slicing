@@ -4,6 +4,7 @@ from .utils.imports import *
 from .utils.period import Period
 from .utils.savingWeights import *
 from .utils.loadingWeights import *
+from Service.FactoryService import FactoryService
 
 
 class Environment:
@@ -222,7 +223,7 @@ class Environment:
         list(map(lambda x: positions_of_outlets.append(x.position), outlets))
         return positions_of_outlets
 
-
+    
 
     def starting(self):
         """
@@ -311,10 +312,14 @@ class Environment:
             #     previous_steps_sending = self.steps
 
 
-            provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps,"FiveG")
-            path = 'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//small_time_out_add_flag_small_state_my_reward_failure_testalloutlets//request_info//outlet_FiveG.pkl'
+            provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps)
+            path = 'small_time_out_add_flag_small_state_my_reward_failure_testalloutlets//request_info//outlet_FiveG.pkl'
 
-            list_of_values = read_from_pickle(path)
+            try:
+                with open(path, 'rb') as file:
+                    list_of_values = pickle.load(file)
+            except TypeError as e:
+                print("Error loading file:", e)
             for serv_info in list_of_values:
                 factory = FactoryService(0, 0, 0)
                 serv_type = serv_info[0]

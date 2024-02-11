@@ -759,7 +759,7 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
         if len(info[0])==1 and len(info[1])==1: 
             outlet = info[0][0]
             service = info[1][2]
-            print('enhancera', service.__id)
+            #print('enhancera', service.__id)
             performance_logger.set_user_requests(outlet, car, service, False)
             performance_logger.generated_requests_over_simulation += 1
             # print(" performance_logger.generated_requests_over_simulation : ", performance_logger.generated_requests_over_simulation)

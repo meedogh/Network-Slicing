@@ -355,7 +355,7 @@ class Environment:
             traci.simulationStep()
             self.car_distribution(step)
             self.remove_vehicles_arrived()
-            print("step is ....................................... ", step, end='\r', flush=True)
+            print("step is ....................................... ", step)
             if step % 320 == 0:
                 step_for_each_episode_change_period = 0
             if step == self.start and step != 0:
@@ -494,15 +494,23 @@ class Environment:
             # print("SLICED", performance_logger.sliced_requests)
             # print("NUMBER", performance_logger.slice_num_dic)
             for id, value in performance_logger.slice_num_dic.items():
+                # print("SERVICE", performance_logger.sliced_requests)
+                
                 if id in performance_logger.sliced_requests:
                     if value == len(performance_logger.sliced_requests[id]):
-                        print(f'All slices were served for this service: {id}', end='\r', flush=True)
+                        print("999served requests \n ID", id, "\nLEN", len(performance_logger.sliced_requests[id]), "\nVALUE", value)
+
+                        # print(f'All slices were served for this service: {id}')
                         performance_logger.served_slices[id] = True
+                        # print("SERVED SLICE", performance_logger.served_slices)
                     else:
-                        print(f'Not all slices were served for this service: {id}', end='\r', flush=True)
+                        print("not 5erved requests because of number of slices are not equal to the number of served slicies \n ID", id, "\nLEN", len(performance_logger.sliced_requests[id]), "\nVALUE", value)
+                        # print(f'Not all slices were served for this service: {id}')
                         performance_logger.served_slices[id] = False
                 else:
-                    print(f'Not all slices were served for this service: {id}', end='\r', flush=True)
+                    # print("not served requests because service is not shown in sliced_requests \n ID", id, "\nVALUE", value)
+
+                    # print(f'Not all slices were served for this service: {id}')
                     performance_logger.served_slices[id] = False
 
             if self.steps - self.previous_steps_centralize_action >= 40:
@@ -584,6 +592,8 @@ class Environment:
                             os.path.join(sliced_requests_path, f"sliced_served.pkl"),
                             performance_logger.served_slices,
                         )
+                print(performance_logger.sliced_requests)
+                print("SLICED.")
                 add_value_to_pickle(
                             os.path.join(sliced_requests_path, f"sliced_request.pkl"),
                             performance_logger.sliced_requests,

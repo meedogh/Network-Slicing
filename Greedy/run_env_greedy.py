@@ -321,7 +321,7 @@ class Environment:
 
     def enable_sending_requests(self,greedy,car, observer, performance_logger, start_time):
 
-        car.attach(observer)
+        # car.attach(observer)
         car.set_state(
             float(round(traci.vehicle.getPosition(car.id)[0], 4)),
             float(round(traci.vehicle.getPosition(car.id)[1], 4)),
@@ -405,7 +405,7 @@ class Environment:
             print("out ", i.__class__.__name__)
 
         outlets_pos = self.get_positions_of_outlets(outlets)
-        observer = ConcreteObserver(outlets_pos, outlets)
+        observer = Car(outlets_pos, outlets)
         greedy = Greedy()
         # set the maximum amount of memory that the garbage collector is allowed to use to 1 GB
         max_size = 273741824
@@ -461,7 +461,7 @@ class Environment:
             # list(map(lambda veh: requests_buffering(veh, observer, performance_logger), vehicles, ))
             # for index, outlet in enumerate(self.temp_outlets):
 
-            list(map(lambda veh:self.car_interact(veh, observer , self.gridcells_dqn ,performance_logger,self.steps,greedy),vehicles))
+            list(map(lambda veh:self.enable_sending_requests(veh, observer , performance_logger,self.steps,greedy),vehicles))
 
             update_figures(self.steps / 10, self.temp_outlets, self.gridcells_dqn)
 
