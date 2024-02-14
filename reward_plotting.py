@@ -7,7 +7,7 @@ outlet_num = 0
 # results_dir = os.path.join(sys.path[0],f"run_rl_just_on_rush_hours_lr_0.001//reward_accumilated_decentralize//accu_reward{outlet_num}.pkl")
 deque = []
 epsilon_list = []
-for i in range(83,92):
+for i in range(91,93):
     epsilon = 0.95
     results_dir = os.path.join(sys.path[0],f"run_rl_just_on_rush_hours_lr_0.001_{i}//reward_accumilated_decentralize//accu_reward{outlet_num}.pkl")
 

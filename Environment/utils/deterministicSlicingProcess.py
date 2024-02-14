@@ -1,35 +1,16 @@
 from Utils.Bandwidth import Bandwidth
 from copy import deepcopy
-def check_slice_num(service_list, outlets, slice_num=1):
-    
-    # bandwidth_demand = SERVICES_TYPES[request.type]["BANDWIDTH"]
-    # critical_demand = SERVICES_TYPES[request.type]["CRITICAL"]
-    # allocated_bandwidth = Bandwidth(bandwidth_demand, request.power).allocated()
-    # if allocated_bandwidth <= tower.capacity:
+def check_slice_num(service_list, outlets):
     for outlet in outlets:
         if isinstance(service_list, list):
             service = service_list[2]
         else:
             service = service_list
-        # print("BANDWIDTH", service.bandwidth)
-        # print("CRITICALITY", service.criticality)
-        # print('check_slice_num outlet.current_capacity', outlet.current_capacity)
-        # print('check_slice_num service.service_power_allocate', service.service_power_allocate)
-        # print('check_slice_num (service.service_power_allocate // slice_num)', (service.service_power_allocate // slice_num))
-
-        bandwidth = Bandwidth(service.bandwidth, service.criticality)
-        allocated_bandwidth = bandwidth.allocated
-        # print(service)
-        
-        if outlet.current_capacity >= allocated_bandwidth:
-            return slice_num
-        
-        elif outlet.current_capacity < (allocated_bandwidth // slice_num) and slice_num<=4:
-            slice_num+=1
-            return check_slice_num(service, outlets, slice_num)
-        
-        if slice_num > 4 or slice_num is None:
-            return -1
+        for slice_num in range(1, 5):
+            bandwidth = Bandwidth(service.bandwidth, service.criticality).allocated
+            if outlet.current_capacity >= bandwidth // slice_num:
+                return slice_num
+    return 1
         
 
 
@@ -38,7 +19,8 @@ def request_slicer(performance_logger, service_list, outlets, slice_num=1):
     
     sub_service = None
     for outlet in outlets:
-        slice_num = check_slice_num(service_list, outlets, slice_num)
+
+        slice_num = check_slice_num(service_list, outlets)
         # print(f"SLICE NUM {slice_num}")
         if slice_num > 1:
             for i in range(slice_num):

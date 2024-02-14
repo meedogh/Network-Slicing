@@ -498,16 +498,17 @@ class Environment:
                 
                 if id in performance_logger.sliced_requests:
                     if value == len(performance_logger.sliced_requests[id]):
-                        print("999served requests \n ID", id, "\nLEN", len(performance_logger.sliced_requests[id]), "\nVALUE", value)
+                        # print("999served requests \n ID", id, "\nLEN", len(performance_logger.sliced_requests[id]), "\nVALUE", value)
 
                         # print(f'All slices were served for this service: {id}')
                         performance_logger.served_slices[id] = True
                         # print("SERVED SLICE", performance_logger.served_slices)
                     else:
-                        print("not 5erved requests because of number of slices are not equal to the number of served slicies \n ID", id, "\nLEN", len(performance_logger.sliced_requests[id]), "\nVALUE", value)
+                        # print("not 5erved requests because of number of slices are not equal to the number of served slicies \n ID", id, "\nLEN", len(performance_logger.sliced_requests[id]), "\nVALUE", value)
                         # print(f'Not all slices were served for this service: {id}')
                         performance_logger.served_slices[id] = False
                 else:
+                    # print("FUCK YOU, FUCK YOU, FUCK YOU")
                     # print("not served requests because service is not shown in sliced_requests \n ID", id, "\nVALUE", value)
 
                     # print(f'Not all slices were served for this service: {id}')

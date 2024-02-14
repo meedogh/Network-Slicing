@@ -5,7 +5,7 @@ from Environment.utils.paths import *
 
 def logging_important_info_for_testing(performance_logger,
         outlet_index,outlet,satellite ):
-    pass
+    # pass
 
     # add_value_to_pickle(
     #     os.path.join(reward_decentralized_path, f"reward{outlet_index}.pkl"),
@@ -77,10 +77,10 @@ def logging_important_info_for_testing(performance_logger,
         outlet.dqn.environment.state.delay_time,
     )
 
-    # add_value_to_pickle(
-    #     os.path.join(number_of_timed_out_requests_from_algorithm_path,f"number_of_timed_out_requests_from_algorithm{outlet_index}.pkl")
-    #     , outlet.dqn.environment.state.number_of_timed_out_requests_from_algorithm,
-    # )
+    add_value_to_pickle(
+        os.path.join(number_of_timed_out_requests_from_algorithm_path,f"number_of_timed_out_requests_from_algorithm{outlet_index}.pkl")
+        , outlet.dqn.environment.state.number_of_timed_out_requests_from_algorithm,
+    )
     add_value_to_pickle(
         os.path.join(number_of_rejected_requests_over_simulation_path,f"number_of_rejected_requests_over_simulation{outlet_index}.pkl"),
         len(satellite.rejected_requests_buffer)
