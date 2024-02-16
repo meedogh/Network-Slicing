@@ -584,25 +584,25 @@ class Environment:
                 list_ = []
 
 
-                print('run env rl sliced served', performance_logger.served_slices)
-                print('run env rl sliced requests', performance_logger.sliced_requests)
-                print('run env rl slice num dic', performance_logger.slice_num_dic)
+                # print('run env rl sliced served', performance_logger.served_slices)
+                # print('run env rl sliced requests', performance_logger.sliced_requests)
+                # print('run env rl slice num dic', performance_logger.slice_num_dic)
 
 
-                add_value_to_pickle(
-                            os.path.join(sliced_requests_path, f"sliced_served.pkl"),
-                            performance_logger.served_slices,
-                        )
-                print(performance_logger.sliced_requests)
-                print("SLICED.")
-                add_value_to_pickle(
-                            os.path.join(sliced_requests_path, f"sliced_request.pkl"),
-                            performance_logger.sliced_requests,
-                        )
-                add_value_to_pickle(
-                            os.path.join(sliced_requests_path, f"sliced_num.pkl"),
-                            performance_logger.slice_num_dic,
-                        )
+                # add_value_to_pickle(
+                #             os.path.join(sliced_requests_path, f"sliced_served.pkl"),
+                #             performance_logger.served_slices,
+                #         )
+                # print(performance_logger.sliced_requests)
+                # print("SLICED.")
+                # add_value_to_pickle(
+                #             os.path.join(sliced_requests_path, f"sliced_request.pkl"),
+                #             performance_logger.sliced_requests,
+                #         )
+                # add_value_to_pickle(
+                #             os.path.join(sliced_requests_path, f"sliced_num.pkl"),
+                #             performance_logger.slice_num_dic,
+                #         )
                 for ind, gridcell_dqn in enumerate(self.gridcells_dqn):
                     for i, out in enumerate(gridcell_dqn.agents.grid_outlets):
                         # add_value_to_pickle(
