@@ -259,9 +259,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
 
             # print("for outlet : ", outlet.__class__.__name__, " outlet current capacity : ", outlet.current_capacity)
             for i, (service, flag) in enumerate(performancelogger.queue_waiting_requests_in_buffer[outlet]):
-                print("WFGBUBUFBU")
                 if flag == True:
-                    print("WFGBUBUFBUTRUUUUUUUUUUUUE")
                     # performancelogger.queue_requested_buffer[outlet].appendleft(1)
                     failure_rate = 0.3
                     service.request_failure = np.random.rand() >= failure_rate
@@ -378,12 +376,9 @@ def read_from_pickle(path):
             pass
     return list_of_values
 def enable_sending_requests( service,gridcells_dqn, performance_logger, start_time,outlet_name, sattelite):
-        print("FUCK YOU NIGGA")
         for gridcell in gridcells_dqn:
-            print("I HATE WOMEN")
             for j, outlet in enumerate(gridcell.agents.grid_outlets):
                 if outlet.__class__.__name__ == outlet_name:
-                    print("TEST")
                     if len(performance_logger.queue_waiting_requests_in_buffer[
                                 outlet]) < outlet_max_waiting_buffer_length(outlet):
                         outlet._max_capacity = outlet.set_max_capacity(outlet.__class__.__name__)
@@ -425,7 +420,6 @@ def enable_sending_requests( service,gridcells_dqn, performance_logger, start_ti
 
                                 outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
 
-                            print("AAAAAAAAAAAAAAAAAAAAAAAAAAAA")
                             outlet.dqn.environment.state.timed_out_length = 0
                             outlet.dqn.environment.state.from_waiting_to_serv_length = 0
                             outlet.dqn.environment.state.wasting_buffer_length = len(

@@ -508,7 +508,6 @@ class Environment:
                         # print(f'Not all slices were served for this service: {id}')
                         performance_logger.served_slices[id] = False
                 else:
-                    # print("FUCK YOU, FUCK YOU, FUCK YOU")
                     # print("not served requests because service is not shown in sliced_requests \n ID", id, "\nVALUE", value)
 
                     # print(f'Not all slices were served for this service: {id}')
