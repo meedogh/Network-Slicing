@@ -1,5 +1,7 @@
 from typing import List
 from Outlet.Cellular.ICellular import Cellular
+from Outlet.Sat.sat import Satellite
+from Service.FactoryService import FactoryService
 from .utils.imports import *
 from .utils.period import Period
 from .utils.savingWeights import *
@@ -249,6 +251,13 @@ class Environment:
         # performance_logger_for_fifo = PerformanceLoggerFifo()
         outlets = self.get_all_outlets(performance_logger)
         self.Grids = self.fill_grids(self.fill_grids_with_the_nearest(outlets[:4]))
+        satellite = Satellite(1,
+                              [1, 1, 0],
+                              'sat',
+                              [100, 100],
+                              1000000000000000,
+                              [],
+                              [10, 10, 10])
         step = 0
         step_for_each_episode_change_period = 0
         print("\n")
@@ -311,8 +320,8 @@ class Environment:
             #     previous_steps_sending = self.steps
 
 
-            provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps,"FiveG")
-            path = 'C://Users//Windows dunya//PycharmProjects//pythonProject//Network-Slicing//small_time_out_add_flag_small_state_my_reward_failure_testalloutlets//request_info//outlet_FiveG.pkl'
+            provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps, "FiveG")
+            path = 'run_fifo_just_on_rush_hours_lr_0.001_02//request_info//outlet_FiveG.pkl'
 
             list_of_values = read_from_pickle(path)
             for serv_info in list_of_values:
@@ -324,9 +333,9 @@ class Environment:
                 service.time_out = serv_info[2]
                 service.time_execution = serv_info[3]
                 if self.steps == serv_info[4]:
-                   enable_sending_requests(service,self.gridcells_dqn, performance_logger ,self.steps,"FiveG")
+                   enable_sending_requests(service,self.gridcells_dqn, performance_logger ,self.steps,"FiveG", satellite)
 
-            buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps,"FiveG")
+            buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps,"FiveG", satellite)
             if self.steps - self.previous_steps_centralize_action >= 40:
                 self.previous_steps_centralize_action = self.steps
                 # centralize_nextstate_reward(self.gridcells_dqn)

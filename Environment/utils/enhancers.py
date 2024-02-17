@@ -10,7 +10,7 @@ from .logging_rl import logging_important_info_for_testing
 from .mask_generation import *
 from .. import env_variables
 from numpy import random as nump_rand
-
+from .paths import request_info
 
 def centralize_state_action(gridcells_dqn, step, performance_logger):
     number_of_services = 3
@@ -421,7 +421,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                         service.remaining_time_out = outlet.dqn.environment.state.remaining_time_out
                         outlet.dqn.environment.state.delay_time = time_out - outlet.dqn.environment.state.remaining_time_out
                         outlet.dqn.environment.state.time_out_flag = 0
-
+                        # print(outlet.dqn.environment.state.delay_time)
                         outlet.dqn.environment.state.tower_capacity_before_time_out_step_service = service.tower_capacity_before_time_out_step - round(
                             ((service.service_power_allocate / 3500) * 100), 2)
 
@@ -524,19 +524,19 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                             service.time_execution = service.calculate_processing_time()
 
                             # request_info = "C:/Users/Windows dunya/PycharmProjects/pythonProject/Network-Slicing/"
-                            # path = f"{request_info}outlet_{outlet.__class__.__name__}.pkl"
-                            # main_string = service.__class__.__name__
-                            #
-                            # substring_dec = {'Safety': "SAFETY",
-                            #                  'Entertainment': "ENTERTAINMENT",
-                            #                  'Autonomous': "AUTONOMOUS"}
-                            #
-                            # for key, value1 in substring_dec.items():
-                            #     if key in main_string:
-                            #         value = (value1, service.service_power_allocate, service.time_out,
-                            #                  service.time_execution, start_time)
-                            #         add_value_to_pickle(path, value)
-                            #
+                            path = f"{request_info}//outlet_{outlet.__class__.__name__}.pkl"
+                            main_string = service.__class__.__name__
+                            
+                            substring_dec = {'Safety': "SAFETY",
+                                             'Entertainment': "ENTERTAINMENT",
+                                             'Autonomous': "AUTONOMOUS"}
+                            
+                            for key, value1 in substring_dec.items():
+                                if key in main_string:
+                                    value = (value1, service.service_power_allocate, service.time_out,
+                                             service.time_execution, start_time)
+                                    add_value_to_pickle(path, value)
+                            
                             # print("performance_logger.queue_requested_buffer[outlet] : ",
                             #       performance_logger.queue_requested_buffer[outlet])
                             # print("performance_logger.queue_ensured_buffer[outlet] : ",

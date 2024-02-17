@@ -6,6 +6,8 @@ from Service.FactoryService import FactoryService
 from .logging_rl import logging_important_info_for_testing
 from .. import env_variables
 from .mask_generation import *
+from .paths import request_info
+from .helpers import add_value_to_pickle
 
 
 def rolling_average(data, window_size):
@@ -248,18 +250,22 @@ def provisioning_time_services(outlets, performance_logger, time_step_simulation
 
 
 
-def buffering_not_served_requests(outlets, performancelogger, time_step_simulation,outlet_name):
+def buffering_not_served_requests(outlets, performancelogger, time_step_simulation,outlet_name, satellite):
     for outlet_index, outlet in enumerate(outlets):
         if outlet.__class__.__name__ == outlet_name:
+
             services_timed_out = []
             service_moved_to_served = []
+
             # print("for outlet : ", outlet.__class__.__name__, " outlet current capacity : ", outlet.current_capacity)
             for i, (service, flag) in enumerate(performancelogger.queue_waiting_requests_in_buffer[outlet]):
+                print("WFGBUBUFBU")
                 if flag == True:
+                    print("WFGBUBUFBUTRUUUUUUUUUUUUE")
                     # performancelogger.queue_requested_buffer[outlet].appendleft(1)
                     failure_rate = 0.3
                     service.request_failure = np.random.rand() >= failure_rate
-
+                    
                     if service.request_failure == False:
                         outlet.dqn.agents.action.command.action_value_decentralize = 1
                         outlet.dqn.environment.state.max_tower_capacity = outlet._max_capacity
@@ -293,7 +299,8 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
                             outlet.dqn.environment.state.delay_time = 0
-                            logging_important_info_for_testing(performancelogger,outlet_index, outlet)
+                            print("I'M HERE.")
+                            logging_important_info_for_testing(performancelogger,outlet_index, outlet, satellite)
 
 
 
@@ -336,12 +343,12 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             outlet.dqn.environment.state.remaining_time_out = time_out - (
                                         time_step_simulation - start_time) - 1
                             outlet.dqn.environment.state.delay_time = time_out -  outlet.dqn.environment.state.remaining_time_out
-
+                            print("DELAY TIME OUT", outlet.dqn.environment.state.delay_time)
                             outlet.dqn.environment.reward.reward_value = 1000
 
                             outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
 
-                            logging_important_info_for_testing(performancelogger,outlet_index, outlet)
+                            logging_important_info_for_testing(performancelogger,outlet_index, outlet, satellite)
 
             for ser in services_timed_out:
                 performancelogger.queue_waiting_requests_in_buffer[outlet].remove([ser, True])
@@ -370,10 +377,13 @@ def read_from_pickle(path):
         except EOFError:
             pass
     return list_of_values
-def enable_sending_requests( service,gridcells_dqn, performance_logger, start_time,outlet_name):
+def enable_sending_requests( service,gridcells_dqn, performance_logger, start_time,outlet_name, sattelite):
+        print("FUCK YOU NIGGA")
         for gridcell in gridcells_dqn:
+            print("I HATE WOMEN")
             for j, outlet in enumerate(gridcell.agents.grid_outlets):
                 if outlet.__class__.__name__ == outlet_name:
+                    print("TEST")
                     if len(performance_logger.queue_waiting_requests_in_buffer[
                                 outlet]) < outlet_max_waiting_buffer_length(outlet):
                         outlet._max_capacity = outlet.set_max_capacity(outlet.__class__.__name__)
@@ -411,17 +421,17 @@ def enable_sending_requests( service,gridcells_dqn, performance_logger, start_ti
                                     performance_logger.queue_requested_buffer[outlet])
                                 outlet.dqn.environment.reward.services_ensured = len(
                                     performance_logger.queue_ensured_buffer[outlet])
-
                                 outlet.dqn.environment.reward.reward_value = 100
 
                                 outlet.dqn.environment.reward.reward_value_accumilated = outlet.dqn.environment.reward.reward_value_accumilated + outlet.dqn.environment.reward.reward_value
 
+                            print("AAAAAAAAAAAAAAAAAAAAAAAAAAAA")
                             outlet.dqn.environment.state.timed_out_length = 0
                             outlet.dqn.environment.state.from_waiting_to_serv_length = 0
                             outlet.dqn.environment.state.wasting_buffer_length = len(
                                 performance_logger.queue_wasted_req_buffer[outlet])
                             outlet.dqn.environment.state.delay_time = 0
-                            logging_important_info_for_testing(performance_logger,j, outlet)
+                            logging_important_info_for_testing(performance_logger,j, outlet, sattelite)
 
                             if served == False:
                                 performance_logger.queue_waiting_requests_in_buffer[outlet].append(
