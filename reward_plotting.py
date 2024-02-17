@@ -7,9 +7,9 @@ outlet_num = 0
 # results_dir = os.path.join(sys.path[0],f"run_rl_just_on_rush_hours_lr_0.001//reward_accumilated_decentralize//accu_reward{outlet_num}.pkl")
 deque = []
 epsilon_list = []
-for i in range(91,93):
+for i in range(1,4):
     epsilon = 0.95
-    results_dir = os.path.join(sys.path[0],f"run_rl_just_on_rush_hours_lr_0.001_{i}//reward_accumilated_decentralize//accu_reward{outlet_num}.pkl")
+    results_dir = os.path.join(sys.path[0],f"run_fifo_just_on_rush_hours_lr_0.001_0{i}//reward_accumilated_decentralize//accu_reward{outlet_num}.pkl")
 
         # filename  = f"C://Users//Windows dunya//Downloads//action_each_single_request_reward2_method2_repeat_periods_each_episode_retrain_buffer_percentage_small_time_out_add_flag_small_state_my_reward_failure//reward_accumilated_decentralize//accu_reward{outlet_num}.pkl"
     
