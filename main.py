@@ -1,4 +1,4 @@
-from Environment import run_env_rl
+# from Environment import run_env_rl
 # from memory_profiler import profile
 from Environment import run_fifo
 # from  Environment import run_heuristic

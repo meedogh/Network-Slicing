@@ -289,7 +289,7 @@ class Environment:
                 self.temp_outlets.append(outlet)
 
         load_weigths_buffer(self.gridcells_dqn[0])
-        while step < env_variables.TIME:
+        while True:
             process = psutil.Process()
             memory_usage = process.memory_info().rss / 1024.0 / 1024.0  # Convert to MB
             if memory_usage > self.memory_threshold:
@@ -298,7 +298,8 @@ class Environment:
             gc.collect(0)
 
             traci.simulationStep()
-
+            if performance_logger.generated_requests_over_simulation > 0 and performance_logger.served_requests_over_simulation // performance_logger.generated_requests_over_simulation <= 0.01:
+                break
             print("step is ....................................... ", step)
             if step % 320 == 0:
                 step_for_each_episode_change_period = 0
@@ -320,8 +321,8 @@ class Environment:
             #     previous_steps_sending = self.steps
 
 
-            provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps, "FiveG")
-            path = 'run_fifo_just_on_rush_hours_lr_0.001_02//request_info//outlet_FiveG.pkl'
+            provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps, "Wifi")
+            path = 'run_fifo_just_on_rush_hours_lr_0.001_02//request_info//outlet_Wifi.pkl'
 
             list_of_values = read_from_pickle(path)
             for serv_info in list_of_values:
@@ -333,9 +334,9 @@ class Environment:
                 service.time_out = serv_info[2]
                 service.time_execution = serv_info[3]
                 if self.steps == serv_info[4]:
-                   enable_sending_requests(service,self.gridcells_dqn, performance_logger ,self.steps,"FiveG", satellite)
+                   enable_sending_requests(service,self.gridcells_dqn, performance_logger ,self.steps, satellite)
 
-            buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps,"FiveG", satellite)
+            buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps, satellite)
             if self.steps - self.previous_steps_centralize_action >= 40:
                 self.previous_steps_centralize_action = self.steps
                 # centralize_nextstate_reward(self.gridcells_dqn)
@@ -371,18 +372,18 @@ class Environment:
                             out.dqn.environment.reward.reward_value_accumilated,
                         )
 
-                        out.dqn.environment.state.resetsate()
-                        out.dqn.environment.reward.resetreward()
-                        out.dqn.environment.reward.reward_value_accumilated = 0
-                        out.current_capacity = out.set_max_capacity(out.__class__.__name__)
+                    #     out.dqn.environment.state.resetsate()
+                    #     out.dqn.environment.reward.resetreward()
+                    #     out.dqn.environment.reward.reward_value_accumilated = 0
+                    #     out.current_capacity = out.set_max_capacity(out.__class__.__name__)
 
-                    gridcell_dqn.environment.reward.resetreward()
-                    gridcell_dqn.environment.state.resetsate(self.temp_outlets)
+                    # gridcell_dqn.environment.reward.resetreward()
+                    # gridcell_dqn.environment.state.resetsate(self.temp_outlets)
 
-                performance_logger.reset_state_decentralize_requirement()
+                # performance_logger.reset_state_decentralize_requirement()
 
             step += 1
-            step_for_each_episode_change_period += 1
+            # step_for_each_episode_change_period += 1
             self.steps += 1
             if step == 50:
                 save_weigths_buffer(self.gridcells_dqn[0], 50)

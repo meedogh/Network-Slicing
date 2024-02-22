@@ -59,6 +59,13 @@ class Environment:
             if self.polygon.getType(id_poly) == "building":
                 all_builds_.append(id_poly)
         return all_builds_
+    
+    def check_stop_condition(self, performance_logger, outlet, satellite):
+        serving_ratio = self.calculate_serving_ratio(performance_logger, outlet, satellite)
+        if serving_ratio == -1:
+            return True
+        else:
+            return False
 
     def prepare_route(self):
         """
@@ -266,6 +273,27 @@ class Environment:
         if len(ids_arrived) != 0:
             list(map(remove_vehicle, ids_arrived))
 
+    def calculate_serving_ratio(self, performance_logger, outlet, satellite):
+        generated = performance_logger.generated_requests_over_simulation
+        aborted = outlet.abort_requests
+        # print("REJECTED", satellite.rejected_requests_buffer)
+        rejected = len(satellite.rejected_requests_buffer)
+        timed_out = outlet.dqn.environment.state.timed_out_length
+        print("GENERATED REQUESTS   ", generated)
+
+        served_requests = generated - aborted - rejected - timed_out
+        print("SERVED REQUESTS  ", served_requests)
+        if served_requests <= 0 and generated != 0:
+            return -1
+        
+        if generated == 0:
+            return 0
+        serving_ratio = served_requests / generated
+        print("SERVING RATIO    ", serving_ratio)
+        if serving_ratio == 0:
+            return -1
+        return serving_ratio
+    
     def add_new_vehicles(self):
         """
         Add vehicles which inserted into the road network in this time step.
@@ -296,6 +324,53 @@ class Environment:
                 )
             )
             self.generate_vehicles(number_cars)
+
+    def generate_too_many_requests_scenario(self, performance_logger, outlet, satellite, step):
+        """
+        Gradually increases the number of requests generated until the serving ratio becomes 0.
+        """
+        if step % 10 == 0:
+            increase_factor = 2
+            new_number_of_requests = int(performance_logger.generated_requests_over_simulation * increase_factor)
+            # performance_logger.generated_requests_over_simulation = new_number_of_requests
+
+
+            for _ in range(new_number_of_requests - performance_logger.generated_requests_over_simulation):
+                types = [*SERVICES_TYPES.keys()]
+                type_ = random.choices(types, weights=(
+                    env_variables.ENTERTAINMENT_RATIO, env_variables.SAFETY_RATIO,
+                    env_variables.AUTONOMOUS_RATIO), k=1)
+                realtime_ = random.choice(SERVICES_TYPES[type_[0]]["REALTIME"])
+                bandwidth_ = random.choice(SERVICES_TYPES[type_[0]]["BANDWIDTH"])
+                criticality_ = random.choice(SERVICES_TYPES[type_[0]]["CRITICAL"])
+                factory = FactoryService(realtime_, bandwidth_, criticality_)
+                service = factory.produce_services(type_[0])
+                service.realtime = realtime_
+                request_bandwidth = Bandwidth(service.bandwidth, service.criticality)
+                request_cost = RequestCost(request_bandwidth, service.realtime)
+                service.cost_in_bit_rate = request_cost.cost_setter(outlet)
+                service.service_power_allocate = request_bandwidth.allocated
+                service.total_cost_in_dolar = service.calculate_service_cost_in_Dolar_per_bit()
+                service.time_out = service.calculate_time_out()
+                service.time_execution = service.calculate_processing_time()
+                performance_logger.queue_requested_buffer[outlet] += 1
+                performance_logger.queue_power_for_requested_in_buffer[outlet].append(
+                    [service, False])
+                performance_logger.queue_power_for_requested_in_buffer[outlet][0][1] = False
+                performance_logger.queue_waiting_requests_in_buffer[outlet].appendleft(
+                    [service, True])
+                performance_logger.queue_requests_with_time_out_buffer[outlet][service] = [
+                    self.steps,
+                    service.time_out]
+                performance_logger.generated_requests_over_simulation += 1
+                logging_important_info_for_testing(performance_logger, 0, outlet, satellite)
+
+        serving_ratio = self.calculate_serving_ratio(performance_logger, outlet, satellite)
+        if serving_ratio == 0:
+            print("Serving ratio became 0. Scenario complete.")
+            return True  
+        else:
+            return False
 
     def run(self):
         self.starting()
@@ -344,7 +419,7 @@ class Environment:
                 self.temp_outlets.append(outlet)
 
         load_weigths_buffer(self.gridcells_dqn[0])
-        while step < env_variables.TIME:
+        while True: 
             process = psutil.Process()
             memory_usage = process.memory_info().rss / 1024.0 / 1024.0  # Convert to MB
             if memory_usage > self.memory_threshold:
@@ -354,10 +429,12 @@ class Environment:
 
             traci.simulationStep()
             self.car_distribution(step)
+            print("STEP ----", step)
+ 
             self.remove_vehicles_arrived()
-            print("step is ....................................... ", step)
-            if step % 320 == 0:
-                step_for_each_episode_change_period = 0
+            # print(self.check_stop_condition(performance_logger, outlet, satellite))
+            if self.check_stop_condition(performance_logger, outlet, satellite):
+                break
             if step == self.start and step != 0:
                 for outlet in self.temp_outlets:
                     if outlet.__class__.__name__ == 'Wifi' and len(outlet.dqn.agents.memory) > 75:
@@ -617,10 +694,10 @@ class Environment:
                         out.dqn.environment.state.resetsate()
                         out.dqn.environment.reward.resetreward()
                         out.dqn.environment.reward.reward_value_accumilated = 0
-                        out.current_capacity = out.set_max_capacity(out.__class__.__name__)
-                        satellite.rejected_requests_buffer = deque([])
-                        satellite.sum_of_costs_of_all_requests = 0
-                        out.abort_request = 0
+                        # out.current_capacity = out.set_max_capacity(out.__class__.__name__)
+                        # satellite.rejected_requests_buffer = deque([])
+                        # satellite.sum_of_costs_of_all_requests = 0
+                        # out.abort_request = 0
 
                         # for index , (exploitation, state, action, reward, next_state, prob) in enumerate(out.dqn.agents.memory) :
                         #     updated_tuple = (exploitation, state, action, reward, next_state, 0.0)
@@ -642,7 +719,7 @@ class Environment:
             if step == env_variables.TIME:
                 save_weigths_buffer(self.gridcells_dqn[0], 5)
 
-
+        
         self.close()
 
     def close(self):

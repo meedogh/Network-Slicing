@@ -371,7 +371,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             [service, True])
                         outlet.dqn.environment.state.from_wait_to_serve_over_simulation = len(
                             performancelogger.queue_from_wait_to_serve_over_simulation[outlet])
-
+                        performancelogger.served_requests_over_simulation += 1
                         if [service, False] in performancelogger.queue_power_for_requested_in_buffer[outlet]:
                             index = performancelogger.queue_power_for_requested_in_buffer[outlet].index(
                                 [service, False])
@@ -523,7 +523,6 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                             service.time_out = service.calculate_time_out()
                             service.time_execution = service.calculate_processing_time()
 
-                            # request_info = "C:/Users/Windows dunya/PycharmProjects/pythonProject/Network-Slicing/"
                             path = f"{request_info}//outlet_{outlet.__class__.__name__}.pkl"
                             main_string = service.__class__.__name__
                             
@@ -655,6 +654,7 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                         performance_logger.sliced_requests = (service.parent_service, service)
 
                                     if served == True:
+                                        performance_logger.served_requests_over_simulation += 1
                                         outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                                         outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
 
@@ -754,24 +754,28 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
     car.set_state(
         float(round(traci.vehicle.getPosition(car.id)[0], 4)),
         float(round(traci.vehicle.getPosition(car.id)[1], 4)), )
-    info = car.send_request(performance_logger)
-    if info != None:
-        if len(info[0])==1 and len(info[1])==1: 
-            outlet = info[0][0]
-            service = info[1][2]
-            #print('enhancera', service.__id)
-            performance_logger.set_user_requests(outlet, car, service, False)
-            performance_logger.generated_requests_over_simulation += 1
-            # print(" performance_logger.generated_requests_over_simulation : ", performance_logger.generated_requests_over_simulation)
-            request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, service, start_time, satellite, info)
-        else:
-            # print("LEN", len(info[0]), len(info[1]))
-            # print("ELSE")
-            for outlet in info[0]:
-                performance_logger.set_user_requests(outlet, car, info[1][2], False)
+    
+    current_step = traci.simulation.getTime()
+    # print("TIME", current_step)
+    for _ in range(int(current_step//5 + 1)):
+        info = car.send_request(performance_logger)
+        if info != None:
+            if len(info[0])==1 and len(info[1])==1: 
+                outlet = info[0][0]
+                service = info[1][2]
+                #print('enhancera', service.__id)
+                performance_logger.set_user_requests(outlet, car, service, False)
                 performance_logger.generated_requests_over_simulation += 1
                 # print(" performance_logger.generated_requests_over_simulation : ", performance_logger.generated_requests_over_simulation)
-                request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, info[1][2], start_time, satellite, info)
+                request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, service, start_time, satellite, info)
+            else:
+                # print("LEN", len(info[0]), len(info[1]))
+                # print("ELSE")
+                for outlet in info[0]:
+                    performance_logger.set_user_requests(outlet, car, info[1][2], False)
+                    performance_logger.generated_requests_over_simulation += 1
+                    # print(" performance_logger.generated_requests_over_simulation : ", performance_logger.generated_requests_over_simulation)
+                    request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, info[1][2], start_time, satellite, info)
     # else:
     #     print("Failure.")
 

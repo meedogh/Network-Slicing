@@ -66,6 +66,8 @@ class PerformanceLogger(metaclass=SingletonMeta):
 
     _generated_requests_over_simulation: int = field(default_factory=int)
 
+    _served_requests_over_simulation: int = field(default_factory=int)
+
     _queue_request_failure_flags:Dict[Outlet, deque[Service, bool:False]] = field(default_factory=dict)
 
     _outlet_services_requested_number: Dict[Outlet, List[int]] = field(default_factory=dict)
@@ -79,6 +81,7 @@ class PerformanceLogger(metaclass=SingletonMeta):
     _power_costs: List[float] = field(default_factory=list)
 
 
+    
     def initial_setting(self,outlet):
         self.set_outlet_services_power_allocation(outlet, [0, 0, 0])
         self.set_queue_requested_buffer(outlet, 0)
@@ -185,6 +188,15 @@ class PerformanceLogger(metaclass=SingletonMeta):
     @generated_requests_over_simulation.setter
     def generated_requests_over_simulation(self,value):
         self._generated_requests_over_simulation = value
+
+    @property
+    def served_requests_over_simulation(self):
+        return self._served_requests_over_simulation
+
+    @served_requests_over_simulation.setter
+    def served_requests_over_simulation(self,value):
+        self._served_requests_over_simulation = value
+    
     @property
     def queue_wasted_req_buffer(self):
         return self._queue_wasted_req_buffer
@@ -363,9 +375,9 @@ class PerformanceLogger(metaclass=SingletonMeta):
 
     def reset_state_decentralize_requirement(self):
         for key in self._queue_requested_buffer:
-            self._queue_requested_buffer[key] = 0
+            self._queue_requested_buffer[key] = -1
         for key in self._queue_ensured_buffer:
-            self._queue_ensured_buffer[key] = 0
+            self._queue_ensured_buffer[key] = -1
         for key in self._queue_power_for_requested_in_buffer:
             self._queue_power_for_requested_in_buffer[key] = deque([])
         for key in self._queue_waiting_requests_in_buffer:
@@ -382,6 +394,7 @@ class PerformanceLogger(metaclass=SingletonMeta):
             self._queue_from_wait_to_serve_over_simulation[key] = deque([])
         for key in self._queue_time_out_from_simulation:
             self._queue_time_out_from_simulation[key] = deque([])
-        self._generated_requests_over_simulation = 0
+        self._generated_requests_over_simulation = -1
+        self._served_requests_over_simulation = -1
         for key in self._number_of_requested_requests_buffer:
-            self._number_of_requested_requests_buffer[key]=0
+            self._number_of_requested_requests_buffer[key]= -1

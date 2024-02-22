@@ -2,7 +2,7 @@ import os
 import sys
 
 results_dir = os.path.join(sys.path[0],
-                           'run_fifo_just_on_rush_hours_lr_0.001_04')
+                           'run_rl_just_on_rush_hours_lr_0.001_97')
 centralized_weights = os.path.join(results_dir, 'centralized_weights')
 decentralized_weights = os.path.join(results_dir, 'decentralized_weights')
 path_memory_centralize = os.path.join(results_dir, 'centralize_memory')
@@ -37,7 +37,7 @@ sum_power_allocation_path = os.path.join(results_dir, "sum_power_allocation//")
 prev_results_dec_weight = f"{os.path.join(sys.path[0])}/"
 # prev_results_dec_memory = f"{os.path.join(sys.path[0])}//action_each_single_request_reward_method4_add_init_10_11_12_no_protrization_less_failure_less_reward//"
 prev_centralize_weights_path = os.path.join(prev_results_3tanh_dir, "centralized_weights//")
-prev_decentralize_weights_path = os.path.join(prev_results_dec_weight, "run_fifo_just_on_rush_hours_lr_0.001_03/decentralized_weights/")
+prev_decentralize_weights_path = os.path.join(prev_results_dec_weight, "run_rl_just_on_rush_hours_lr_0.001_96/decentralized_weights/")
 # prev_centralize_memory_path = os.path.join(prev_results_4tanh_dir,"centralize_memory//")
 # prev_decentralize_memory_path = os.path.join(prev_results_dec_memory,"decentralize_memory//")
 centralize_qvalue_path = os.path.join(results_dir, "qvalue_centralized_for_plotting//")
@@ -49,10 +49,12 @@ timed_out_requests_over_the_simulation_path = os.path.join(results_dir, "timed_o
 from_wait_to_serve_requests_over_the_simulation_path = os.path.join(results_dir,
                                                                     "from_wait_to_serve_requests_over_the_simulation//")
 generated_requests_over_simulation_path = os.path.join(results_dir, "generated_requests_over_simulation//")
+served_requests_over_simulation_path = os.path.join(results_dir, "served_requests_over_simulation//")
 delay_time_path = os.path.join(results_dir, "delay_time//")
 request_info = os.path.join(results_dir, "request_info//")
 number_of_timed_out_requests_from_algorithm_path = os.path.join(results_dir,
                                                                 "number_of_timed_out_requests_from_algorithm//")
+
 number_of_rejected_requests_over_simulation_path = os.path.join(results_dir,
                                                                 "number_of_rejected_requests_over_simulation//")
 sum_of_cost_of_all_rejected_requests_path = os.path.join(results_dir, "sum_of_cost_of_all_rejected_requests//")
