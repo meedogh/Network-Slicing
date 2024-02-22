@@ -275,13 +275,13 @@ class Environment:
 
     def calculate_serving_ratio(self, performance_logger, outlet, satellite):
         generated = performance_logger.generated_requests_over_simulation
-        aborted = outlet.abort_requests
-        # print("REJECTED", satellite.rejected_requests_buffer)
-        rejected = len(satellite.rejected_requests_buffer)
-        timed_out = outlet.dqn.environment.state.timed_out_length
+        # aborted = outlet.abort_requests
+        # # print("REJECTED", satellite.rejected_requests_buffer)
+        # rejected = len(satellite.rejected_requests_buffer)
+        # timed_out = outlet.dqn.environment.state.timed_out_length
         print("GENERATED REQUESTS   ", generated)
 
-        served_requests = generated - aborted - rejected - timed_out
+        served_requests = performance_logger.served_requests_over_simulation
         print("SERVED REQUESTS  ", served_requests)
         if served_requests <= 0 and generated != 0:
             return -1
@@ -365,7 +365,7 @@ class Environment:
                 performance_logger.generated_requests_over_simulation += 1
                 logging_important_info_for_testing(performance_logger, 0, outlet, satellite)
 
-        serving_ratio = self.calculate_serving_ratio(performance_logger, outlet, satellite)
+        serving_ratio = performance_logger.served_requests_over_simulation // performance_logger.generated_requests_over_simulation
         if serving_ratio == 0:
             print("Serving ratio became 0. Scenario complete.")
             return True  
@@ -548,7 +548,7 @@ class Environment:
             ra.seed(seed_value)
 
             number_of_cars_will_send_requests = round(
-                len(list(env_variables.vehicles.values())) * 0.5
+                len(list(env_variables.vehicles.values())) * 1
 
             )
             vehicles = ra.sample(
