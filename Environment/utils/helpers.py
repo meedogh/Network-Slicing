@@ -7,6 +7,9 @@ from .aggregators import *
 
 
 def add_value_to_pickle(path, value):
+    directory = os.path.dirname(path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     mode = "wb" if not os.path.exists(path) else "ab"
     with open(path, mode) as file:
         pickle.dump(value, file)
