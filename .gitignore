@@ -65,3 +65,5 @@ test.py
 *.yml
 /results3_tanh/
 *run_rl_just_on_rush_hours_lr*
+*run_rl_scenario*
+*run_fifo_scenario*
