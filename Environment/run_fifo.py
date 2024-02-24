@@ -22,6 +22,8 @@ class Environment:
     snapshot_time = 5
     previous_steps_centralize = 0
     previous_steps_centralize_action = 0
+    previous_generated = 0
+    previous_served = 0
     previouse_steps_reseting = 0
     prev = 0
     memory_threshold = 1500  # 3.5GB
@@ -294,12 +296,25 @@ class Environment:
             memory_usage = process.memory_info().rss / 1024.0 / 1024.0  # Convert to MB
             if memory_usage > self.memory_threshold:
                 gc.collect(0)
-
+            generated = performance_logger.generated_requests_over_simulation - self.previous_generated
+            served = performance_logger.served_requests_over_simulation - self.previous_served
             gc.collect(0)
-
+            print("GENERATED", generated)
+            print ("SERVED", served)
+            print("PREVIOUS GEN", self.previous_generated)
+            print ("PREVIOUS SERVE", self.previous_served)
+            print("TOTAL GEN", performance_logger.generated_requests_over_simulation)
+            print("TOTAL SERVE", performance_logger.served_requests_over_simulation)
+            # print("RATIO", performance_logger.served_requests_over_simulation // performance_logger.generated_requests_over_simulation)
             traci.simulationStep()
-            if performance_logger.generated_requests_over_simulation > 0 and performance_logger.served_requests_over_simulation // performance_logger.generated_requests_over_simulation <= 0.01:
+            if (generated > 0 and served / generated <= 0.01) or (served == 0 and step > 1 and self.previous_generated != performance_logger.generated_requests_over_simulation):
+                print("GENERATED", generated)
+                print ("SERVED", served)
+                # print("RATIO", served / generated)
                 break
+            else:
+                self.previous_generated = performance_logger.generated_requests_over_simulation
+                self.previous_served = performance_logger.served_requests_over_simulation
             print("step is ....................................... ", step)
             if step % 320 == 0:
                 step_for_each_episode_change_period = 0
@@ -333,8 +348,9 @@ class Environment:
                 service.service_power_allocate = serv_info[1]
                 service.time_out = serv_info[2]
                 service.time_execution = serv_info[3]
+                # print("SERV INFO 4", serv_info[4])
                 if self.steps == serv_info[4]:
-                   enable_sending_requests(service,self.gridcells_dqn, performance_logger ,self.steps, satellite)
+                    enable_sending_requests(service,self.gridcells_dqn, performance_logger ,self.steps, satellite)
 
             buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps, satellite)
             if self.steps - self.previous_steps_centralize_action >= 40:

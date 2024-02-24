@@ -267,7 +267,7 @@ def provisioning_time_services(outlets, performance_logger, time_step_simulation
 
 def buffering_not_served_requests(outlets, performancelogger, time_step_simulation, satellite):
     for outlet_index, outlet in enumerate(outlets):
-        print("OUTLET_INDEEEEEEX", outlet_index)
+        # print("OUTLET_INDEEEEEEX", outlet_index)
         services_timed_out = []
         service_moved_to_served = []
 
@@ -320,6 +320,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             performancelogger.queue_waiting_requests_in_buffer[outlet]) > 0:
 
                         service_moved_to_served.append(service)
+                        # performancelogger.served_requests_over_simulation += 1
                         performancelogger.queue_from_wait_to_serve_over_simulation[outlet].appendleft([service,True])
                         outlet.dqn.environment.state.from_wait_to_serve_over_simulation= len(performancelogger.queue_from_wait_to_serve_over_simulation[outlet])
 
@@ -364,7 +365,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
         for ser in services_timed_out:
             performancelogger.queue_waiting_requests_in_buffer[outlet].remove([ser, True])
         for ser in service_moved_to_served:
-            performancelogger.served_requests_over_simulation += 1
+            
             performancelogger.queue_waiting_requests_in_buffer[outlet].remove([ser, True])
 
 
@@ -391,10 +392,10 @@ def read_from_pickle(path):
     return list_of_values
 
 def enable_sending_requests( service,gridcells_dqn, performance_logger, start_time, satellite):
-        performance_logger.generated_requests_over_simulation += 1
+        
         for gridcell in gridcells_dqn:
             for j, outlet in enumerate(gridcell.agents.grid_outlets):
-
+                performance_logger.generated_requests_over_simulation += 1
                 if len(performance_logger.queue_waiting_requests_in_buffer[
                             outlet]) < outlet_max_waiting_buffer_length(outlet):
                     outlet._max_capacity = outlet.set_max_capacity(outlet.__class__.__name__)
