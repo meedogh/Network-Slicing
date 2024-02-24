@@ -23,6 +23,7 @@ supported_service_decentralized_path = os.path.join(results_dir, 'supported_serv
 waiting_buffer_length_path = os.path.join(results_dir, "waiting_buffer_length")
 timed_out_length_path = os.path.join(results_dir, "timed_out_length")
 from_waiting_to_serv_length_path = os.path.join(results_dir, "from_waiting_to_serv_length")
+end2end_delay_path = os.path.join(results_dir, "end_to_end_delay")
 wasting_req_length_path = os.path.join(results_dir, "wasting_req_length")
 prev_results_3tanh_dir =f"{os.path.join(sys.path[0])}//results3_tanh//results3_tanh//"
 

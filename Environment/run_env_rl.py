@@ -10,6 +10,7 @@ from .utils.savingWeights import *
 from .utils.loadingWeights import *
 
 
+
 class Environment:
     size = 0
     data = {}
@@ -351,7 +352,7 @@ class Environment:
                 service.cost_in_bit_rate = request_cost.cost_setter(outlet)
                 service.service_power_allocate = request_bandwidth.allocated
                 service.total_cost_in_dolar = service.calculate_service_cost_in_Dolar_per_bit()
-                service.time_out = service.calculate_time_out()
+                service.time_out = service.calculate_time_out() #- (0.01 * step)
                 service.time_execution = service.calculate_processing_time()
                 performance_logger.queue_requested_buffer[outlet] += 1
                 performance_logger.queue_power_for_requested_in_buffer[outlet].append(
@@ -435,6 +436,8 @@ class Environment:
             # print(self.check_stop_condition(performance_logger, outlet, satellite))
             if self.check_stop_condition(performance_logger, outlet, satellite):
                 break
+    
+
             if step == self.start and step != 0:
                 for outlet in self.temp_outlets:
                     if outlet.__class__.__name__ == 'Wifi' and len(outlet.dqn.agents.memory) > 75:
@@ -557,9 +560,10 @@ class Environment:
 
             provisioning_time_services(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps)
 
+            
             list(map(lambda veh: enable_sending_requests(veh, observer, self.gridcells_dqn, performance_logger,
                                                          self.steps, satellite), vehicles, ))
-
+            
             buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps,
                                           satellite)
             
