@@ -344,9 +344,11 @@ class Environment:
                 factory = FactoryService(0, 0, 0)
                 serv_type = serv_info[0]
                 service = factory.produce_services(serv_type)
-
-                service.service_power_allocate = serv_info[1]
-                service.time_out = serv_info[2]
+                # service.bandwidth += step/20
+                # print("BAND", service.bandwidth)
+                service.service_power_allocate = serv_info[1] #* (1+step/20)
+                service.time_out = serv_info[2]  - step/20
+                # print("TIME OUT", service.time_out)
                 service.time_execution = serv_info[3]
                 # print("SERV INFO 4", serv_info[4])
                 if self.steps == serv_info[4]:

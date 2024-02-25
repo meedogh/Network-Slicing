@@ -11,6 +11,7 @@ class Car(Vehicle):
     iterator = 0
     def car_requests(self):
         self.iterator += 0.1
+        print("ITERATOR ITERATOR", self.iterator)
         self.services = []
         car_services = []
         types = [*SERVICES_TYPES.keys()]

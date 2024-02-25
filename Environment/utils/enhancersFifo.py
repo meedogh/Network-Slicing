@@ -288,7 +288,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                         performancelogger.queue_waiting_requests_in_buffer[outlet])
 
                     start_time = performancelogger.queue_requests_with_time_out_buffer[outlet][service][0]
-                    time_out = performancelogger.queue_requests_with_time_out_buffer[outlet][service][1]
+                    time_out = performancelogger.queue_requests_with_time_out_buffer[outlet][service][1] - time_step_simulation/20
                     outlet.dqn.environment.state.remaining_time_out = time_out
                     lr = -1
                     if start_time + time_out <= time_step_simulation and len(
@@ -322,7 +322,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
 
                         service_moved_to_served.append(service)
                         performancelogger.end_to_end_delay = time_step_simulation - performancelogger.end_to_end_delay
-                        # performancelogger.served_requests_over_simulation += 1
+                        performancelogger.served_requests_over_simulation += 1
                         performancelogger.queue_from_wait_to_serve_over_simulation[outlet].appendleft([service,True])
                         outlet.dqn.environment.state.from_wait_to_serve_over_simulation= len(performancelogger.queue_from_wait_to_serve_over_simulation[outlet])
 

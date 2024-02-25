@@ -367,12 +367,12 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
 
                         service_moved_to_served.append(service)
                         performancelogger.end_to_end_delay = traci.simulation.getTime() - performancelogger.end_to_end_delay
+                        performancelogger.served_requests_over_simulation += 1
                         outlet.sum_of_costs_of_all_requests += service.total_cost_in_dolars
                         performancelogger.queue_from_wait_to_serve_over_simulation[outlet].appendleft(
                             [service, True])
                         outlet.dqn.environment.state.from_wait_to_serve_over_simulation = len(
                             performancelogger.queue_from_wait_to_serve_over_simulation[outlet])
-                        performancelogger.served_requests_over_simulation += 1
                         if [service, False] in performancelogger.queue_power_for_requested_in_buffer[outlet]:
                             index = performancelogger.queue_power_for_requested_in_buffer[outlet].index(
                                 [service, False])
@@ -757,29 +757,29 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
         float(round(traci.vehicle.getPosition(car.id)[0], 4)),
         float(round(traci.vehicle.getPosition(car.id)[1], 4)), )
     
-    current_step = traci.simulation.getTime()
-    # print("TIME", current_step)
-    for _ in range(int(current_step//5 + 1)):
-        info = car.send_request(performance_logger)
-        if info != None:
-            if len(info[0])==1 and len(info[1])==1: 
-                outlet = info[0][0]
-                service = info[1][2]
+    # current_step = traci.simulation.getTime()
+    # # print("TIME", current_step)
+    # for _ in range(int(current_step//5 + 1)):
+    info = car.send_request(performance_logger)
+    if info != None:
+        if len(info[0])==1 and len(info[1])==1: 
+            outlet = info[0][0]
+            service = info[1][2]
+            performance_logger.end_to_end_delay = start_time
+            #print('enhancera', service.__id)
+            performance_logger.set_user_requests(outlet, car, service, False)
+            performance_logger.generated_requests_over_simulation += 1
+            # print(" performance_logger.generated_requests_over_simulation : ", performance_logger.generated_requests_over_simulation)
+            request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, service, start_time, satellite, info)
+        else:
+            # print("LEN", len(info[0]), len(info[1]))
+            # print("ELSE")
+            for outlet in info[0]:
                 performance_logger.end_to_end_delay = start_time
-                #print('enhancera', service.__id)
-                performance_logger.set_user_requests(outlet, car, service, False)
+                performance_logger.set_user_requests(outlet, car, info[1][2], False)
                 performance_logger.generated_requests_over_simulation += 1
                 # print(" performance_logger.generated_requests_over_simulation : ", performance_logger.generated_requests_over_simulation)
-                request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, service, start_time, satellite, info)
-            else:
-                # print("LEN", len(info[0]), len(info[1]))
-                # print("ELSE")
-                for outlet in info[0]:
-                    performance_logger.end_to_end_delay = start_time
-                    performance_logger.set_user_requests(outlet, car, info[1][2], False)
-                    performance_logger.generated_requests_over_simulation += 1
-                    # print(" performance_logger.generated_requests_over_simulation : ", performance_logger.generated_requests_over_simulation)
-                    request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, info[1][2], start_time, satellite, info)
+                request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, info[1][2], start_time, satellite, info)
     # else:
     #     print("Failure.")
 

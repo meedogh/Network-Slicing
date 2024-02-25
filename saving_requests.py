@@ -22,10 +22,11 @@ def save_served_requests(folder_path, j, served_requests):
     file_path = os.path.join(served_requests_folder, f"serving_ratio{j}.pkl")
     
     # Cut off data after the first occurrence of 0
-    zero_index = np.where(served_requests <= 0.01)[0]
-    if len(zero_index) > 0:
-        served_requests = served_requests[:zero_index[0]]
-    
+    zero_index = np.where(served_requests <= 0.03)[0][0]
+    print(zero_index)
+    # if len(zero_index) > 0:
+    print(served_requests)
+    served_requests = served_requests[:zero_index]
     with open(file_path, "wb") as f:
         pickle.dump(served_requests, f)
 
@@ -42,15 +43,15 @@ def save_folders(folder_paths, title):
             folder_served = os.path.join(folder_path, f"served_requests_over_simulation")
             all_served.extend(load_data(folder_served, f"served_requests_{j}"))
             
-            # folder_ratio = os.path.join(folder_path, f"serving_ratio")
-            # all_ratio.extend(load_data(folder_ratio, f"serving_ratio{j}"))
+            folder_ratio = os.path.join(folder_path, f"serving_ratio")
+            all_ratio.extend(load_data(folder_ratio, f"serving_ratio{j}"))
 
             min_length = min(len(all_generated), len(all_served))
 
             all_generated = np.array(all_generated[3:min_length])
             all_served = np.array(all_served[3:min_length])
-            serving_ratio = all_served / all_generated
-            # serving_ratio = all_ratio[0]
+            # serving_ratio = all_served / all_generated
+            serving_ratio = all_ratio[0]
             # print(min(serving_ratio))
             print(serving_ratio)
             plt.plot(serving_ratio)
@@ -58,7 +59,7 @@ def save_folders(folder_paths, title):
             save_served_requests(folder_path, j, serving_ratio)
 
 def main():
-    fifo_folder_paths = ["run_fifo_scenario_1_lr_0.001"]
+    fifo_folder_paths = ["run_rl_scenario_1_lr_0.001"]
     save_folders(fifo_folder_paths, "FIFO")
 
 if __name__ == "__main__":
