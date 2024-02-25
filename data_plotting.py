@@ -44,6 +44,11 @@ def main():
             generated_data = np.array(load_data(folder_generated, f"generated_requests_over_simulation{j}")) 
             # plt.plot(served_data/generated_data)
             # plt.show()
+            folder_ratio = os.path.join(folder_path, f"serving_ratio")
+            served_ratio = np.array(load_data(folder_ratio, f"serving_ratio{j}")) 
+            plt.plot(served_ratio[0])
+            plt.show()
+
             served_data_flat = served_data.flatten()
             generated_data_flat = generated_data.flatten()
 
@@ -89,22 +94,22 @@ def main():
         print(f"Episode {i}: {avg}")
 
     # Plotting the data
-    plt.figure(figsize=(10, 6))
-    plt.plot(all_served_fifo/all_generated_fifo)
-    plt.scatter(np.arange(episode_length_fifo, len(all_served_fifo)+1, episode_length_fifo), average_points_fifo, color='red', label='Average Served Requests')
-    plt.plot(np.arange(episode_length_fifo, len(all_served_fifo)+1, episode_length_fifo), average_points_fifo, color='red', linestyle='-', marker='o')
+    # plt.figure(figsize=(10, 6))
+    # plt.plot(all_served_fifo/all_generated_fifo)
+    # plt.scatter(np.arange(episode_length_fifo, len(all_served_fifo)+1, episode_length_fifo), average_points_fifo, color='red', label='Average Served Requests')
+    # plt.plot(np.arange(episode_length_fifo, len(all_served_fifo)+1, episode_length_fifo), average_points_fifo, color='red', linestyle='-', marker='o')
 
-    plt.plot(all_served_rl[3:]/all_generated_rl[3:-1])
-    print(all_served_rl)
-    plt.scatter(np.arange(episode_length_rl, len(all_served_rl)+1, episode_length_rl), average_points_rl, color='green', label='Average Served Requests')
-    plt.plot(np.arange(episode_length_rl, len(all_served_rl)+1, episode_length_rl), average_points_rl, color='green', linestyle='-', marker='o')
+    # plt.plot(all_served_rl[3:]/all_generated_rl[3:-1])
+    # print(all_served_rl)
+    # plt.scatter(np.arange(episode_length_rl, len(all_served_rl)+1, episode_length_rl), average_points_rl, color='green', label='Average Served Requests')
+    # plt.plot(np.arange(episode_length_rl, len(all_served_rl)+1, episode_length_rl), average_points_rl, color='green', linestyle='-', marker='o')
     
-    plt.xlabel('Time Step')
-    plt.ylabel('Served Requests')
-    plt.title('Served Requests Over Time')
-    plt.grid(True)
-    plt.legend()
-    plt.show()
+    # plt.xlabel('Time Step')
+    # plt.ylabel('Served Requests')
+    # plt.title('Served Requests Over Time')
+    # plt.grid(True)
+    # plt.legend()
+    # plt.show()
 
 
 if __name__ == "__main__":

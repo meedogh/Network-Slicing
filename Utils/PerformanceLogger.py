@@ -68,7 +68,7 @@ class PerformanceLogger(metaclass=SingletonMeta):
 
     _served_requests_over_simulation: int = field(default_factory=int)
 
-    _end_to_end_delay: Dict[Service, int] = field(default_factory=dict)
+    _end_to_end_delay: int = field(default_factory=int)
 
     _queue_request_failure_flags:Dict[Outlet, deque[Service, bool:False]] = field(default_factory=dict)
 
@@ -192,6 +192,14 @@ class PerformanceLogger(metaclass=SingletonMeta):
         self._generated_requests_over_simulation = value
 
     @property
+    def end_to_end_delay(self):
+        return self._end_to_end_delay
+
+    @end_to_end_delay.setter
+    def end_to_end_delay(self,value):
+        self._end_to_end_delay = value
+
+    @property
     def served_requests_over_simulation(self):
         return self._served_requests_over_simulation
 
@@ -310,15 +318,6 @@ class PerformanceLogger(metaclass=SingletonMeta):
         if outlet not in self._outlet_services_power_allocation:
             self._outlet_services_power_allocation[outlet] = {}
         self._outlet_services_power_allocation[outlet] = service
-
-    @property
-    def end_to_end_delay(self):
-        return self._end_to_end_delay
-
-    def set_end_to_end_delay(self, service, step):
-        if service not in self._end_to_end_delay:
-            self._end_to_end_delay[service] = 0
-        self._end_to_end_delay[service] = step
 
     @property
     def service_requested(self):
