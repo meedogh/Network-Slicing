@@ -8,17 +8,14 @@ from Utils.config import SERVICES_TYPES
 from Environment.utils.deterministicSlicingProcess import request_slicer
 
 class Car(Vehicle):
-    iterator = 0
     def car_requests(self):
-        self.iterator += 0.1
-        print("ITERATOR ITERATOR", self.iterator)
         self.services = []
         car_services = []
         types = [*SERVICES_TYPES.keys()]
         type_ = random.choices(types, weights=(
         env_variables.ENTERTAINMENT_RATIO, env_variables.SAFETY_RATIO, env_variables.AUTONOMOUS_RATIO), k=1)
         realtime_ = random.choice(SERVICES_TYPES[type_[0]]["REALTIME"])
-        bandwidth_ = random.choice(SERVICES_TYPES[type_[0]]["BANDWIDTH"]) * self.iterator
+        bandwidth_ = random.choice(SERVICES_TYPES[type_[0]]["BANDWIDTH"])
         criticality_ = random.choice(SERVICES_TYPES[type_[0]]["CRITICAL"])
         factory = FactoryService(realtime_, bandwidth_, criticality_)
         service_ = factory.produce_services(type_[0])
