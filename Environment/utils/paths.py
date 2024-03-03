@@ -63,6 +63,7 @@ number_of_abort_requests_over_the_simulation_path = os.path.join(results_dir,"nu
 users_logging_info_path = os.path.join(results_dir,"users_logging_info//")
 reward_info_path = os.path.join(results_dir,"reward_info//")
 states_of_memory_path =  os.path.join(results_dir,"states_of_memory//")
+time_out_delay_path = os.path.join(results_dir,"time_out_delay//")
 
 os.makedirs(states_of_memory_path,exist_ok=True)
 os.makedirs(reward_info_path , exist_ok=True)
@@ -103,3 +104,5 @@ os.makedirs(waiting_buffer_length_path, exist_ok=True)
 os.makedirs(timed_out_length_path, exist_ok=True)
 os.makedirs(from_waiting_to_serv_length_path, exist_ok=True)
 os.makedirs(wasting_req_length_path, exist_ok=True)
+os.makedirs(time_out_delay_path, exist_ok=True)
+os.makedirs(end2end_delay_path, exist_ok=True)

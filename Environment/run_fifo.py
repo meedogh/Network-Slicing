@@ -340,19 +340,22 @@ class Environment:
             path = 'run_fifo_just_on_rush_hours_lr_0.001_02//request_info//outlet_Wifi.pkl'
 
             list_of_values = read_from_pickle(path)
-            for serv_info in list_of_values:
-                factory = FactoryService(0, 0, 0)
-                serv_type = serv_info[0]
-                service = factory.produce_services(serv_type)
-                # service.bandwidth += step/20
-                # print("BAND", service.bandwidth)
-                service.service_power_allocate = serv_info[1] #* (1+step/20)
-                service.time_out = serv_info[2]  - step/20
-                # print("TIME OUT", service.time_out)
-                service.time_execution = serv_info[3]
-                # print("SERV INFO 4", serv_info[4])
-                if self.steps == serv_info[4]:
-                    enable_sending_requests(service,self.gridcells_dqn, performance_logger ,self.steps, satellite)
+            for _ in range(step//20 + 1):
+                for serv_info in list_of_values:
+                    factory = FactoryService(0, 0, 0)
+                    serv_type = serv_info[0]
+                    service = factory.produce_services(serv_type)
+                    # service.bandwidth += step/20
+                    # print("BAND", service.bandwidth)
+                    service.service_power_allocate = serv_info[1] #+ step/20
+                    service.time_out = serv_info[2] - 0.8 * step
+                    if service.time_out < 0:
+                        service.time_out = 0
+                    # print("TIME OUT", service.time_out)
+                    service.time_execution = serv_info[3]
+                    # print("SERV INFO 4", serv_info[4])
+                    if self.steps == serv_info[4]:
+                        enable_sending_requests(service,self.gridcells_dqn, performance_logger ,self.steps, satellite)
 
             buffering_not_served_requests(self.gridcells_dqn[0].agents.grid_outlets, performance_logger, self.steps, satellite)
             if self.steps - self.previous_steps_centralize_action >= 40:

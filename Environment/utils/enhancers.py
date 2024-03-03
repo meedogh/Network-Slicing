@@ -366,7 +366,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             performancelogger.sliced_requests = (service.parent_service, service)
 
                         service_moved_to_served.append(service)
-                        performancelogger.end_to_end_delay = traci.simulation.getTime() - performancelogger.end_to_end_delay
+                        performancelogger.end_to_end_delay = traci.simulation.getTime() - start_time
                         performancelogger.served_requests_over_simulation += 1
                         outlet.sum_of_costs_of_all_requests += service.total_cost_in_dolars
                         performancelogger.queue_from_wait_to_serve_over_simulation[outlet].appendleft(
@@ -655,7 +655,7 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                         performance_logger.sliced_requests = (service.parent_service, service)
 
                                     if served == True:
-                                        performance_logger.end_to_end_delay = traci.simulation.getTime() - performance_logger.end_to_end_delay
+                                        performance_logger.end_to_end_delay = traci.simulation.getTime() - start_time
                                         performance_logger.served_requests_over_simulation += 1
                                         outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                                         outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
@@ -765,7 +765,7 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
         if len(info[0])==1 and len(info[1])==1: 
             outlet = info[0][0]
             service = info[1][2]
-            performance_logger.end_to_end_delay = start_time
+            # performance_logger.end_to_end_delay = start_time
             #print('enhancera', service.__id)
             performance_logger.set_user_requests(outlet, car, service, False)
             performance_logger.generated_requests_over_simulation += 1
@@ -775,7 +775,7 @@ def enable_sending_requests(car, observer, gridcells_dqn, performance_logger, st
             # print("LEN", len(info[0]), len(info[1]))
             # print("ELSE")
             for outlet in info[0]:
-                performance_logger.end_to_end_delay = start_time
+                # performance_logger.end_to_end_delay = start_time
                 performance_logger.set_user_requests(outlet, car, info[1][2], False)
                 performance_logger.generated_requests_over_simulation += 1
                 # print(" performance_logger.generated_requests_over_simulation : ", performance_logger.generated_requests_over_simulation)

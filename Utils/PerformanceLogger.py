@@ -70,6 +70,8 @@ class PerformanceLogger(metaclass=SingletonMeta):
 
     _end_to_end_delay: int = field(default_factory=int)
 
+    _time_out_delay: int = field(default_factory=int)
+
     _queue_request_failure_flags:Dict[Outlet, deque[Service, bool:False]] = field(default_factory=dict)
 
     _outlet_services_requested_number: Dict[Outlet, List[int]] = field(default_factory=dict)
@@ -198,6 +200,14 @@ class PerformanceLogger(metaclass=SingletonMeta):
     @end_to_end_delay.setter
     def end_to_end_delay(self,value):
         self._end_to_end_delay = value
+
+    @property
+    def time_out_delay(self):
+        return self._time_out_delay
+
+    @time_out_delay.setter
+    def time_out_delay(self,value):
+        self._time_out_delay = value
 
     @property
     def served_requests_over_simulation(self):

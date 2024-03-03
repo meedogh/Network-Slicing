@@ -55,6 +55,11 @@ def logging_important_info_for_testing(performance_logger,
             performance_logger.end_to_end_delay,
         )
 
+        add_value_to_pickle(
+            os.path.join(time_out_delay_path, f"time_out_delay{outlet_index}.pkl"),
+            performance_logger.time_out_delay,
+        )
+
         #
         # add_value_to_pickle(
         #     os.path.join(from_waiting_to_serv_length_path, f"from_waiting_to_serv_length{outlet_index}.pkl"),

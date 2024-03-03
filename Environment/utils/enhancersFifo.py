@@ -222,6 +222,7 @@ def serving_requests(performancelogger, outlet, start_time, service_, satellite)
     
     for i, (service, flag) in enumerate(performancelogger.queue_power_for_requested_in_buffer[outlet]):
         if service_ == service:
+            performancelogger.time_out_delay = service.time_out
             path = f"{request_info}//outlet_{outlet.__class__.__name__}.pkl"
             main_string = service.__class__.__name__
             
@@ -274,6 +275,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
 
         # print("for outlet : ", outlet.__class__.__name__, " outlet current capacity : ", outlet.current_capacity)
         for i, (service, flag) in enumerate(performancelogger.queue_waiting_requests_in_buffer[outlet]):
+            
             if flag == True:
                 # performancelogger.queue_requested_buffer[outlet].appendleft(1)
                 failure_rate = 0.3
@@ -288,7 +290,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                         performancelogger.queue_waiting_requests_in_buffer[outlet])
 
                     start_time = performancelogger.queue_requests_with_time_out_buffer[outlet][service][0]
-                    time_out = performancelogger.queue_requests_with_time_out_buffer[outlet][service][1] - time_step_simulation/20
+                    time_out = performancelogger.queue_requests_with_time_out_buffer[outlet][service][1] #- time_step_simulation/20
                     outlet.dqn.environment.state.remaining_time_out = time_out
                     lr = -1
                     if start_time + time_out <= time_step_simulation and len(
@@ -321,7 +323,8 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             performancelogger.queue_waiting_requests_in_buffer[outlet]) > 0:
 
                         service_moved_to_served.append(service)
-                        performancelogger.end_to_end_delay = time_step_simulation - performancelogger.end_to_end_delay
+                        performancelogger.time_out_delay = service.time_out
+                        performancelogger.end_to_end_delay = time_step_simulation - start_time
                         performancelogger.served_requests_over_simulation += 1
                         performancelogger.queue_from_wait_to_serve_over_simulation[outlet].appendleft([service,True])
                         outlet.dqn.environment.state.from_wait_to_serve_over_simulation= len(performancelogger.queue_from_wait_to_serve_over_simulation[outlet])
@@ -400,7 +403,7 @@ def enable_sending_requests( service,gridcells_dqn, performance_logger, start_ti
                 performance_logger.generated_requests_over_simulation += 1
                 if len(performance_logger.queue_waiting_requests_in_buffer[
                             outlet]) < outlet_max_waiting_buffer_length(outlet):
-                    performance_logger.end_to_end_delay = start_time
+                    # performance_logger.end_to_end_delay = start_time
                     outlet._max_capacity = outlet.set_max_capacity(outlet.__class__.__name__)
                     gridcell.environment.state._max_capacity_each_outlet[j] = outlet._max_capacity
                     gridcell.environment.state._capacity_each_tower[j] = outlet.current_capacity
@@ -424,7 +427,8 @@ def enable_sending_requests( service,gridcells_dqn, performance_logger, start_ti
                         performance_logger.queue_power_for_requested_in_buffer[outlet][0][1] = False
                         served = serving_requests(performance_logger,outlet, start_time, service, satellite)
                         if served == True:
-                            performance_logger.end_to_end_delay = traci.simulation.getTime() - performance_logger.end_to_end_delay 
+                            performance_logger.time_out_delay = service.time_out
+                            performance_logger.end_to_end_delay = traci.simulation.getTime() - start_time 
                             performance_logger.served_requests_over_simulation += 1
                             outlet.dqn.environment.state._tower_capacity = outlet.current_capacity
                             outlet.dqn.environment.state.power_of_requests = service.service_power_allocate
