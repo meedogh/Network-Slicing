@@ -468,7 +468,7 @@ def choosing_abort_requests(performance_logger, outlet):
         if flag == True:
             timeout_durations.append(service.time_out)
             remaining_time_out_duration.append(service.remaining_time_out)
-    normalized_timeouts = [1 - (el2 / el1) for el1, el2 in zip(timeout_durations, remaining_time_out_duration)]
+    normalized_timeouts = [0 if el1 == 0 else 1 - (el2 / el1) for el1, el2 in zip(timeout_durations, remaining_time_out_duration)]
     # Calculate the percent point function (inverse of the CDF)
     vals = beta.ppf(normalized_timeouts, alpha, beta_value)
     aborted_services = []
