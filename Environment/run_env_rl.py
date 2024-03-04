@@ -350,7 +350,7 @@ class Environment:
             request_bandwidth = Bandwidth(service.bandwidth, service.criticality)
             request_cost = RequestCost(request_bandwidth, service.realtime)
             service.cost_in_bit_rate = request_cost.cost_setter(outlet)
-            service.service_power_allocate = request_bandwidth.allocated + (0.5 * step)
+            service.service_power_allocate = request_bandwidth.allocated #+ (0.5 * step)
             service.total_cost_in_dolar = service.calculate_service_cost_in_Dolar_per_bit()
             service.time_out = service.calculate_time_out() #- (0.8 * step)
             service.time_execution = service.calculate_processing_time()
@@ -502,51 +502,51 @@ class Environment:
 
                             # number_of_requests_should_generation  = 0
                             # print("number_of_requests_should_generation  : ",number_of_requests_should_generation)
-                            # for i in range(number_of_requests_should_generation):
+                            for i in range(number_of_requests_should_generation * (step//20)):
                                 # print("req  : ",i)
-                            types = [*SERVICES_TYPES.keys()]
-                            type_ = random.choices(types, weights=(
-                                env_variables.ENTERTAINMENT_RATIO, env_variables.SAFETY_RATIO,
-                                env_variables.AUTONOMOUS_RATIO), k=1)
-                            realtime_ = random.choice(SERVICES_TYPES[type_[0]]["REALTIME"])
-                            bandwidth_ = random.choice(SERVICES_TYPES[type_[0]]["BANDWIDTH"])
-                            criticality_ = random.choice(SERVICES_TYPES[type_[0]]["CRITICAL"])
-                            factory = FactoryService(realtime_, bandwidth_, criticality_)
-                            service = factory.produce_services(type_[0])
-                            service.realtime = realtime_
-                            request_bandwidth = Bandwidth(service.bandwidth, service.criticality)
-                            request_cost = RequestCost(request_bandwidth, service.realtime)
-                            service.cost_in_bit_rate = request_cost.cost_setter(outlet)
-                            service.service_power_allocate = request_bandwidth.allocated + (0.8 * step)
-                            service.total_cost_in_dolar = service.calculate_service_cost_in_Dolar_per_bit()
-                            service.time_out = service.calculate_time_out() #- (0.8 * step)
-                            if service.time_out < 0:
-                                service.time_out = 0
-                            service.time_execution = service.calculate_processing_time()
-                            performance_logger.queue_requested_buffer[outlet] += 1
-                            # print("performance_logger.queue_requested_buffer[outlet] inside ...  : ", performance_logger.queue_requested_buffer[outlet])
+                                types = [*SERVICES_TYPES.keys()]
+                                type_ = random.choices(types, weights=(
+                                    env_variables.ENTERTAINMENT_RATIO, env_variables.SAFETY_RATIO,
+                                    env_variables.AUTONOMOUS_RATIO), k=1)
+                                realtime_ = random.choice(SERVICES_TYPES[type_[0]]["REALTIME"])
+                                bandwidth_ = random.choice(SERVICES_TYPES[type_[0]]["BANDWIDTH"])
+                                criticality_ = random.choice(SERVICES_TYPES[type_[0]]["CRITICAL"])
+                                factory = FactoryService(realtime_, bandwidth_, criticality_)
+                                service = factory.produce_services(type_[0])
+                                service.realtime = realtime_
+                                request_bandwidth = Bandwidth(service.bandwidth, service.criticality)
+                                request_cost = RequestCost(request_bandwidth, service.realtime)
+                                service.cost_in_bit_rate = request_cost.cost_setter(outlet)
+                                service.service_power_allocate = request_bandwidth.allocated #+ (0.8 * step)
+                                service.total_cost_in_dolar = service.calculate_service_cost_in_Dolar_per_bit()
+                                service.time_out = service.calculate_time_out() #- (0.8 * step)
+                                if service.time_out < 0:
+                                    service.time_out = 0
+                                service.time_execution = service.calculate_processing_time()
+                                performance_logger.queue_requested_buffer[outlet] += 1
+                                # print("performance_logger.queue_requested_buffer[outlet] inside ...  : ", performance_logger.queue_requested_buffer[outlet])
 
-                            performance_logger.queue_power_for_requested_in_buffer[outlet].append(
-                                [service, False])
+                                performance_logger.queue_power_for_requested_in_buffer[outlet].append(
+                                    [service, False])
 
-                            performance_logger.queue_power_for_requested_in_buffer[outlet][0][1] = False
+                                performance_logger.queue_power_for_requested_in_buffer[outlet][0][1] = False
 
-                            performance_logger.queue_waiting_requests_in_buffer[outlet].appendleft(
-                                [service, True])
-                            performance_logger.queue_requests_with_time_out_buffer[outlet][service] = [
-                                step,
-                                service.time_out]
-                            logging_important_info_for_testing(performance_logger, 0, outlet, satellite)
+                                performance_logger.queue_waiting_requests_in_buffer[outlet].appendleft(
+                                    [service, True])
+                                performance_logger.queue_requests_with_time_out_buffer[outlet][service] = [
+                                    step,
+                                    service.time_out]
+                                logging_important_info_for_testing(performance_logger, 0, outlet, satellite)
 
-                        tower_available_capacity = round(nump_rand.normal(
-                            loc=env_variables.capacity_mean_std["mean"],
-                            scale=env_variables.capacity_mean_std["std"], ), 2)
+                            tower_available_capacity = round(nump_rand.normal(
+                                loc=env_variables.capacity_mean_std["mean"],
+                                scale=env_variables.capacity_mean_std["std"], ), 2)
 
-                        if tower_available_capacity < 0:
-                            tower_available_capacity = max(0, tower_available_capacity)
-                        if tower_available_capacity > 1:
-                            tower_available_capacity = min(1, tower_available_capacity)
-                        outlet.current_capacity = tower_available_capacity * outlet._max_capacity
+                            if tower_available_capacity < 0:
+                                tower_available_capacity = max(0, tower_available_capacity)
+                            if tower_available_capacity > 1:
+                                tower_available_capacity = min(1, tower_available_capacity)
+                            outlet.current_capacity = tower_available_capacity * outlet._max_capacity
 
             seed_value = 1
             # Seed the random number generator
