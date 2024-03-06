@@ -22,7 +22,7 @@ def save_served_requests(folder_path, j, served_requests):
     file_path = os.path.join(served_requests_folder, f"serving_ratio{j}.pkl")
     
     # Cut off data after the first occurrence of 0
-    zero_index = np.where(served_requests <= 0.095)[0][0]
+    zero_index = np.where(served_requests <= 0.1019)[0][0]
     print(zero_index)
     # if len(zero_index) > 0:
     print(served_requests)
@@ -48,10 +48,10 @@ def save_folders(folder_paths, title):
 
             min_length = min(len(all_generated), len(all_served))
 
-            all_generated = np.array(all_generated[100:min_length])
-            all_served = np.array(all_served[100:min_length])
+            all_generated = np.array(all_generated[1:min_length])
+            all_served = np.array(all_served[1:min_length])
 
-            # serving_ratio = all_served / all_generated
+            serving_ratio = all_served / all_generated
             serving_ratio = all_ratio[0]
 
             # print(min(serving_ratio))
@@ -61,7 +61,7 @@ def save_folders(folder_paths, title):
             # save_served_requests(folder_path, j, serving_ratio)
 
 def main():
-    fifo_folder_paths = ["run_rl_scenario_3_lr_0.001"]
+    fifo_folder_paths = ["run_rl_scenario_2_lr_0.001"]
     save_folders(fifo_folder_paths, "FIFO")
 
 if __name__ == "__main__":

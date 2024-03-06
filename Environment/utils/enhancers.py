@@ -366,6 +366,7 @@ def buffering_not_served_requests(outlets, performancelogger, time_step_simulati
                             performancelogger.sliced_requests = (service.parent_service, service)
 
                         service_moved_to_served.append(service)
+                        performancelogger.time_out_delay = service.time_out
                         performancelogger.end_to_end_delay = traci.simulation.getTime() - start_time
                         performancelogger.served_requests_over_simulation += 1
                         outlet.sum_of_costs_of_all_requests += service.total_cost_in_dolars
@@ -655,6 +656,7 @@ def request_reject_acceptance(car, performance_logger, gridcells_dqn, outlet, se
                                         performance_logger.sliced_requests = (service.parent_service, service)
 
                                     if served == True:
+                                        performance_logger.time_out_delay = service.time_out
                                         performance_logger.end_to_end_delay = traci.simulation.getTime() - start_time
                                         performance_logger.served_requests_over_simulation += 1
                                         outlet.dqn.environment.state._tower_capacity = outlet.current_capacity

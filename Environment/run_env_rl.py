@@ -712,7 +712,7 @@ class Environment:
                     gridcell_dqn.environment.reward.resetreward()
                     gridcell_dqn.environment.state.resetsate(self.temp_outlets)
 
-                performance_logger.reset_state_decentralize_requirement()
+                # performance_logger.reset_state_decentralize_requirement()
 
             step += 1
             step_for_each_episode_change_period += 1
