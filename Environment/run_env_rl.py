@@ -350,7 +350,7 @@ class Environment:
             request_bandwidth = Bandwidth(service.bandwidth, service.criticality)
             request_cost = RequestCost(request_bandwidth, service.realtime)
             service.cost_in_bit_rate = request_cost.cost_setter(outlet)
-            service.service_power_allocate = request_bandwidth.allocated #+ (0.5 * step)
+            service.service_power_allocate = request_bandwidth.allocated + (0.8 * step)
             service.total_cost_in_dolar = service.calculate_service_cost_in_Dolar_per_bit()
             service.time_out = service.calculate_time_out() #- (0.8 * step)
             service.time_execution = service.calculate_processing_time()
@@ -502,7 +502,7 @@ class Environment:
 
                             # number_of_requests_should_generation  = 0
                             # print("number_of_requests_should_generation  : ",number_of_requests_should_generation)
-                            for i in range(number_of_requests_should_generation * (step//20)):
+                            for i in range(number_of_requests_should_generation):
                                 # print("req  : ",i)
                                 types = [*SERVICES_TYPES.keys()]
                                 type_ = random.choices(types, weights=(
@@ -517,7 +517,7 @@ class Environment:
                                 request_bandwidth = Bandwidth(service.bandwidth, service.criticality)
                                 request_cost = RequestCost(request_bandwidth, service.realtime)
                                 service.cost_in_bit_rate = request_cost.cost_setter(outlet)
-                                service.service_power_allocate = request_bandwidth.allocated #+ (0.8 * step)
+                                service.service_power_allocate = request_bandwidth.allocated + (0.8 * step)
                                 service.total_cost_in_dolar = service.calculate_service_cost_in_Dolar_per_bit()
                                 service.time_out = service.calculate_time_out() #- (0.8 * step)
                                 if service.time_out < 0:
