@@ -350,9 +350,9 @@ class Environment:
             request_bandwidth = Bandwidth(service.bandwidth, service.criticality)
             request_cost = RequestCost(request_bandwidth, service.realtime)
             service.cost_in_bit_rate = request_cost.cost_setter(outlet)
-            service.service_power_allocate = request_bandwidth.allocated + (0.8 * step)
+            service.service_power_allocate = request_bandwidth.allocated #+ (0.8 * step)
             service.total_cost_in_dolar = service.calculate_service_cost_in_Dolar_per_bit()
-            service.time_out = service.calculate_time_out() #- (0.8 * step)
+            service.time_out = service.calculate_time_out() - (0.8 * step)
             service.time_execution = service.calculate_processing_time()
             performance_logger.queue_requested_buffer[outlet] += 1
             performance_logger.queue_power_for_requested_in_buffer[outlet].append(
@@ -517,9 +517,9 @@ class Environment:
                                 request_bandwidth = Bandwidth(service.bandwidth, service.criticality)
                                 request_cost = RequestCost(request_bandwidth, service.realtime)
                                 service.cost_in_bit_rate = request_cost.cost_setter(outlet)
-                                service.service_power_allocate = request_bandwidth.allocated + (0.8 * step)
+                                service.service_power_allocate = request_bandwidth.allocated #+ (0.8 * step)
                                 service.total_cost_in_dolar = service.calculate_service_cost_in_Dolar_per_bit()
-                                service.time_out = service.calculate_time_out() #- (0.8 * step)
+                                service.time_out = service.calculate_time_out() - (0.8 * step)
                                 if service.time_out < 0:
                                     service.time_out = 0
                                 service.time_execution = service.calculate_processing_time()
